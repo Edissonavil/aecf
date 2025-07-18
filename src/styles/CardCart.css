@@ -1,0 +1,23 @@
+/* src/styles/CartCard.css */
+
+.cart-card-image-wrapper {
+  overflow: hidden; /* Asegura que la imagen no sobresalga del contenedor al hacer zoom */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* O un alto fijo, por ejemplo, 150px */
+  position: relative; /* Necesario para el posicionamiento de la imagen interna si se usa absolute */
+}
+
+.cart-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Recorta la imagen para que cubra el área sin distorsión */
+  transition: transform 0.1s ease-out; /* Transición suave para el zoom */
+  cursor: zoom-in; /* Cambia el cursor para indicar que se puede hacer zoom */
+}
+
+/* Opcional: si la imagen de placeholder es muy grande */
+.cart-card-img[src*="/placeholder.png"] {
+  object-fit: contain; /* Para que la imagen de placeholder se ajuste sin recorte */
+}

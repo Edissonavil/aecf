@@ -1,0 +1,314 @@
+/* src/styles/LoginPage.css */
+
+/* Import de tipografías */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&family=Inter:wght@400;600;700&display=swap');
+
+/* Fuente base */
+body, .font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+/* -----------------------------------------------------------------
+   Shared card styles
+   ----------------------------------------------------------------- */
+/* separa la sección de contraseña del botón */
+.login-form .position-relative {
+  margin-bottom: 1.25rem;
+}
+
+/* opcional: más separación antes de los links */
+.btn-login {
+  margin-bottom: 1.5rem;
+}
+
+/* define el factor de zoom (1 = 100%, 1.2 = 120%, etc) */
+.login-card {
+  --content-zoom: 1;
+  overflow: hidden; /* evita scrollbars si algo sobresale */
+}
+
+/* aplica zoom únicamente al inner */
+.login-card__inner {
+  zoom: var(--content-zoom);
+  transform-origin: top center; /* punto de referencia */
+  /* opcional: si quieres centrar el inner dentro del card tras el zoom */
+  margin: 0 auto;
+}
+
+
+.login-card,
+.login-card2 {
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+  background: #fff;
+  border-top: 8px solid #FF00FF;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+  margin: 0 auto;
+}
+
+.login-card:hover,
+.login-card2:hover {
+  transform: scale(1.02);
+}
+
+/* Padding diferentes por defecto */
+.login-card {
+  padding: 8rem 6rem;
+}
+
+.login-card2 {
+  padding: 2rem 1.5rem;
+}
+
+/* -----------------------------------------------------------------
+   Responsive adjustments
+   ----------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .login-card,
+  .login-card2 {
+    padding: 4rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card,
+  .login-card2 {
+    padding: 2.5rem 1.5rem;
+    border-radius: 0.5rem;
+  }
+}
+
+/* -----------------------------------------------------------------
+   Layout wrapper
+   ----------------------------------------------------------------- */
+.login-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 1rem;
+}
+
+/* -----------------------------------------------------------------
+   Header (título/subtítulo)
+   ----------------------------------------------------------------- */
+.login-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.login-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.9rem;
+  font-weight: 900;
+  color: #222;
+}
+
+.text-fuchsia-electric {
+  color: #FF00FF;
+}
+
+.login-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+/* -----------------------------------------------------------------
+   Formulario de login
+   ----------------------------------------------------------------- */
+.login-form .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  color: #333;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 3px rgba(255,0,255,0.3);
+}
+
+/* Espacio para el botón de mostrar/ocultar contraseña */
+.login-form input[type="password"] {
+  padding-right: 3.5rem;
+}
+
+/* -----------------------------------------------------------------
+   Botones principales
+   ----------------------------------------------------------------- */
+.btn-login,
+.btn-colaborador {
+  display: block;
+  width: 100%;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  color: #fff;
+  background-color: #FF00FF;
+}
+
+.btn-login:hover,
+.btn-colaborador:hover {
+  background-color: #FF00FF;
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(255,0,255,0.4);
+}
+
+/* Elimina outline al hacer focus en el botón colaborador */
+.btn-colaborador:focus {
+  outline: none;
+}
+
+/* -----------------------------------------------------------------
+   Links de recuperación/registro
+   ----------------------------------------------------------------- */
+.login-links {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.login-link,
+.register-link {
+  color: #FF00FF;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.login-link:hover,
+.register-link:hover {
+  color: #FF00FF;
+}
+
+.register-link {
+  color: #FFD700;
+}
+
+.register-link:hover {
+  color: #cca300;
+}
+
+/* -----------------------------------------------------------------
+   Quitar subrayado/colores del <Link> dentro de .login-card2
+   ----------------------------------------------------------------- */
+.login-card2 a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.login-card2 a:hover,
+.login-card2 a:focus {
+  text-decoration: none;
+  outline: none;
+}
+
+/* -----------------------------------------------------------------
+   Toggle de contraseña (emoji ojo)
+   ----------------------------------------------------------------- */
+.password-toggle-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100% - 2px);
+}
+
+/* -----------------------------------------------------------------
+   Checkbox circular custom
+   ----------------------------------------------------------------- */
+.form-group-checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  margin-top: 10px;
+}
+
+.custom-checkbox-input {
+  appearance: none;
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.custom-checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #666;
+  user-select: none;
+}
+
+.custom-checkbox-circle {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  margin-right: 10px;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+  background-color: #fff;
+}
+
+.custom-checkbox-input:checked + .custom-checkbox-label .custom-checkbox-circle {
+  background-color: #f72585;
+  border-color: #f72585;
+}
+
+.custom-checkbox-input:checked + .custom-checkbox-label .custom-checkbox-circle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 6px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+}
+
+.custom-checkbox-label:hover .custom-checkbox-circle {
+  border-color: #f72585;
+  box-shadow: 0 0 5px rgba(247, 37, 133, 0.3);
+}

@@ -1,0 +1,100 @@
+/* === Estilos base === */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+  }
+  
+  /* === Contenedor principal === */
+  .upload-card {
+    background-color: #fff;
+    border-top: 6px solid #FF00FF;
+    border-radius: 1rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+  }
+  
+  /* === Título principal === */
+  .upload-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 2rem;
+    text-align: center;
+    color: #333;
+  }
+  .upload-title span {
+    color: #FF00FF;
+  }
+  
+  /* === Etiquetas de formularios === */
+  label.form-label {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  /* === Input & Select === */
+  input.form-control,
+  select.form-select,
+  textarea.form-control {
+    border-radius: 0.5rem;
+    border-color: #ced4da;
+    transition: border-color 0.2s;
+  }
+  
+  input.form-control:focus,
+  select.form-select:focus,
+  textarea.form-control:focus {
+    border-color: #FF00FF;
+    box-shadow: 0 0 0 0.2rem rgba(255, 0, 255, 0.2);
+  }
+  
+  /* === Botón primario === */
+  .btn-primary {
+    background-color: #FF00FF;
+    border-color: #FF00FF;
+    font-weight: 700;
+  }
+  
+  .btn-primary:hover {
+    background-color: #cc00cc;
+    border-color: #cc00cc;
+  }
+  
+  /* === Botón secundario / outline === */
+  .btn-outline-primary {
+    border-color: #FF00FF;
+    color: #FF00FF;
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: #FF00FF;
+    color: #fff;
+  }
+  
+  /* === Mensajes === */
+  .alert-success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+    border-color: #badbcc;
+  }
+  
+  .alert-danger {
+    background-color: #f8d7da;
+    color: #842029;
+    border-color: #f5c2c7;
+  }
+  
+  /* === Imagen preview === */
+  .preview-img {
+    max-height: 200px;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* === Responsive ajustes === */
+  @media (max-width: 768px) {
+    .upload-card {
+      padding: 1.5rem;
+    }
+  }
+  

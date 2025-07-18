@@ -1,0 +1,91 @@
+/* src/styles/TermsAndConditionsPage.css */
+
+.terms-page-container {
+    max-width: 900px; /* Limits the width for better readability on large screens */
+    margin-top: 30px;
+    margin-bottom: 30px;
+    font-family: 'Inter', sans-serif; /* Use 'Inter' or your project's main font */
+    line-height: 1.7; /* Improves readability of text blocks */
+    color: #333; /* Dark grey for primary text */
+    background-color: #ffffff; /* White background for the card */
+    border-radius: 8px; /* Slightly rounded corners for the container */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+    padding: 30px; /* Internal padding */
+}
+
+.terms-title {
+    font-size: 2.5rem; /* Large and prominent title */
+    font-weight: 700; /* Bold */
+    color: #222; /* Very dark grey */
+    margin-bottom: 30px;
+    border-bottom: 2px solid #eee; /* A subtle line under the main title */
+    padding-bottom: 15px;
+    text-align: center; /* Center the main title */
+}
+
+.terms-subtitle {
+    font-size: 1.6rem; /* Slightly smaller for sub-headings */
+    font-weight: 600; /* Semi-bold */
+    color: #444; /* Darker grey */
+    margin-top: 30px; /* Space above each section */
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee; /* A subtle line under sub-headings */
+    padding-bottom: 5px;
+}
+
+.terms-page-container p {
+    margin-bottom: 15px;
+    text-align: justify; /* Justify text for a clean, formal look */
+}
+
+.terms-page-container ul {
+    list-style-type: disc; /* Standard disc bullets */
+    margin-left: 20px; /* Indent lists */
+    margin-bottom: 15px;
+}
+
+.terms-page-container li {
+    margin-bottom: 8px; /* Space between list items */
+}
+
+/* Specific color for 'AEC' parts in titles/links */
+.terms-page-container .text-fuchsia-electric {
+    color: #ff0080; /* This should match your branding's fuchsia color */
+}
+
+/* Styles for the "Volver a la Solicitud" button */
+.terms-page-container .btn-outline-secondary {
+    border-color: #ced4da;
+    color: #6c757d;
+    transition: all 0.2s ease-in-out; /* Smooth transition on hover */
+}
+
+.terms-page-container .btn-outline-secondary:hover {
+    background-color: #e9ecef; /* Light grey background on hover */
+    color: #5a6268;
+    border-color: #adb5bd;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .terms-page-container {
+        margin-left: 15px;
+        margin-right: 15px;
+        padding: 20px;
+    }
+    .terms-title {
+        font-size: 2rem;
+    }
+    .terms-subtitle {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .terms-title {
+        font-size: 1.8rem;
+    }
+    .terms-subtitle {
+        font-size: 1.2rem;
+    }
+}

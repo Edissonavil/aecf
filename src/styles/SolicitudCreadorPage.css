@@ -1,0 +1,89 @@
+/* src/styles/SolicitudCreadorPage.css */
+
+.solicitud-creador-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #f0f2f5; /* Light grey background */
+}
+
+.solicitud-creador-card {
+    max-width: 600px;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.solicitud-logo {
+    max-height: 80px;
+    width: auto;
+}
+
+.solicitud-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-top: 15px;
+    color: #333;
+}
+
+.solicitud-creador-card .form-label {
+    font-weight: 600;
+    color: #444;
+}
+
+.solicitud-creador-card .form-control {
+    border-radius: 0.375rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ced4da;
+}
+
+.solicitud-creador-card .form-control:focus {
+    border-color: #ff0080; /* Fuchsia Electric */
+    box-shadow: 0 0 0 0.25rem rgba(255, 0, 128, 0.25);
+}
+
+.terms-and-conditions-section {
+    max-height: 250px; /* Adjust as needed */
+    overflow-y: auto;
+    font-size: 0.9rem;
+    color: #555;
+    background-color: #e9ecef; /* Lighter background for terms */
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 15px;
+}
+
+.terms-and-conditions-section ul {
+    padding-left: 20px;
+    margin-bottom: 10px;
+}
+
+.terms-and-conditions-section li {
+    margin-bottom: 5px;
+}
+
+.terms-and-conditions-section a {
+    color: #ff0080; /* Fuchsia Electric */
+    text-decoration: none;
+}
+
+.terms-and-conditions-section a:hover {
+    text-decoration: underline;
+}
+
+.btn-solicitar {
+    background-color: #ff0080; /* Fuchsia Electric */
+    border-color: #ff0080;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    border-radius: 0.375rem;
+}
+
+.btn-solicitar:hover {
+    background-color: #cc0066; /* Darker fuchsia */
+    border-color: #cc0066;
+}

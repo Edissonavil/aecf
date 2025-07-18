@@ -1,0 +1,22 @@
+/* src/styles/ReviewPaymentsPage.css */
+
+/* Estilos básicos para la página de revisión de pagos */
+.review-payments-page-container {
+    padding: 20px;
+}
+
+.review-payments-card {
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.receipt-image-preview {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+}
+
+/* Puedes añadir más estilos para los botones, badges, etc. */

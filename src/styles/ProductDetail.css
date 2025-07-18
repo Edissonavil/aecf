@@ -1,0 +1,46 @@
+/* src/styles/ProductDetail.css */
+
+/* Image Wrapper for fixed size and centering */
+.product-image-wrapper {
+    width: 100%; /* Take full width of its column */
+    max-width: 450px; /* Max width for larger screens */
+    height: 350px; /* Fixed height for consistency */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* Crucial for zoom effect to keep content within bounds */
+    border: 1px solid #e9ecef; /* Light border */
+    background-color: #f8f9fa; /* Light background */
+    position: relative; /* Needed for absolute positioning if overlays are added later */
+    border-radius: 0.5rem; /* Rounded corners */
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); /* Subtle shadow */
+}
+
+/* The actual image inside the wrapper */
+.product-detail-img {
+    width: 100%; /* Fill wrapper width */
+    height: 100%; /* Fill wrapper height */
+    object-fit: contain; /* Ensures the entire image is visible without cropping */
+    transition: transform 0.3s ease-in-out; /* Smooth transition for zoom */
+    /* Remove original style attributes from inline style in JSX for these */
+}
+
+/* Enhance text readability for description */
+.product-description {
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Badges for file types */
+.file-badge {
+    min-width: 60px; /* Ensure badges have a minimum width */
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 767.98px) {
+    .product-image-wrapper {
+        height: 300px; /* Slightly smaller height on mobile */
+    }
+}

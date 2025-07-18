@@ -1,0 +1,99 @@
+/* Contenedor general */
+.apd__container {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Título */
+  .apd__title {
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+  }
+  
+  /* Card */
+  .apd__card {
+    overflow: hidden;
+  }
+  
+  
+  /* Nombre */
+  .apd__name {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Meta datos (ID, uploader) */
+  .apd__meta {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  
+  /* Descripción */
+  .apd__desc {
+    margin-bottom: 1.5rem;
+    line-height: 1.4;
+  }
+  
+  /* Bloque de info adicional */
+  .apd__info > div {
+    margin-bottom: 1rem;
+  }
+  
+  /* Lista de documentos */
+  .apd__docs li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .apd__doc-link i {
+    font-size: 1.2rem;
+  }
+  
+  /* Botones de acción */
+  .apd__actions {
+    margin-top: 1.5rem;
+  }
+  
+  /* Estado de carga / no encontrado */
+  .apd__loading {
+    text-align: center;
+    margin: 3rem 0;
+    font-size: 1.1rem;
+  }
+
+.apd__cover:hover {
+  transform: scale(1.2); /* ajusta el nivel de zoom */
+  cursor: zoom-out;
+}
+
+/* El wrapper oculta desbordes y es relativo para el lens */
+.apd__cover-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+/* El <img> base */
+.apd__cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+}
+
+/* El lente: ocupa toda la caja, invisible hasta hover */
+.apd__zoom-lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;   /* para que no bloquee eventos del ratón */
+  background-repeat: no-repeat;
+  background-size: 200%;  /* nivel de zoom: 200% */
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Al hacer hover en el wrapper, mostramos el lente */
+.apd__cover-wrapper:hover .apd__zoom-lens {
+  opacity: 1;
+}

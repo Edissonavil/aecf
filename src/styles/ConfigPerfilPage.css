@@ -1,0 +1,113 @@
+/* src/styles/ProfileSettingsPage.css */
+
+/* Variables de color del tema */
+:root {
+    --color-primary: #D63384;        /* Fuchsia-electric */
+    --color-primary-hover: #C12E77;
+    --color-secondary: #495057;      /* Gris oscuro */
+    --color-bg-disabled: #e9ecef;
+    --color-success: #28a745;
+    --color-warning: #ffc107;
+    --color-danger: #dc3545;
+    --color-text: #343a40;
+    --color-muted: #6c757d;
+  }
+  
+  /* Estilos generales del contenedor y tarjeta */
+  .profile-settings-container {
+      max-width: 800px;
+      margin: 3rem auto;
+      padding: 2rem;
+  }
+  
+  .profile-settings-card {
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Encabezados */
+  .profile-settings-card h1 {
+      font-size: 2rem;
+      color: var(--color-text);
+      margin-bottom: 1.5rem;
+  }
+  
+  .profile-settings-card h2 {
+      font-size: 1.5rem;
+      color: var(--color-primary);
+      margin-bottom: 2rem;
+  }
+  
+  /* Controles de formulario */
+  .profile-settings-card .form-label {
+      font-weight: 600;
+      color: var(--color-secondary);
+  }
+  
+  .profile-settings-card .form-control[disabled],
+  .profile-settings-card .form-control[readonly] {
+      background-color: var(--color-bg-disabled);
+      opacity: 0.8;
+  }
+  
+  /* Botones de alternar modo */
+  .profile-mode-toggle-buttons .btn {
+      min-width: 150px;
+      font-weight: 500;
+  }
+  
+  .profile-mode-toggle-buttons .btn-primary {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+  }
+  
+  .profile-mode-toggle-buttons .btn-outline-primary {
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+  }
+  .profile-mode-toggle-buttons .btn-outline-primary:hover {
+      background-color: var(--color-primary-hover);
+      color: #fff;
+  }
+  
+  /* Botones de acción */
+  .profile-settings-card .btn-success {
+      background-color: var(--color-success);
+      border-color: var(--color-success);
+  }
+  
+  .profile-settings-card .btn-warning {
+      background-color: var(--color-warning);
+      border-color: var(--color-warning);
+      color: #212529 !important; /* Texto oscuro sobre amarillo */
+  }
+  
+  .profile-settings-card .btn-danger {
+      background-color: var(--color-danger);
+      border-color: var(--color-danger);
+  }
+  
+  /* Sección de eliminar cuenta */
+  .profile-settings-card .card.border-danger {
+      border: 1px solid var(--color-danger) !important;
+  }
+  
+  .profile-settings-card .card-body h5.text-danger {
+      color: var(--color-danger) !important;
+      font-size: 1.25rem;
+  }
+  
+  .profile-settings-card .card-body p.text-muted {
+      font-size: 0.9rem;
+      color: var(--color-muted) !important;
+  }
+  
+  /* Spinners y Alertas */
+  .profile-spinner-container {
+      min-height: 80vh;
+  }
+  
+  .profile-settings-card .alert {
+      margin-bottom: 1.5rem;
+  }
+  

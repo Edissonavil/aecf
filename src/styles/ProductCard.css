@@ -1,0 +1,79 @@
+.pc-container {
+    display: flex;
+    flex-wrap: wrap;
+    background: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin: 1rem 0;
+  }
+  .pc-image-wrap {
+    flex: 1 1 300px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .pc-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+  }
+  .pc-content {
+    flex: 2 1 400px;
+    padding: 1rem;
+    text-align: left;
+  }
+  .pc-title { font-size: 1.5rem; font-weight: 900; color: #333; }
+  .pc-price { font-size: 1.25rem; font-weight: 700; color: #FF00FF; margin: 0.5rem 0; }
+  .pc-collab { color: #555; margin-bottom: 0.5rem; }
+  .pc-specialties-wrap { margin: 0.5rem 0; }
+  .pc-specialty {
+    display: inline-block;
+    background: #f5f5f5;
+    color: #FF00FF;
+    padding: 0.25rem 0.5rem;
+    margin: 0 0.25rem 0.25rem 0;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+  }
+  .pc-country { margin: 0.5rem 0; }
+  .pc-country-val { font-weight: 600; }
+  .pc-description { margin: 1rem 0; color: #666; }
+  .pc-icons-wrap { margin: 0.5rem 0; }
+  .pc-icon {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid #ccc;
+    color: #333;
+    padding: 0.25rem 0.5rem;
+    margin: 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+  }
+  .pc-sidebar {
+    flex: 1 1 200px;
+    background: #f9f9f9;
+    padding: 1rem;
+    text-align: center;
+  }
+  .pc-sidebar-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
+  .pc-size-label { color: #555; }
+  .pc-size-val { font-size: 1.5rem; font-weight: 700; color: #FF00FF; margin: 0.5rem 0; }
+  .pc-btn {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .pc-btn-cart { background: #FF00FF; color: #fff; }
+  .pc-btn-cart:hover { background: #cc00cc; transform: scale(1.02); }
+  .pc-btn-buy { background: #FFD700; color: #333; }
+  .pc-btn-buy:hover { background: #cca300; transform: scale(1.02); }

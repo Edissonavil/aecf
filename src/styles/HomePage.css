@@ -1,0 +1,230 @@
+/* src/styles/HomePage.css */
+
+/* --- Importación de Fuentes (Asegúrate de que estén importadas globalmente en tu proyecto o en index.html) --- */
+/* @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&family=Inter:wght@400;600;700&display=swap'); */
+
+/* Colores personalizados */
+.text-fuchsia-electric { color: #FF00FF !important; }
+.bg-fuchsia-electric { background-color: #FF00FF !important; }
+.btn-fuchsia-electric {
+  background-color: #FF00FF;
+  color: #fff;
+  border-color: #FF00FF;
+}
+.btn-fuchsia-electric:hover {
+  background-color: #FF00FF;
+  border-color: #FF00FF;
+  color: #fff;
+}
+.btn-view-details {
+    background-color: #FFD700; /* Amarillo */
+    color: #333;
+    border-color: #FFD700;
+}
+.btn-view-details:hover {
+    background-color: #e0c200; /* Amarillo más oscuro al pasar el ratón */
+    border-color: #e0c200;
+    color: #333;
+}
+.text-yellow-construction { color: #FFD700 !important; }
+
+/* --- Hero Section --- */
+.hero-section {
+  background-color: #f8f9fa98; /* Fondo ligero con transparencia */
+  /* Puedes añadir una imagen de fondo o un gradiente aquí si lo deseas */
+  /* background: linear-gradient(135deg, #FF00FF, #cc00cc); */
+  color: #333; /* Color de texto predeterminado para esta sección */
+}
+
+.hero-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 3.5rem; /* Tamaño de fuente grande para el título */
+  font-weight: 900;
+  line-height: 1.2;
+}
+@media (min-width: 992px) { /* Para pantallas grandes */
+  .hero-title {
+    font-size: 4.5rem;
+  }
+}
+@media (max-width: 768px) { /* Para pantallas medianas */
+  .hero-title {
+    font-size: 2.8rem;
+  }
+}
+@media (max-width: 576px) { /* Para pantallas pequeñas */
+  .hero-title {
+    font-size: 2.2rem;
+  }
+}
+
+.highlight-text {
+  color: #FF00FF; /* Color fucsia para el texto resaltado */
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  max-width: 700px; /* Ancho máximo para el subtítulo */
+  line-height: 1.5;
+}
+@media (max-width: 576px) {
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+}
+
+.btn-explore {
+  padding: 0.8rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+.btn-explore:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Catalog Section --- */
+.catalog-section {
+  background-color: #fff;
+}
+
+.catalog-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #222;
+}
+@media (max-width: 768px) {
+  .catalog-title {
+    font-size: 2rem;
+  }
+}
+@media (max-width: 576px) {
+  .catalog-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* Search bar styles */
+.search-wrapper {
+  position: relative;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.search-input {
+  padding-left: 2.5rem; /* Espacio para el ícono */
+  border-radius: 0.5rem;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  pointer-events: none; /* Asegura que el clic pase al input */
+}
+
+/* Filter buttons */
+.filter-btn {
+  font-weight: 700;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  white-space: nowrap; /* Evita que el texto del botón se rompa */
+}
+/* Estilo del botón activo (complementa btn-fuchsia-electric) */
+.filter-btn.btn-fuchsia-electric {
+  box-shadow: 0 2px 5px rgba(255, 0, 255, 0.3);
+}
+.filter-btn:not(.btn-fuchsia-electric):hover {
+    background-color: #FFD700; /* Amarillo para hover en botones inactivos */
+    color: #333;
+    border-color: #FFD700;
+}
+
+/* Product Card Styling */
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden; /* Para asegurar que el img-top no se desborde */
+}
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; /* Sombra más pronunciada */
+}
+
+.product-card-img {
+  height: 200px; /* Altura fija para la imagen de la tarjeta */
+  object-fit: cover; /* Asegura que la imagen cubra el espacio sin distorsionarse */
+}
+
+.product-card-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  min-height: 3rem; /* Para mantener la altura uniforme si el título es corto */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limita el título a 2 líneas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-price {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #FF00FF; /* Color fucsia para el precio */
+}
+
+.badge.bg-secondary.text-dark {
+    background-color: #e9ecef !important; /* Gris claro para el badge */
+    color: #495057 !important;
+    font-weight: 600;
+}
+
+/* --- Benefits Section --- */
+.benefits-section {
+  background-color: #f8f9fa;
+}
+
+.benefits-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #222;
+}
+@media (max-width: 768px) {
+  .benefits-title {
+    font-size: 1.8rem;
+  }
+}
+@media (max-width: 576px) {
+  .benefits-title {
+    font-size: 1.5rem;
+  }
+}
+
+.benefit-item {
+  background-color: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.benefit-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; /* Sombra más pronunciada */
+}
+
+.icon {
+  font-size: 3rem; /* Tamaño de los íconos */
+  color: #FF00FF; /* Color fucsia para los íconos */
+  display: block; /* Para centrarlo si es un emoji/carácter */
+  margin-bottom: 0.5rem;
+}
+
+.benefit-item h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+}

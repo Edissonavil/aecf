@@ -1,0 +1,285 @@
+/* src/styles/RegisterPage.css */
+
+/* Importa tus fuentes si no lo haces globalmente */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&family=Inter:wght@400;600;700&display=swap');
+
+/* Base font for the page */
+body, .font-inter {
+  font-family: 'Inter', sans-serif;
+}
+
+/* --- Estilos para el botón de mostrar/ocultar contraseña (emojis) --- */
+/* Asegúrate de que el contenedor del input y el botón sea relativo */
+.register-form .form-group.position-relative {
+  position: relative;
+}
+
+/* Dar espacio al input para el botón del ojo */
+.register-form input[type="password"] {
+  padding-right: 3.5rem; /* Asegura suficiente espacio para el emoji */
+}
+
+/* Estilos para el botón del ojo */
+.password-toggle-btn {
+  position: absolute;
+  right: 0.75rem; /* Distancia desde el borde derecho */
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 1.25rem; /* Tamaño del emoji */
+  cursor: pointer;
+  z-index: 10; /* Asegura que esté encima del input */
+  padding: 0.25rem;
+  line-height: 1; /* Ayuda a la alineación vertical del emoji */
+  /* Propiedades para centrar el emoji dentro del botón */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100% - 2px); /* Ajusta la altura para que el botón esté dentro del input */
+}
+
+/* --- Estilos para el checkbox circular de los Términos y Condiciones --- */
+.form-group-checkbox {
+  display: flex; /* Permite alinear el checkbox y el texto */
+  align-items: center; /* Centra verticalmente el checkbox y el texto */
+  margin-bottom: 15px; /* Espacio debajo del checkbox */
+  margin-top: 10px; /* Espacio arriba del checkbox */
+}
+
+/* Oculta el checkbox nativo para poder estilizarlo a medida */
+.custom-checkbox-input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Estilo del label que envuelve el checkbox y el texto */
+.custom-checkbox-label {
+  display: flex;
+  align-items: center; /* Alinea el círculo y el texto */
+  cursor: pointer;
+  font-size: 0.95rem; /* Tamaño de fuente del texto */
+  color: #666; /* Color del texto del label */
+  user-select: none; /* Evita la selección de texto al hacer doble clic */
+}
+
+/* Estilo del círculo (el span que visualmente representa el checkbox) */
+.custom-checkbox-circle {
+  display: inline-block;
+  width: 20px; /* Tamaño del círculo */
+  height: 20px; /* Tamaño del círculo */
+  border: 2px solid #ccc; /* Borde inicial del círculo */
+  border-radius: 50%; /* Hace el elemento completamente circular */
+  margin-right: 10px; /* Espacio entre el círculo y el texto */
+  position: relative; /* Necesario para posicionar el pseudo-elemento del "tick" */
+  transition: all 0.2s ease-in-out; /* Transición suave para cambios de estado */
+  background-color: #fff; /* Fondo blanco por defecto */
+}
+
+/* Estilo del círculo cuando el checkbox está marcado */
+.custom-checkbox-input:checked + .custom-checkbox-label .custom-checkbox-circle {
+  background-color: #f72585; /* Color de fondo fucsia cuando está marcado */
+  border-color: #f72585; /* Borde fucsia cuando está marcado */
+}
+
+/* Estilo del "tick" (marca de verificación) dentro del círculo cuando está marcado */
+.custom-checkbox-input:checked + .custom-checkbox-label .custom-checkbox-circle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg); /* Centra y rota el tick */
+  width: 6px; /* Ancho del tick */
+  height: 12px; /* Alto del tick */
+  border: solid white; /* Color del tick blanco */
+  border-width: 0 2px 2px 0; /* Solo bordes derecho e inferior para formar la "V" */
+}
+
+/* Efecto hover en el círculo */
+.custom-checkbox-label:hover .custom-checkbox-circle {
+  border-color: #f72585; /* Cambia el color del borde al pasar el ratón */
+  box-shadow: 0 0 5px rgba(247, 37, 133, 0.3); /* Sutil sombra al pasar el ratón */
+}
+
+/* --- Resto de tus estilos existentes para RegisterPage.css --- */
+
+.register-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 1rem;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 500px;
+  background: #fff;
+  border-top: 8px solid #FF00FF;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  padding: 8rem 4rem; /* Ajusta según tus necesidades */
+  transition: transform 0.3s;
+}
+
+.register-card:hover {
+  transform: scale(1.02);
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.register-logo {
+  height: 48px;
+  margin-bottom: 3.0rem;
+}
+
+.register-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.9rem;
+  font-weight: 900;
+  color: #222;
+}
+
+.text-fuchsia-electric {
+  color: #FF00FF;
+}
+
+.register-subtitle {
+  font-size: 1.2rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.register-form .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.register-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.register-form .form-control { /* Usas form-control, asegúrate de que estos estilos apliquen */
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  color: #333;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.register-form .form-control:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 3px rgba(255,0,255,0.3);
+}
+
+.btn-register {
+  display: block;
+  width: 100%;
+  background-color: #FF00FF;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.75rem;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-register:hover {
+  background-color: #cc00cc;
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(255,0,255,0.4);
+}
+
+.btn-register:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.register-links {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.link-text {
+  color: #FF00FF;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.link-text:hover {
+  color: #cc00cc;
+}
+
+.link-text-yellow {
+  color: #FFD700;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.link-text-yellow:hover {
+  color: #cca300;
+}
+
+.error-text {
+  color: #dc3545; /* Color de error, rojo */
+  font-size: 0.875em;
+  margin-top: 0.25rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .register-card {
+    padding: 4rem 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: 2.5rem 1.5rem;
+    border-radius: 0.5rem;
+  }
+  .register-logo {
+    height: 40px;
+    margin-bottom: 2rem;
+  }
+  .register-title {
+    font-size: 1.5rem;
+  }
+  .register-subtitle {
+    font-size: 1rem;
+  }
+  .register-form .form-control, .btn-register {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  .register-links {
+    font-size: 0.8rem;
+  }
+}

@@ -1,0 +1,20 @@
+# .nixpacks.toml
+# Configuración para una aplicación frontend (ej. Node.js/React/Vue/Angular)
+
+[phases.setup]
+# Detecta el gestor de paquetes y asegúrate de que las dependencias estén instaladas.
+# Nixpacks generalmente detecta 'npm install' o 'yarn install' automáticamente,
+# pero puedes especificarlo si es necesario.
+# commands = ["npm install"] # O "yarn install"
+
+[phases.build]
+# Comando para construir tu aplicación frontend para producción.
+# Esto es un ejemplo, ajústalo a tu proyecto (ej. 'npm run build', 'yarn build').
+commands = ["npm run build"]
+
+[start]
+# Comando para servir tu aplicación frontend.
+# Para SPAs, a menudo se usa un servidor estático (ej. 'serve -s build').
+# Asegúrate de que el puerto sea el 3000 o el que tu app espere, o configúralo.
+cmd = "npx serve -s build -p 3000" # Ajusta 'build' si tu carpeta de salida es diferente (ej. 'dist')
+

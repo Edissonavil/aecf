@@ -1,13 +1,44 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* index.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap');
+
+:root {
+  --fuchsia-electric: #FF00FF;
+  --fuchsia-electric-dark: #cc00cc;
+  --yellow-construction: #FFD700;
+  --yellow-construction-dark: #cca300;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body {
+  margin:0;
+  font-family: 'Open Sans', sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.font-montserrat, h1,h2,h3 { font-family: 'Montserrat', sans-serif; }
+
+
+
+/* Colores personalizados */
+.text-fuchsia-electric { color: var(--fuchsia-electric); }
+.bg-fuchsia-electric { background-color: var(--fuchsia-electric); }
+.hover\:bg-fuchsia-electric-dark:hover { background-color: var(--fuchsia-electric-dark); }
+.border-fuchsia-electric { border-color: var(--fuchsia-electric); }
+
+.text-yellow-construction { color: var(--yellow-construction); }
+.bg-yellow-construction { background-color: var(--yellow-construction); }
+.hover\:bg-yellow-construction-dark:hover { background-color: var(--yellow-construction-dark); }
+.border-yellow-construction { border-color: var(--yellow-construction); }
+
+.fuchsia-glow { box-shadow: 0 0 15px rgba(255, 0, 255, 0.5); }
+
+/* Scroll reveal (puedes ajustar u omitir) */
+.scroll-reveal { opacity: 0; transform: translateY(30px); transition: opacity .6s, transform .6s; }
+.scroll-reveal.is-visible { opacity:1; transform: translateY(0); }
+
+/* Animación de cards */
+.card-enter { animation: card-enter-animation .5s ease-out forwards; }
+@keyframes card-enter-animation {
+  from { opacity:0; transform: scale(.95) translateY(20px); }
+  to   { opacity:1; transform: scale(1)    translateY(0); }
 }
