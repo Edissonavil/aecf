@@ -1,30 +1,27 @@
 # ---------- Build Stage ----------
 FROM node:18-alpine AS build
-
-# Set working directory
 WORKDIR /app
 
-# Copia los archivos y depende de package-lock si lo tienes
 COPY package*.json ./
 RUN npm install
 
-# Copia el resto del código
 COPY . .
-
-# Construye la aplicación para producción
 RUN npm run build
 
 # ---------- Serve Stage ----------
 FROM nginx:stable-alpine
+WORKDIR /usr/share/nginx/html
 
-# Copia el archivo de configuración por defecto
-COPY --from=build /app/build /usr/share/nginx/html
+# Limpio el contenido default y copio el build
+RUN rm -rf ./*
+COPY --from=build /app/build .
 
-# Elimina la configuración por defecto y reemplázala (opcional)
+# Copio mi config de Nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expone el puerto que Nginx usará
-EXPOSE 80
+# Le indico a Railway que use el PORT que le pase (o el 80 si no hay)
+ARG PORT=80
+ENV PORT $PORT
+EXPOSE $PORT
 
 CMD ["nginx", "-g", "daemon off;"]
-
