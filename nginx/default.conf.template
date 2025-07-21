@@ -1,0 +1,15 @@
+# nginx/default.conf.template
+server {
+  # escucha el puerto que Railway ponga en $PORT
+  listen ${PORT};
+  server_name _;
+
+  root /usr/share/nginx/html;
+  index index.html;
+
+  location / {
+    try_files $uri /index.html;
+  }
+
+  error_page 404 /index.html;
+}
