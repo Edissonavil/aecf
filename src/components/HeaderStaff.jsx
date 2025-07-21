@@ -20,7 +20,7 @@ export default function HeaderStaff() {
       description: 'Vista general de tus ventas'
     },
     { 
-      path: '/subirProducto', 
+      path: '/cargarProducto', 
       icon: '📦', 
       label: 'Subir Producto',
       description: 'Añadir nuevos productos'
@@ -51,17 +51,21 @@ export default function HeaderStaff() {
   const whiteBackground = '#ffffff'; // Fondo del sidebar
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: greyBackground }}>
-      {/* Sidebar minimalista */}
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', backgroundColor: greyBackground }}>
+      {/* Sidebar fijo */}
       <div 
         style={{ 
           display: 'flex',
           flexDirection: 'column',
-          width: '260px',
+          width: '260px', // Ancho fijo del sidebar
           backgroundColor: whiteBackground,
           boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
           borderRight: `1px solid #e0e0e0`,
           padding: '20px 0',
+          position: 'fixed', // Hace que el sidebar sea fijo en la pantalla
+          height: '100vh',   // Ocupa el 100% del alto del viewport
+          overflowY: 'auto', // Permite el scroll interno si el contenido del sidebar es largo
+          zIndex: 1000,      // Asegura que el sidebar esté por encima de otros elementos
         }}
       >
         {/* Header del sidebar */}
@@ -106,13 +110,8 @@ export default function HeaderStaff() {
                   transition: 'all 0.2s ease',
                   backgroundColor: isActiveLink(item.path) ? primaryColor : 'transparent',
                   color: isActiveLink(item.path) ? '#ffffff' : '#444',
-                  boxShadow: isActiveLink(item.path) ? `0 2px 6px ${primaryColor}4D` : 'none', // 4D para opacidad
+                  boxShadow: isActiveLink(item.path) ? `0 2px 6px ${primaryColor}4D` : 'none',
                   fontWeight: isActiveLink(item.path) ? 'bold' : 'normal',
-                  // Estilos para el hover (puedes usar un CSS-in-JS library o un archivo CSS)
-                  // Por simplicidad, aquí se mantiene en línea, pero para ':hover' se necesita una solución real.
-                  // Idealmente, esto iría en un archivo CSS o Styled Components/Emotion
-                  // Por ejemplo, para un archivo CSS:
-                  // .nav-link-item:hover { background-color: ${lightPink}; color: ${darkerPink}; }
                 }}
                 onMouseEnter={e => {
                   if (!isActiveLink(item.path)) {
@@ -195,7 +194,13 @@ export default function HeaderStaff() {
       </div>
 
       {/* Área de contenido principal */}
-      <div style={{ flexGrow: '1', padding: '25px' }}>
+      <div style={{ 
+        flexGrow: '1', 
+        marginLeft: '260px', // Ajustar este margen al ancho del sidebar
+        padding: '25px', 
+        overflowY: 'auto', 
+        height: '100vh',
+      }}>
         <Outlet />
       </div>
     </div>

@@ -157,6 +157,15 @@ export default function ProductDetail() {
                     Necesitas <a href="/login" className="alert-link">Iniciar Sesión</a> para añadir productos al carrito de compras.
                   </Alert>
                 )}
+                {/* Botón para volver al catálogo */}
+                <Button
+                  variant="outline-secondary" // Un estilo más discreto
+                  size="sm" // ¡Más pequeño!
+                  className="mt-3" // Mantener un pequeño margen superior
+                  onClick={() => navigate('/catalog')}
+                >
+                  Volver al Catálogo
+                </Button>
               </div>
             </Col>
           </Row>

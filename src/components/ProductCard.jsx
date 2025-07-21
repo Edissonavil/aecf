@@ -38,7 +38,7 @@ export default function ProductCard({ product }) {
 
         {/* Especialidad */}
         <p className="text-muted mb-1">
-          <strong>Especialidad:</strong> {productSpecialties}
+          <strong></strong> {productSpecialties}
         </p>
 
         {/* País */}

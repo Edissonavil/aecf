@@ -1,23 +1,49 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# Directorio de dependencias de Node
 /node_modules
-/.pnp
-.pnp.js
 
-# testing
-/coverage
-
-# production
+# Directorio de compilación
 /build
+/dist
+/out
 
-# misc
-.DS_Store
+# Archivos de caché
+.cache/
+.parcel-cache/
+.vite/
+.next/ # Si usas Next.js
+.nuxt/ # Si usas Nuxt.js
+
+# Archivos de configuración de entorno (¡CRÍTICO!)
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
+lerna-debug.log*
+
+# Archivos de caché del IDE
+.idea/
+.vscode/
+
+# Editor de texto/IDE específicos (ej. VS Code)
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/extensions.json
+.vscode/*.code-workspace
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Test coverage
+/coverage
+
+# Historias de Storybook (si usas)
+*.stories.mdx

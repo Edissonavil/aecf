@@ -1,14 +1,15 @@
-// src/pages/SolicitudCreadorPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Form, Button, Card, Alert } from 'react-bootstrap';
-import axios from 'axios'; // Necesitarás axios para la solicitud HTTP
-import '../styles/SolicitudCreadorPage.css'; // Crea este archivo CSS
+import axios from 'axios';
+import '../styles/SolicitudCreadorPage.css';
 
 const SolicitudCreadorPage = () => {
   const [nombreCompleto, setNombreCompleto] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  // Nuevo estado para el campo "hablanosDeTi"
+  const [hablanosDeTi, setHablanosDeTi] = useState('');
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -33,7 +34,9 @@ const SolicitudCreadorPage = () => {
         {  
         nombreCompleto,
         username,
-        email
+        email,
+        // Incluye el nuevo campo en la solicitud
+        hablanosDeTi
       });
 
       if (response.status === 200) {
@@ -94,6 +97,18 @@ const SolicitudCreadorPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+              />
+            </Form.Group>
+
+            {/* Nuevo campo "Hablanos un poco de ti" */}
+            <Form.Group className="mb-3" controlId="formHablanosDeTi">
+              <Form.Label>Háblanos un poco de ti (Opcional)</Form.Label>
+              <Form.Control
+                as="textarea" // Usamos textarea para múltiples líneas
+                rows={3}      // Número de filas visible
+                placeholder="Cuéntanos sobre tu experiencia, habilidades o por qué quieres ser un creador AEC."
+                value={hablanosDeTi}
+                onChange={(e) => setHablanosDeTi(e.target.value)}
               />
             </Form.Group>
 

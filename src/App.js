@@ -1,4 +1,4 @@
-// src/App.js
+// src/App.js - Alternativa con rutas absolutas
 import React, { useContext } from 'react';
 import {
   BrowserRouter as Router,
@@ -44,47 +44,9 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { AuthContext } from './context/AuthContext';
 
-// Componente de carga simple
-const LoadingScreen = () => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '100vh',
-    backgroundColor: '#f5f5f5'
-  }}>
-    <div style={{
-      textAlign: 'center',
-      padding: '2rem'
-    }}>
-      <div style={{
-        width: '50px',
-        height: '50px',
-        border: '3px solid #f3f3f3',
-        borderTop: '3px solid #3498db',
-        borderRadius: '50%',
-        animation: 'spin 1s linear infinite',
-        margin: '0 auto 1rem'
-      }}></div>
-      <p style={{ color: '#666', fontSize: '16px' }}>Cargando...</p>
-      <style jsx>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
-    </div>
-  </div>
-);
-
 export default function App() {
-  const { isAuthenticated, role, isAuthLoading } = useContext(AuthContext);
+  const { isAuthenticated, role } = useContext(AuthContext);
   const safeRole = (role || '').toUpperCase();
-
-  // Mostrar pantalla de carga mientras se inicializa la autenticación
-  if (isAuthLoading) {
-    return <LoadingScreen />;
-  }
 
   return (
     <Router>
@@ -109,7 +71,7 @@ export default function App() {
           </Route>
         )}
 
-        {/* — STAFF ROUTES — */}
+        {/* — STAFF ROUTES — CAMBIADO: Usar rutas absolutas en Navigate */}
         {isAuthenticated && safeRole === 'ROL_COLABORADOR' && (
           <Route path="/" element={<HeaderStaff />}>
             <Route index                   element={<Navigate to="/cargarProducto" replace />} />
@@ -137,47 +99,30 @@ export default function App() {
           </Route>
         )}
 
-        {/* — REDIRECT PARA ADMIN EN RUTA RAÍZ — */}
-        {isAuthenticated && safeRole === 'ROL_ADMIN' && (
-          <Route path="/" element={<Navigate to="/admin" replace />} />
-        )}
-
-        {/* — PUBLIC ROUTES — Solo se muestran cuando NO está autenticado */}
-        {!isAuthenticated && (
-          <Route element={
-            <>
-              <HeaderGuest />
-              <main style={{ marginTop: '72px' }}><Outlet/></main>
-              <Footer />
-            </>
-          }>
-            <Route path="/"                    element={<HomePage />} />
-            <Route path="login"               element={<LoginPage />} />
-            <Route path="registro"            element={<RegisterPage />} />
-            <Route path="terminos"            element={<TermsPage />} />
-            <Route path="privacy-policy"      element={<PrivacyPolicyPage />} />
-            <Route path="login-colaborador"   element={<LoginColab />} />
-            <Route path="producto/:id"        element={<ProductDetail />} />
-            <Route path="catalog"             element={<CatalogPage />} />
-            <Route path="solicitudCreador"    element={<SolicitudCreadorPage />} />
-            <Route path="terminosYcondiciones" element={<TermsAndConditionsPage />} />
-            <Route path="nosotros"            element={<SobreNosotros />} />
-            <Route path="resetearClave"       element={<ForgotPasswordPage />} />
-            <Route path="*"                   element={<Navigate to="/" replace />} />
-          </Route>
-        )}
-
-        {/* — FALLBACK para rutas no manejadas cuando está autenticado — */}
-        {isAuthenticated && (
-          <Route path="*" element={
-            safeRole === 'ROL_ADMIN' ? <Navigate to="/admin" replace /> :
-            safeRole === 'ROL_COLABORADOR' ? <Navigate to="/cargarProducto" replace /> :
-            <Navigate to="/" replace />
-          } />
-        )}
+        {/* — PUBLIC ROUTES — */}
+        <Route element={
+          <>
+            <HeaderGuest />
+            <main style={{ marginTop: '72px' }}><Outlet/></main>
+            <Footer />
+          </>
+        }>
+          <Route path="/"                    element={<HomePage />} />
+          <Route path="login"               element={<LoginPage />} />
+          <Route path="registro"            element={<RegisterPage />} />
+          <Route path="terminos"            element={<TermsPage />} />
+          <Route path="privacy-policy"      element={<PrivacyPolicyPage />} />
+          <Route path="login-colaborador"   element={<LoginColab />} />
+          <Route path="producto/:id"        element={<ProductDetail />} />
+          <Route path="catalog"             element={<CatalogPage />} />
+          <Route path="solicitudCreador"    element={<SolicitudCreadorPage />} />
+          <Route path="terminosYcondiciones" element={<TermsAndConditionsPage />} />
+          <Route path="nosotros"            element={<SobreNosotros />} />
+          <Route path="resetearClave"       element={<ForgotPasswordPage />} />
+          <Route path="*"                   element={<Navigate to="/" replace />} />
+        </Route>
 
       </Routes>
     </Router>
   );
-
 }

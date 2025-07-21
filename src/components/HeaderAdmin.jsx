@@ -60,17 +60,21 @@ const HeaderAdmin = () => {
   const darkerPink = '#C71585'; // Rosa más oscuro para texto
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f5f7fa' }}>
-      {/* Sidebar minimalista */}
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden', backgroundColor: '#f5f7fa' }}>
+      {/* Sidebar fijo */}
       <div 
         style={{ 
           display: 'flex',
           flexDirection: 'column',
-          width: '260px', // Un poco más estrecho
+          width: '260px', // Ancho fijo del sidebar
           backgroundColor: '#ffffff',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.05)', // Sombra más suave
-          borderRight: `1px solid #e0e0e0`, // Borde más sutil
+          boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+          borderRight: `1px solid #e0e0e0`,
           padding: '20px 0',
+          position: 'fixed', // Hace que el sidebar sea fijo en la pantalla
+          height: '100vh',   // Ocupa el 100% del alto del viewport
+          overflowY: 'auto', // Permite el scroll interno si el contenido del sidebar es largo
+          zIndex: 1000,      // Asegura que el sidebar esté por encima de otros elementos
         }}
       >
         {/* Header del sidebar */}
@@ -117,9 +121,17 @@ const HeaderAdmin = () => {
                   color: isActiveLink(item.path) ? '#ffffff' : '#444',
                   boxShadow: isActiveLink(item.path) ? '0 2px 6px rgba(255,105,180,0.3)' : 'none',
                   fontWeight: isActiveLink(item.path) ? 'bold' : 'normal',
-                  '&:hover': {
-                    backgroundColor: isActiveLink(item.path) ? primaryColor : lightPink,
-                    color: isActiveLink(item.path) ? '#ffffff' : darkerPink,
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActiveLink(item.path)) {
+                    e.currentTarget.style.backgroundColor = lightPink;
+                    e.currentTarget.style.color = darkerPink;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActiveLink(item.path)) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#444';
                   }
                 }}
               >
@@ -157,11 +169,17 @@ const HeaderAdmin = () => {
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
-              '&:hover': {
-                backgroundColor: primaryColor,
-                color: '#ffffff',
-                boxShadow: '0 2px 6px rgba(255,105,180,0.3)'
-              }
+
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = primaryColor;
+              e.currentTarget.style.color = '#ffffff';
+              e.currentTarget.style.boxShadow = '0 2px 6px rgba(255,105,180,0.3)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = primaryColor;
+              e.currentTarget.style.boxShadow = 'none';
             }}
           >
             <span style={{ marginRight: '8px' }}>🚪</span>
@@ -171,7 +189,13 @@ const HeaderAdmin = () => {
       </div>
 
       {/* Área de contenido principal */}
-      <div style={{ flexGrow: '1', padding: '25px' }}> {/* Más padding para el contenido */}
+      <div style={{ 
+        flexGrow: '1', 
+        marginLeft: '260px', // Ajustar este margen al ancho del sidebar
+        padding: '25px', 
+        overflowY: 'auto', 
+        height: '100vh',
+      }}>
         <Outlet />
       </div>
     </div>

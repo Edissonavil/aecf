@@ -1,0 +1,234 @@
+/* src/pages/AdminStatsView.css */
+
+/* Variables CSS para colores personalizados (igual que UploadProductPage para consistencia) */
+:root {
+  --aec-fuchsia-primary: #FF00FF; /* Magenta principal */
+  --aec-fuchsia-secondary: #cc00cc; /* Un tono más oscuro para hover */
+  --aec-fuchsia-light: #ffe6ff; /* Para fondos muy claros */
+  --aec-blue: #0088FE;
+  --aec-purple: #8884d8;
+  --aec-orange: #FF8042;
+  --aec-red: #dc3545;
+  --aec-green: #28a745;
+}
+
+/* Importar fuentes desde Google Fonts para consistencia */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* === Estilos base === */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa; /* Consistent background */
+}
+
+/* === Contenedor principal para la vista de estadísticas === */
+.stats-page-container {
+    background-color: #fff;
+    border-top: 6px solid var(--aec-fuchsia-primary); /* Matches upload-card border-top */
+    border-radius: 1rem; /* Matches upload-card border-radius */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* Matches upload-card shadow */
+    padding: 2.5rem; /* Matches upload-card padding */
+}
+
+/* === Título principal para las páginas de estadísticas === */
+.stats-main-title {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 2rem; /* Matches upload-title font-size */
+    text-align: center;
+    color: #333; /* Matches upload-title color */
+    margin-bottom: 2.5rem; /* Increased margin for better separation */
+}
+.stats-main-title span {
+    color: var(--aec-fuchsia-primary); /* Matches upload-title span color */
+}
+
+/* === Etiquetas de formularios === */
+label.form-label {
+    font-weight: 600;
+    color: #333;
+}
+
+/* === Input & Select === */
+input.form-control,
+select.form-select,
+textarea.form-control {
+    border-radius: 0.5rem;
+    border-color: #ced4da;
+    transition: border-color 0.2s;
+}
+
+input.form-control:focus,
+select.form-select:focus,
+textarea.form-control:focus {
+    border-color: var(--aec-fuchsia-primary);
+    box-shadow: 0 0 0 0.2rem rgba(255, 0, 255, 0.2);
+}
+
+/* === Botón primario === */
+.btn-primary-custom { /* Custom class to avoid conflict if Bootstrap default is overridden */
+    background-color: var(--aec-fuchsia-primary);
+    border-color: var(--aec-fuchsia-primary);
+    font-weight: 700;
+    padding-left: 2.5rem; /* px-5 */
+    padding-right: 2.5rem; /* px-5 */
+    padding-top: 0.625rem; /* py-2 */
+    padding-bottom: 0.625rem; /* py-2 */
+}
+
+.btn-primary-custom:hover {
+    background-color: var(--aec-fuchsia-secondary);
+    border-color: var(--aec-fuchsia-secondary);
+}
+
+/* === Mensajes de alerta === */
+.alert-success-custom { /* Custom class */
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border-color: #badbcc;
+}
+
+.alert-danger-custom { /* Custom class */
+  background-color: #f8d7da;
+  color: #842029;
+  border-color: #f5c2c7;
+}
+
+/* === Stat Cards (similar to UploadProductPage form inputs for consistency) === */
+.stat-card-item {
+    background-color: #fff;
+    border-radius: 0.5rem; /* Matching input border-radius */
+    border: 1px solid #e0e0e0; /* Subtle border for definition */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03); /* Lighter shadow */
+    padding: 1.5rem; /* Consistent padding */
+    transition: all 0.2s ease-in-out;
+    display: flex; /* For flexible content */
+    align-items: center; /* Vertically align content */
+}
+
+.stat-card-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06); /* Slightly more pronounced on hover */
+}
+
+/* Icon circles within stat cards */
+.icon-circle {
+  padding: 0.75rem; /* p-3 */
+  border-radius: 50%; /* rounded-full */
+}
+.icon-bg-fuchsia { background-color: var(--aec-fuchsia-light); }
+.icon-text-fuchsia { color: var(--aec-fuchsia-primary); }
+.icon-bg-blue { background-color: rgba(0, 136, 254, 0.1); }
+.icon-text-blue { color: var(--aec-blue); }
+.icon-bg-purple { background-color: rgba(136, 132, 216, 0.1); }
+.icon-text-purple { color: var(--aec-purple); }
+.icon-bg-orange { background-color: rgba(255, 128, 66, 0.1); }
+.icon-text-orange { color: var(--aec-orange); }
+
+/* Spinners */
+.spinner-border-fuchsia {
+  border-bottom-color: var(--aec-fuchsia-primary) !important;
+}
+
+/* === Tabs styling (revisiting to match form control aesthetics) === */
+.nav-tabs-custom .nav-item {
+  flex-grow: 1;
+}
+
+.nav-tabs-custom .nav-link {
+  border: 1px solid #ced4da; /* Matching form control border */
+  border-bottom: none; /* No bottom border for tab itself */
+  border-radius: 0.5rem 0.5rem 0 0; /* Rounded top corners */
+  color: #495057;
+  padding: 0.75rem 1.5rem;
+  text-align: center;
+  font-size: 1.0rem; /* Slightly smaller to fit */
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0; /* Light background for inactive tabs */
+  margin-right: 0.25rem; /* Small gap between tabs */
+}
+
+.nav-tabs-custom .nav-link:hover {
+  color: var(--aec-fuchsia-primary);
+  background-color: #e9ecef; /* Lighter hover effect */
+}
+
+.nav-tabs-custom .nav-link.active {
+  background-color: #fff; /* White background for active tab */
+  color: var(--aec-fuchsia-primary);
+  border-color: var(--aec-fuchsia-primary); /* Fuchsia border on active */
+  border-bottom-color: #fff; /* Make bottom border transparent to blend with content */
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow on active tab */
+}
+
+/* Remove margin for the last nav-item to prevent extra space */
+.nav-tabs-custom .nav-item:last-child .nav-link {
+    margin-right: 0;
+}
+
+/* Tab content cards below the tabs */
+.tab-content-card {
+    background-color: #fff;
+    border: 1px solid #ced4da; /* Matching form control border */
+    border-top: none; /* Blends with tab */
+    border-radius: 0 0 0.5rem 0.5rem; /* Rounded bottom corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    padding: 2.5rem; /* p-5 */
+    margin-top: -1px; /* Overlap with tab border */
+}
+
+/* Table styling */
+.table th {
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.875rem; /* Slightly smaller font for table headers */
+}
+
+.table tbody tr:hover {
+  background-color: var(--aec-fuchsia-light);
+}
+
+/* Error close button */
+.btn-close-error {
+  font-weight: bold;
+  color: var(--aec-red);
+  font-size: 1.5rem;
+}
+
+.btn-close-error:hover {
+  color: darken(var(--aec-red), 10%);
+}
+
+/* Recharts wrapper adjustments */
+.recharts-wrapper {
+  overflow: visible !important;
+}
+
+/* Text colors */
+.text-fuchsia-custom {
+  color: var(--aec-fuchsia-primary);
+}
+.text-gray-600-custom {
+  color: #6c757d;
+}
+
+/* Rotación para iconos de tendencia */
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .stats-page-container {
+        padding: 1.5rem;
+    }
+    .stats-main-title {
+        font-size: 1.75rem;
+    }
+}

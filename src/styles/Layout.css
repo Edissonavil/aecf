@@ -6,24 +6,26 @@
 
 /* Header */
 .header {
-  position: fixed;
+  position: fixed; /* O sticky, si prefieres que se desplace con el scroll hasta cierto punto */
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(10px);
-  transition: box-shadow 0.3s;
+  background: rgba(255, 255, 255, 0.85); /* Fondo blanco semitransparente */
+  backdrop-filter: blur(10px); /* Efecto de desenfoque detrás del header */
+  transition: box-shadow 0.3s, background-color 0.3s; /* Transiciones suaves */
   z-index: 1000;
 }
+
 .header--scrolled {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra cuando se hace scroll */
 }
+
 .header__inner {
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  padding: 16px 0;
+  padding: 16px 0; /* Espaciado interno del header */
 }
 
 /* Logo / Site title */
@@ -31,28 +33,23 @@
   display: flex;
   align-items: center;
 }
-.logo-image {
-  height: 2.5rem; /* md and default */
-}
+
 .site-title {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 900;
-  font-size: 1.5rem;
-  margin-left: 12px;
+  font-family: 'Montserrat', sans-serif; /* Fuente deseada */
+  font-weight: 900; /* Negrita extrema */
+  font-size: 1.5rem; /* Tamaño de fuente */
+  margin-left: 12px; /* Margen para el logo */
   text-decoration: none;
-  color: #333;
+  color: #333; /* Color de texto base */
 }
 
 /* Navigation */
-.nav,
 .nav-desktop {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1rem; /* Espacio entre los elementos de navegación */
 }
-.nav--open {
-  display: block;
-}
+
 .nav__link {
   text-decoration: none;
   color: #555;
@@ -61,11 +58,13 @@
   border-radius: 0.375rem;
   transition: all 0.2s ease-in-out;
 }
+
 .nav__link:hover {
-  color: #FF00FF;
+  color: #FF00FF; /* Color de hover */
 }
+
 .nav__button {
-  background-color: #FF00FF;
+  background-color: #FF00FF; /* Color de botón principal */
   color: white;
   padding: 0.5rem 1rem;
   font-weight: 700;
@@ -73,10 +72,13 @@
   border-radius: 0.375rem;
   cursor: pointer;
   text-decoration: none;
+  transition: background-color 0.2s ease;
 }
+
 .nav__button:hover {
-  background-color: #FF00FF;
+  background-color: #cc00cc; /* Color de hover para el botón */
 }
+
 .nav__icon {
   display: flex;
   align-items: center;
@@ -92,18 +94,19 @@
 .nav__icon:hover {
   color: #FF00FF;
 }
+
 .nav__cart {
   position: relative;
   font-size: 1.2rem;
   text-decoration: none;
   color: #555;
 }
-.nav__badge,
-.nav__cart-count {
+
+.nav__badge {
   position: absolute;
   top: -6px;
   right: -6px;
-  background: #dc2626;
+  background: #dc2626; /* Color para el badge del carrito */
   color: #fff;
   font-size: 0.65rem;
   height: 18px;
@@ -115,120 +118,90 @@
   align-items: center;
   line-height: 1;
 }
-.nav__user {
-  color: #4b5563;
-  font-weight: 600;
-  font-size: 1.125rem;
+
+/* User Dropdown styles */
+.user-dropdown-toggle {
+  background: none;
+  border: 1px solid #f7efefff; /* Borde sutil */
+  border-radius: 25px; /* Forma de píldora */
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-/* Dropdown */
-.nav__dropdown {
-  position: relative;
+.user-dropdown-toggle:hover {
+  background-color: #FFC0CB; /* Rosa claro en hover */
+  border-color: #FF00FF; /* Borde fucsia en hover */
+  color: #C71585; /* Rosa oscuro en hover */
 }
-.dropdown-menu {
+
+.user-dropdown-menu {
   position: absolute;
+  top: calc(100% + 10px);
   right: 0;
-  top: 100%;
-  margin-top: 0.5rem;
-  width: 12rem;
-  background-color: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1),
-              0 2px 4px -1px rgba(0,0,0,0.06);
-  padding: 0.5rem 0;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.12);
   list-style: none;
-  z-index: 50;
-}
-.dropdown-item {
-  display: block;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  color: #1f2937;
-  text-decoration: none;
-  transition: background-color 0.2s;
-}
-.dropdown-item:hover {
-  background-color: #f3f4f6;
-}
-.dropdown-item-cerr {
-  display: block;
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
-  background: #e5e7eb;
-  color: red;
-}
-.dropdown-divider {
-  border-top: 1px solid #e5e7eb;
-  margin: 0.25rem 0;
+  margin: 0;
+  padding: 8px 0;
+  min-width: 160px;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none; /* Evita interacciones cuando está oculto */
 }
 
-/* Mobile nav */
-.mobile-toggle {
-  font-size: 1.5rem;
+.user-dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all; /* Permite interacciones cuando está visible */
+}
+
+.user-dropdown-item {
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.9rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.user-dropdown-item:hover {
+  background-color: #FFC0CB;
+  color: #C71585;
+}
+
+.user-dropdown-divider {
+  margin: 8px 0;
+  border: none;
+  border-bottom: 1px solid #f7efefff;
+}
+
+.user-dropdown-logout-btn {
+  width: 100%;
+  text-align: left;
   background: none;
   border: none;
+  padding: 10px 15px;
+  color: #FF00FF; /* Rojo para cerrar sesión */
+  font-size: 0.9rem;
   cursor: pointer;
-  padding: 0.5rem;
-  color: #4b5563;
+  font-weight: bold;
+  transition: background-color 0.2s, color 0.2s;
 }
-@media (min-width: 768px) {
-  .mobile-toggle {
-    display: none;
-  }
+
+.user-dropdown-logout-btn:hover {
+  background-color: #FFC0CB;
+  color: #FF00FF; /* Mantiene el color rojo en hover */
 }
-.nav-mobile {
-  display: none;
-  flex-direction: column;
-  gap: 1rem;
-  background: #fff;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  border-top: 1px solid #e5e7eb;
-  width: 100%;
-}
-.nav-mobile.nav--open {
-  display: flex;
-}
-.nav-mobile__link,
-.nav-mobile__button,
-.nav-mobile__logout {
-  width: 100%;
-  text-align: center;
-  font-weight: 600;
-  padding: 0.5rem 1.5rem;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  transition: background-color 0.2s;
-}
-.nav-mobile__link {
-  color: #4b5563;
-}
-.nav-mobile__link:hover {
-  color: #FF00FF;
-}
-.nav-mobile__button {
-  background-color: #FF00FF;
-  color: white;
-}
-.nav-mobile__button:hover {
-  background-color: #cc00cc;
-}
-.nav-mobile__logout {
-  background-color: #dc2626;
-  color: white;
-  font-weight: 700;
-  border: none;
-}
-.nav-mobile__logout:hover {
-  background-color: #b91c1c;
-}
-.nav-mobile__user {
-  font-weight: 600;
-  color: #1f2937;
-  font-size: 1.125rem;
-  margin-bottom: 1rem;
-}
+
 
 /* Footer */
 .footer {
@@ -297,4 +270,3 @@
 .border-yellow-construction { border-color: #FFD700; }
 
 .highlight { color: #FF00FF; }
-
