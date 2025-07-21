@@ -12,6 +12,6 @@ echo "=================="
 PORT=${PORT:-3000}
 echo "Using port: $PORT"
 
-# IMPORTANTE: serve debe escuchar en 0.0.0.0, no en localhost
+# Iniciar serve en todas las interfaces (0.0.0.0), no solo localhost
 echo "Starting server on 0.0.0.0:$PORT"
-serve -s build --host 0.0.0.0 --port $PORT
+serve -s build --listen 0.0.0.0:$PORT
