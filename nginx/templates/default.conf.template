@@ -1,5 +1,6 @@
 server {
-    listen 80 default_server;
+    # Esta variable será reemplazada por envsubst
+    listen ${PORT};
     server_name _;
     
     root /usr/share/nginx/html;

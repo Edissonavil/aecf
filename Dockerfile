@@ -7,19 +7,17 @@ COPY . .
 RUN npm run build
 
 # ---------- Runtime Stage ----------
-FROM nginx:stable-alpine
+FROM node:18-alpine
+WORKDIR /app
 
-# Copia tu carpeta build al html root
-COPY --from=build /app/build /usr/share/nginx/html
+# Instalar serve globalmente
+RUN npm install -g serve
 
-# Copia la configuración de nginx
-COPY nginx/templates/default.conf.template /etc/nginx/conf.d/default.conf
+# Copiar archivos build
+COPY --from=build /app/build ./build
 
-# Railway asigna el puerto dinámicamente
+# Railway proporciona PORT automáticamente
 EXPOSE $PORT
 
-# Script para iniciar nginx con el puerto correcto
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
-CMD ["/start.sh"]
+# serve automáticamente usa la variable de entorno PORT
+CMD ["serve", "-s", "build"]
