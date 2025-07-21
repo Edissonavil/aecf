@@ -12,16 +12,15 @@ RUN npm run build
 FROM nginx:stable-alpine
 WORKDIR /usr/share/nginx/html
 
-# Limpio el contenido default y copio el build
+# Limpio y copro el build
 RUN rm -rf ./*
 COPY --from=build /app/build .
 
-# Copio mi config de Nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copio la plantilla de nginx
+COPY nginx.conf.template /etc/nginx/templates/default.conf.template
 
-# Le indico a Railway que use el PORT que le pase (o el 80 si no hay)
-ARG PORT=80
-ENV PORT $PORT
-EXPOSE $PORT
+# Exponemos 80 solo por convención, Railway usará $PORT
+EXPOSE 80
 
+# Al arrancar, envsubst-on-templates.sh generará default.conf en /etc/nginx/conf.d/
 CMD ["nginx", "-g", "daemon off;"]
