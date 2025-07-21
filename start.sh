@@ -12,6 +12,6 @@ echo "=================="
 PORT=${PORT:-3000}
 echo "Using port: $PORT"
 
-# Iniciar serve en el puerto correcto
-echo "Starting server on port $PORT"
-serve -s build --listen $PORT
+# IMPORTANTE: serve debe escuchar en 0.0.0.0, no en localhost
+echo "Starting server on 0.0.0.0:$PORT"
+serve -s build --host 0.0.0.0 --port $PORT
