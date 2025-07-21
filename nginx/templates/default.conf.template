@@ -1,7 +1,7 @@
 server {
 # envsubst REEMPLAZARÁ $PORT con el valor de Railway
 listen $PORT;
-server_name_;
+server_name _;
 root /usr/share/nginx/html;
 index index.html;
 location / {
