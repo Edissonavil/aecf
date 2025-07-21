@@ -13,7 +13,7 @@ FROM nginx:stable-alpine
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Copia la configuración de nginx
-COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx/templates/default.conf.template /etc/nginx/conf.d/default.conf
 
 # Railway asigna el puerto dinámicamente
 EXPOSE $PORT
