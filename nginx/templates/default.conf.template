@@ -6,7 +6,7 @@ server {
 
 listen $PORT;
 
-server_name ;
+server_name_;
 
 root /usr/share/nginx/html;
 
