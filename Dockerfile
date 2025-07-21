@@ -1,3 +1,4 @@
+
 # ---------- Build Stage ----------
 FROM node:18-alpine AS build
 WORKDIR /app
@@ -10,14 +11,14 @@ RUN npm run build
 FROM node:18-alpine
 WORKDIR /app
 
-# Instalar serve globalmente
+# Instalar serve
 RUN npm install -g serve
 
-# Copiar archivos build
+# Copiar archivos
 COPY --from=build /app/build ./build
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-# Railway proporciona PORT automáticamente
 EXPOSE $PORT
 
-# serve automáticamente usa la variable de entorno PORT
-CMD ["serve", "-s", "build"]
+CMD ["/start.sh"]
