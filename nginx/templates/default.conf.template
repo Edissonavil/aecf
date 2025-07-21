@@ -1,11 +1,10 @@
-# nginx/templates/default.conf.template
 server {
-  # usa $PORT tal cual, Railway la inyectará
+  # envsubst REEMPLAZARÁ $PORT con el valor de Railway
   listen       $PORT;
   server_name  _;
 
-  root /usr/share/nginx/html;
-  index index.html;
+  root   /usr/share/nginx/html;
+  index  index.html;
 
   location / {
     try_files $uri /index.html;
