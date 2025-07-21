@@ -1,7 +1,7 @@
 # nginx/default.conf.template
 server {
-  # escucha el puerto que Railway ponga en $PORT
-  listen ${PORT};
+  # si $PORT no está definido, escucha en 80
+  listen ${PORT:-80};
   server_name _;
 
   root /usr/share/nginx/html;
