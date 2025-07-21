@@ -10,14 +10,31 @@ RUN npm run build
 FROM node:18-alpine
 WORKDIR /app
 
-# Instalar serve
-RUN npm install -g serve
+# Instalar express
+RUN npm init -y && npm install express
 
-# Copiar archivos
+# Crear un servidor simple con Node.js
+RUN echo 'const express = require("express");' > server.js && \
+    echo 'const path = require("path");' >> server.js && \
+    echo 'const app = express();' >> server.js && \
+    echo '' >> server.js && \
+    echo 'const PORT = process.env.PORT || 3000;' >> server.js && \
+    echo '' >> server.js && \
+    echo '// Servir archivos estáticos' >> server.js && \
+    echo 'app.use(express.static(path.join(__dirname, "build")));' >> server.js && \
+    echo '' >> server.js && \
+    echo '// Manejar rutas de React Router' >> server.js && \
+    echo 'app.get("*", (req, res) => {' >> server.js && \
+    echo '  res.sendFile(path.join(__dirname, "build", "index.html"));' >> server.js && \
+    echo '});' >> server.js && \
+    echo '' >> server.js && \
+    echo 'app.listen(PORT, "0.0.0.0", () => {' >> server.js && \
+    echo '  console.log(`Server running on 0.0.0.0:${PORT}`);' >> server.js && \
+    echo '});' >> server.js
+
+# Copiar archivos build
 COPY --from=build /app/build ./build
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
 
 EXPOSE $PORT
 
-CMD ["/start.sh"]
+CMD ["node", "server.js"]
