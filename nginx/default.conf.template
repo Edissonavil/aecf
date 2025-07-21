@@ -1,7 +1,6 @@
 # nginx/default.conf.template
 server {
-  # si $PORT no está definido, escucha en 80
-  listen ${PORT:-80};
+  listen 80;
   server_name _;
 
   root /usr/share/nginx/html;
