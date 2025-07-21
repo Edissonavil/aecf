@@ -1,23 +1,11 @@
-default.conf.template
-
 server {
-
 # envsubst REEMPLAZARÁ $PORT con el valor de Railway
-
 listen $PORT;
-
 server_name_;
-
 root /usr/share/nginx/html;
-
 index index.html;
-
 location / {
-
 try_files $uri /index.html;
-
 }
-
 error_page 404 /index.html;
-
 }
