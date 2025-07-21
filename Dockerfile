@@ -1,30 +1,23 @@
-# ----------Build Stage ----------
-
+# ---------- Build Stage ----------
 FROM node:18-alpine AS build
-
 WORKDIR /app
-
 COPY package*.json ./
-
 RUN npm install
-
 COPY . .
-
 RUN npm run build
 
 # ---------- Runtime Stage ----------
+FROM node:18-alpine
+WORKDIR /app
 
-FROM nginx:stable-alpine
+# Instalar serve
+RUN npm install -g serve
 
-# nginx busca plantillas en /etc/nginx/templates
+# Copiar archivos
+COPY --from=build /app/build ./build
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-COPY nginx/templates/default.conf.template /etc/nginx/templates/default.conf.template
+EXPOSE $PORT
 
-# Copia tu carpeta build al html root
-
-COPY --from=build /app/build /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx","-g","daemon off;"]
-
+CMD ["/start.sh"]
