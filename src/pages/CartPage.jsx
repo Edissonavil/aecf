@@ -36,7 +36,7 @@ export default function CartPage() {
     alert(`Pago exitoso! ID: ${orderIdFromPayment}`);
     try {
       const resp = await axios.get(
-        `http://localhost:8085/api/orders/${orderIdFromPayment}`,
+        `https://gateway-production-129e.up.railway.app/api/orders/${orderIdFromPayment}`,
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
       setLastRelevantOrder(resp.data);
@@ -66,7 +66,7 @@ export default function CartPage() {
         // Siempre intenta obtener la última orden completada para el usuario
         try {
           const resp = await axios.get(
-            'http://localhost:8085/api/orders/my-orders/latest',
+            'https://gateway-production-129e.up.railway.app/api/orders/my-orders/latest',
             { headers: { Authorization: `Bearer ${accessToken}` } }
           );
           const latestOrder = resp.data;
@@ -206,7 +206,7 @@ export default function CartPage() {
       intervalId = setInterval(async () => {
         try {
           const resp = await axios.get(
-            `http://localhost:8085/api/orders/${lastRelevantOrder.id}`,
+            `https://gateway-production-129e.up.railway.app/api/orders/${lastRelevantOrder.id}`,
             { headers: { Authorization: `Bearer ${accessToken}` } }
           );
           const updatedOrder = resp.data;
@@ -318,7 +318,7 @@ export default function CartPage() {
                     sku: String(d.productId),
                   }));
                   const { data } = await axios.post(
-                    'http://localhost:8085/api/orders',
+                    'https://gateway-production-129e.up.railway.app/api/orders',
                     { currency, totalAmount: +total, items: itemsReq },
                     { headers: { Authorization: `Bearer ${accessToken}` } }
                   );
@@ -328,7 +328,7 @@ export default function CartPage() {
                   try {
                     // 1. Confirma el pago en tu backend.
                     await axios.post(
-                      `http://localhost:8085/api/orders/${data.orderID}/capture`,
+                      `https://gateway-production-129e.up.railway.app/api/orders/${data.orderID}/capture`,
                       {},
                       { headers: { Authorization: `Bearer ${accessToken}` } }
                     );

@@ -150,7 +150,7 @@ const ColaboradorEditarProducto = () => {
     );
   }
 
-  const BASE_FILES_URL = "http://localhost:8083/api/files/"; 
+  const BASE_FILES_URL = "https://gateway-production-129e.up.railway.app/api/files/"; 
 
   return (
     <div className="container my-4">

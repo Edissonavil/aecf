@@ -90,8 +90,5 @@ export function downloadOrder(orderId) {
 }
 
 export const downloadOrderBlob = (downloadUrl) => {
-  // Si 'downloadUrl' es una URL absoluta (ej. https://gateway-production-129e.up.railway.app/api/files/download/...),
-  // axios ignorará la baseURL de ORDER_API y usará directamente downloadUrl.
-  // Esto es lo correcto si order-service-deploy te devuelve la URL completa para el file-service.
   return ORDER_API.get(downloadUrl, { responseType: 'arraybuffer' });
 };

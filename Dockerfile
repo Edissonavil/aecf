@@ -10,7 +10,6 @@ WORKDIR /app
 RUN npm install -g serve
 COPY --from=build /app/build ./build
 
-# Script de inicio mejorado
 RUN echo "#!/bin/sh" > start.sh && \
     echo "PORT=\${PORT:-3000}" >> start.sh && \
     echo "echo \"Starting on port \$PORT\"" >> start.sh && \

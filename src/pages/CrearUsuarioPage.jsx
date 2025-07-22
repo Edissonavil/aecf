@@ -68,7 +68,7 @@ const CrearUsuarioPage = () => {
         }
       };
 
-      const response = await axios.post('http://localhost:8081/api/users', 
+      const response = await axios.post('https://gateway-production-129e.up.railway.app/api/users', 
         {
           nombreUsuario,
           clave,
