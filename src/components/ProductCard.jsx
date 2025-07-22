@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom'; // Para el enlace a los detalles
 
-const FILE_SERVICE_BASE_URL = "http://localhost:8084/api/files"; // Tu URL base para archivos
+const FILE_SERVICE_BASE_URL = "https://gateway-production-129e.up.railway.app/api/files"; // Tu URL base para archivos
 
 export default function ProductCard({ product }) {
   // Manejo de valores nulos/undefined para visualización
