@@ -8,7 +8,6 @@ import { Calendar, DollarSign, ShoppingBag, Package, Users, TrendingUp, AlertCir
 import { useAuth } from '../context/AuthContext';
 import '../styles/AdminStatsView.css'; // Importa el archivo CSS personalizado
 
-// Define la URL base para el Stats Service
 const STATS_API_BASE_URL = 'https://gateway-production-129e.up.railway.app/api/stats'; // CAMBIO CLAVE AQUÍ
 
 const AdminStatsView = () => {
@@ -19,16 +18,13 @@ const AdminStatsView = () => {
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedCollaborator, setSelectedCollaborator] = useState('');
 
-  // Estados para diferentes tipos de datos
   const [completeStats, setCompleteStats] = useState(null);
   const [collaboratorSales, setCollaboratorSales] = useState([]);
   const [productSales, setProductSales] = useState([]);
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Configuración de colores para gráficos
   const COLORS = ['#FF00FF', '#00C49F', '#FFBB28', '#0088FE', '#FF8042', '#8884d8'];
 
-  // Opciones de años (últimos 5 años)
   const yearOptions = Array.from({ length: 5 }, (_, i) =>
     new Date().getFullYear() - i
   );

@@ -51,7 +51,6 @@ export default function AdminProductoDetalle() {
   if (loading) return <p className="apd__loading">Cargando…</p>;
   if (!prod) return <p className="apd__loading">Producto no encontrado.</p>;
 
-  // ✅ Corrección: usar directamente la URL construida en backend
   const primaryImageUrl = prod.fotografiaUrl || '/placeholder.png';
 
   return (

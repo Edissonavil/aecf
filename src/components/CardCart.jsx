@@ -7,7 +7,6 @@ export default function CardCart({ item, onRemove }) {
   // Precio unificado
   const price = item.unitPrice ?? item.precioIndividual ?? 0;
 
-  // Especialidades o guión si no vienen
   const specs = item.especialidades?.length
     ? item.especialidades.join(', ')
     : '—';
@@ -15,8 +14,9 @@ export default function CardCart({ item, onRemove }) {
   // --- Lógica de zoom ---
   const imgWrapperRef = useRef(null);
   const [zoomStyle, setZoomStyle] = useState({});
-
-  const onMouseMove = e => {
+  
+  // Mueve el lente de zoom según la posición del mouse
+const onMouseMove = e => {
     if (!imgWrapperRef.current) return;
     const { left, top, width, height } = imgWrapperRef.current.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
@@ -28,7 +28,6 @@ export default function CardCart({ item, onRemove }) {
     setZoomStyle({ transform: 'scale(1)', transformOrigin: 'center center' });
   };
 
-  // --- URL de la imagen: usa la que viene del backend ---
   const imageUrl = item.fotografiaUrl || '/placeholder.png';
 
   return (
@@ -77,7 +76,7 @@ CardCart.propTypes = {
     unitPrice: PropTypes.number,
     precioIndividual: PropTypes.number,
     especialidades: PropTypes.arrayOf(PropTypes.string),
-    fotografiaUrl: PropTypes.string,        // ahora espera la URL completa
+    fotografiaUrl: PropTypes.string,        
   }).isRequired,
   onRemove: PropTypes.func.isRequired,
 };

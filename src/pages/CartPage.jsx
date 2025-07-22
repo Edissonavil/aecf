@@ -233,19 +233,10 @@ export default function CartPage() {
   if (loading) return <p>Cargando carrito…</p>;
   if (error) return <p className="text-danger">{error}</p>;
 
-  // Determinar si hay una URL de descarga disponible en la última orden relevante
   const hasDownloadUrl = lastRelevantOrder && lastRelevantOrder.downloadUrl;
-
-  // El botón de descarga solo se mostrará si hay una URL de descarga
-  // Y SI el carrito actual del usuario está vacío (indicando que la compra anterior es relevante aquí).
   const showDownloadButton = hasDownloadUrl && cartItems.length === 0;
-
-  // Lógica de renderizado condicional principal
-  // showCartAndPaymentOptions: Se muestra si hay items en el carrito Y NO estamos en los otros estados.
-  // Es importante que NO se muestre si hasDownloadUrl es true, para evitar solapamiento.
   const showCartAndPaymentOptions = itemsWithDetails.length > 0 && !currentOrderId && !isAwaitingManualPaymentReview && !hasDownloadUrl;
   const showUploadReceiptSection = currentOrderId && !isUploadingReceipt;
-  // El mensaje de carrito vacío ahora también considera si no hay una descarga pendiente
   const showInitialEmptyCartMessage = itemsWithDetails.length === 0 && !currentOrderId && !isAwaitingManualPaymentReview && !hasDownloadUrl;
 
   const downloadOrderId = lastRelevantOrder?.orderId; // Asegúrate de obtener el ID de la orden para el nombre del archivo
@@ -334,20 +325,14 @@ export default function CartPage() {
                     );
 
                     // 2. Indica al SDK de PayPal que el proceso de frontend se completó y que cierre su ventana.
-                    // ES CRÍTICO ESPERAR ESTO.
                     await actions.order.capture(); // <--- CAMBIO CLAVE: AWAIT AQUÍ Y ORDEN
 
                     // 3. Actualiza tu UI después de que PayPal haya finalizado su flujo.
                     handlePaymentCompletion(data.orderID); // No necesitas 'await' aquí si no quieres bloquear más,
-                    // la limpieza es asíncrona pero ya el orden se cumplió.
 
                   } catch (error) {
                     console.error("Error durante la captura o post-procesamiento en el frontend:", error);
                     alert("Hubo un error al procesar tu pago. Por favor, contacta a soporte.");
-                    // Si el backend falló la captura, es importante no limpiar el carrito
-                    // y permitir que el usuario intente de nuevo o contacte a soporte.
-                    // Puedes lanzar el error para que `onError` lo maneje si lo deseas.
-                    // throw error;
                   }
                 }}
                 onCancel={(data) => {
@@ -420,7 +405,6 @@ export default function CartPage() {
             onClick={async () => {
               try {
                 // Realiza la petición al backend para iniciar la descarga
-                // Y esto es lo que activará el clearCart en el backend
                 const resp = await fetch(
                   lastRelevantOrder.downloadUrl,
                   { headers: { Authorization: `Bearer ${accessToken}` } }
@@ -442,11 +426,8 @@ export default function CartPage() {
                 document.body.removeChild(a); // Limpiar después
                 URL.revokeObjectURL(url);
 
-                // Después de que la descarga se inicia/completa:
                 // 1. Limpia el estado local de la última orden relevante
                 setLastRelevantOrder(null);
-                // 2. Asegúrate de que el contador del carrito se actualice, 
-                //    aunque el backend ya lo hizo al descargar, esto garantiza sincronía
                 await refreshCartCount();
 
               } catch (e) {

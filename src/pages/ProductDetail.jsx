@@ -5,7 +5,7 @@ import { Container, Row, Col, Card, Badge, Button, Spinner, Alert } from 'react-
 import { getProductById } from '../services/productApi';
 import { addToCart } from '../services/orderApi';
 import { AuthContext } from '../context/AuthContext';
-import '../styles/ProductDetail.css'; // We'll add some CSS here for image sizing/zoom
+import '../styles/ProductDetail.css'; 
 
 const FILE_SERVICE_BASE_URL = 'https://gateway-production-129e.up.railway.app/api/users/solicitud-creador'; 
 
@@ -20,7 +20,7 @@ export default function ProductDetail() {
 
   // Zoom state and ref
   const imgWrapperRef = useRef(null);
-  const [zoomStyle, setZoomStyle] = useState({}); // Start with empty object for no initial transform
+  const [zoomStyle, setZoomStyle] = useState({}); 
 
   // Get refreshCartCount from AuthContext
   const { refreshCartCount } = useContext(AuthContext);

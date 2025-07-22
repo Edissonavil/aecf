@@ -16,8 +16,6 @@ const AdminProductosListado = () => {
   const [query, setQuery] = useState(''); // Para la barra de búsqueda por nombre/colaborador
   const [filterStatus, setFilterStatus] = useState('TODOS'); // Para el filtro por estado
 
-  // `fetchProducts` se envuelve en `useCallback` para que sea una función estable
-  // y no cause un nuevo render innecesario cada vez que el componente se renderiza.
   const fetchProducts = useCallback(() => {
     setLoading(true);
     setError(null);
@@ -30,7 +28,6 @@ const AdminProductosListado = () => {
 
     apiCall
       .then(res => {
-        // Asegúrate de que `res.data.content` sea un array, si no, usa un array vacío
         const items = Array.isArray(res.data.content)
           ? res.data.content
           : [];
@@ -42,25 +39,17 @@ const AdminProductosListado = () => {
       })
       .finally(() => setLoading(false)); // Siempre termina el estado de carga
   }, [filterStatus]); // `fetchProducts` depende de `filterStatus`, por lo que se recarga si este cambia
-
-  // `useEffect` llama a `fetchProducts` cuando el componente se monta
-  // o cuando `fetchProducts` (y por lo tanto `filterStatus`) cambia.
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]); // La dependencia es la función `fetchProducts` (estable por `useCallback`)
-
-  // `filtered` utiliza `useMemo` para optimizar el filtrado de productos
-  // solo se recalcula cuando `productos` o `query` cambian
   const filtered = useMemo(() => {
     if (!query) return productos; // Si no hay búsqueda, devuelve todos los productos
     return productos.filter(p =>
-      // Filtra por nombre de producto o nombre de usuario del uploader (insensible a mayúsculas/minúsculas)
       p.nombre?.toLowerCase().includes(query.toLowerCase()) ||
       p.uploaderUsername?.toLowerCase().includes(query.toLowerCase())
     );
   }, [productos, query]); // Dependencias: `productos` y `query`
 
-  // Mensajes de estado de carga o error
   if (loading) return <p className="text-center py-4">Cargando…</p>;
   if (error) return <p className="text-danger text-center">Error al cargar datos. {error.message}</p>;
 
