@@ -29,8 +29,11 @@ const SolicitudCreadorPage = () => {
     }
 
     try {
-      // Envía la solicitud al nuevo endpoint del backend
-      const response = await axios.post('http://localhost:8081/api/solicitud-creador', 
+      // Define la URL del Gateway para el endpoint de solicitud de creador
+      const GATEWAY_CREATOR_REQUEST_URL = 'https://gateway-production-129e.up.railway.app/api/users/solicitud-creador'; // CAMBIO CLAVE AQUÍ
+
+      // Envía la solicitud al nuevo endpoint del backend a través del Gateway
+      const response = await axios.post(GATEWAY_CREATOR_REQUEST_URL, 
         {  
         nombreCompleto,
         username,

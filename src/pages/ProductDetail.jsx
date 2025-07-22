@@ -7,7 +7,7 @@ import { addToCart } from '../services/orderApi';
 import { AuthContext } from '../context/AuthContext';
 import '../styles/ProductDetail.css'; // We'll add some CSS here for image sizing/zoom
 
-const FILE_SERVICE_BASE_URL = 'http://localhost:8084/api/files';
+const FILE_SERVICE_BASE_URL = 'https://gateway-production-129e.up.railway.app/api/users/solicitud-creador'; 
 
 export default function ProductDetail() {
   const { id } = useParams();

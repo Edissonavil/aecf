@@ -1,7 +1,11 @@
 import axios from 'axios';
 
-const USERS_API = axios.create({
-  baseURL: 'http://localhost:8081/api/users',
+// Usamos la URL pública de tu Gateway
+const GATEWAY_BASE_URL = 'https://gateway-production-129e.up.railway.app';
+
+// Crea la instancia de Axios apuntando al Gateway para los servicios de usuarios
+export const USERS_API = axios.create({
+  baseURL: `${GATEWAY_BASE_URL}/api/users`, // CAMBIO AQUÍ: Apunta al Gateway para usuarios
   headers: { 'Content-Type': 'application/json' }
 });
 
@@ -11,7 +15,7 @@ const USERS_API = axios.create({
  * @returns {Promise}
  */
 export function registerUser(payload) {
-  // Llamamos **solo** a "/users/register"
+  // Ahora llama a GATEWAY_BASE_URL/api/users/register
   return USERS_API.post('/register', payload);
 }
 
@@ -22,6 +26,7 @@ export function registerUser(payload) {
  * @param {number} size
  */
 export function listUsers(page = 0, size = 20) {
+  // Ahora llama a GATEWAY_BASE_URL/api/users/?page=...&size=...
   return USERS_API.get('/', { params: { page, size } });
 }
 

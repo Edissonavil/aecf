@@ -12,7 +12,7 @@ import { useAuth } from '../context/AuthContext';
 import '../styles/CreatorStatsView.css'; // Importa el archivo CSS personalizado
 
 // Define la URL base para el Stats Service
-const STATS_API_BASE_URL = 'http://localhost:8086/api/stats';
+const STATS_API_BASE_URL = 'https://gateway-production-129e.up.railway.app/api/stats'; // CAMBIO CLAVE AQUÍ
 
 const CreatorStatsView = () => {
   const { authToken, isAuthLoading, username: authUsername } = useAuth();

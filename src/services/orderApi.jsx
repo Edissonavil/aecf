@@ -2,10 +2,12 @@
 
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8085';
+// Usamos la URL pública de tu Gateway
+const GATEWAY_BASE_URL = 'https://gateway-production-129e.up.railway.app';
 
+// CART_API ahora apunta al Gateway, y el Gateway se encargará de enrutar a /api/orders/cart
 export const CART_API = axios.create({
-  baseURL: `${BASE_URL}/api/orders/cart`,
+  baseURL: `${GATEWAY_BASE_URL}/api/orders/cart`,
   headers: { 'Content-Type': 'application/json' }
 });
 
@@ -18,21 +20,21 @@ CART_API.interceptors.request.use(config => {
 });
 
 /**
- * GET  /api/orders/cart
+ * GET  /api/orders/cart  (Se convierte en GATEWAY_BASE_URL/api/orders/cart)
  */
 export function getCart() {
   return CART_API.get(``);
 }
 
 /**
- * GET  /api/orders/cart/count
+ * GET  /api/orders/cart/count (Se convierte en GATEWAY_BASE_URL/api/orders/cart/count)
  */
 export function getCartCount() {
   return CART_API.get('/count');
 }
 
 /**
- * POST /api/orders/cart/{productId}?precio=…
+ * POST /api/orders/cart/{productId}?precio=… (Se convierte en GATEWAY_BASE_URL/api/orders/cart/{productId}?precio=…)
  */
 export function addToCart(productId, precioUnitario) {
   return CART_API.post(
@@ -42,13 +44,14 @@ export function addToCart(productId, precioUnitario) {
   );
 }
 
-// DELETE /api/cart/{productId}
+// DELETE /api/cart/{productId} (Se convierte en GATEWAY_BASE_URL/api/orders/cart/{productId})
 export function removeFromCart(productId) {
     return CART_API.delete(`/${productId}`);
 }
 
+// ORDER_API ahora apunta al Gateway, y el Gateway se encargará de enrutar a /api/orders
 export const ORDER_API = axios.create({
-    baseURL: `${BASE_URL}/api/orders`,
+    baseURL: `${GATEWAY_BASE_URL}/api/orders`,
     headers: { 'Content-Type': 'application/json' }
 });
 
@@ -82,10 +85,13 @@ export const reviewManualPayment = async (orderId, approve, comment) => {
 
 /** GET Blob de descarga */
 export function downloadOrder(orderId) {
-    // Llama a GET /api/orders/{orderId}/download
+    // Llama a GET /api/orders/{orderId}/download (Se convierte en GATEWAY_BASE_URL/api/orders/{orderId}/download)
     return ORDER_API.get(`/${orderId}/download`, { responseType: 'blob' });
 }
 
 export const downloadOrderBlob = (downloadUrl) => {
+  // Si 'downloadUrl' es una URL absoluta (ej. https://gateway-production-129e.up.railway.app/api/files/download/...),
+  // axios ignorará la baseURL de ORDER_API y usará directamente downloadUrl.
+  // Esto es lo correcto si order-service-deploy te devuelve la URL completa para el file-service.
   return ORDER_API.get(downloadUrl, { responseType: 'arraybuffer' });
 };
