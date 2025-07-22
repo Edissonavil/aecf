@@ -6,7 +6,7 @@ import { getCartCount } from '../services/orderApi';
 
 // Cliente Axios para auth (este está bien)
 const API = axios.create({
-  baseURL: 'http://localhost:8082/api/auth',
+  baseURL: 'https://gateway-production-129e.up.railway.app/api/auth',
   headers: { 'Content-Type': 'application/json' }
 });
 
