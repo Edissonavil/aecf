@@ -52,7 +52,6 @@ export default function AdminProductoDetalle() {
   if (!prod) return <p className="apd__loading">Producto no encontrado.</p>;
 
   const primaryImageUrl = prod.fotografiaUrl || '/placeholder.png';
-
   return (
     <main className="container apd__container">
       <h1 className="apd__title">Revisión de producto</h1>
@@ -103,15 +102,15 @@ export default function AdminProductoDetalle() {
               <hr />
               <h6 className="fw-semibold mb-2">Documentación:</h6>
               <ul className="list-unstyled apd__docs">
-                {prod.archivosAut && prod.archivosAut.length > 0 ? (
-                  prod.archivosAut.map(fn => (
-                    <li key={fn} className="mb-1">
+                {prod.archivosAutUrls && prod.archivosAutUrls.length > 0 ? (
+                  prod.archivosAutUrls.map((fileUrl, i) => (
+                    <li key={i} className="mb-1"> 
                       <a
-                        href={`${prod.archivosAutUrls?.find(url => url.includes(fn)) || '#'}`}
+                        href={fileUrl} 
                         className="text-decoration-none apd__doc-link"
                         target="_blank" rel="noopener noreferrer"
                       >
-                        <i className="bi bi-file-earmark-zip me-1" /> Archivo: {fn}
+                        <i className="bi bi-file-earmark-zip me-1" /> Archivo: {prod.archivosAut[i] || 'Desconocido'}
                       </a>
                     </li>
                   ))

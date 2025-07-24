@@ -5,7 +5,7 @@ import { Container, Row, Col, Card, Badge, Button, Spinner, Alert } from 'react-
 import { getProductById } from '../services/productApi';
 import { addToCart } from '../services/orderApi';
 import { AuthContext } from '../context/AuthContext';
-import '../styles/ProductDetail.css'; 
+import '../styles/ProductDetail.css';
 
 const FILE_SERVICE_BASE_URL = 'https://gateway-production-129e.up.railway.app/api/files';
 
@@ -20,30 +20,28 @@ export default function ProductDetail() {
 
   // Zoom state and ref
   const imgWrapperRef = useRef(null);
-  const [zoomStyle, setZoomStyle] = useState({}); 
+  const [zoomStyle, setZoomStyle] = useState({});
 
   // Get refreshCartCount from AuthContext
   const { refreshCartCount } = useContext(AuthContext);
 
 
   useEffect(() => {
-    // Fetch product details when the component mounts or ID changes
     getProductById(id)
       .then(res => {
-        // Ensure product.fotografiaProd is not null or undefined
-        if (res.data && res.data.fotografiaProd) {
+        if (res.data && res.data.fotografiaUrl) {
           setProduct(res.data);
         } else {
-          // Handle cases where the product or its image might be missing
-          setError('Product image not available or product data is incomplete.');
+          setError('La URL de la imagen del producto no está disponible o los datos del producto están incompletos.');
         }
       })
       .catch((err) => {
-        console.error('Error fetching product:', err);
+        console.error('Error al obtener el producto:', err);
         setError('No se pudo cargar el producto. Es posible que no exista o que haya un problema con la conexión.');
       })
       .finally(() => setLoading(false));
   }, [id]);
+
 
   const handleAddToCart = async () => {
     try {
@@ -51,7 +49,7 @@ export default function ProductDetail() {
       await refreshCartCount();
       navigate('/cart');
     } catch (err) {
-      console.error("Error adding to cart:", err);
+      console.error("Error al añadir al carrito", err);
       alert('No se pudo añadir el producto al carrito. Por favor, inténtalo de nuevo.');
     }
   };
@@ -93,7 +91,7 @@ export default function ProductDetail() {
                 className="product-image-wrapper rounded"
               >
                 <img
-                  src={`${FILE_SERVICE_BASE_URL}/${product.idProducto}/${product.fotografiaProd}`}
+                  src={product.fotografiaUrl || '/placeholder.png'}
                   alt={product.nombre || 'Product Image'}
                   className="product-detail-img"
                   style={zoomStyle}
@@ -125,15 +123,19 @@ export default function ProductDetail() {
               <div className="mt-5">
                 <h3 className="fw-bold mb-3">Formatos de Archivos:</h3>
                 <Row className="g-2">
-                  {(product.archivosAut || []).map((fn, i) => (
+                  {(product.archivosAutUrls || []).map((fileUrl, i) => (
                     <Col key={i} xs="auto">
                       <Badge bg="info" className="text-dark px-3 py-1 file-badge">
-                        {getExt(fn)}
+                        {getExt(product.archivosAut[i] || '')}
                       </Badge>
+                      <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="ms-2">
+                        Descargar {product.archivosAut[i]}
+                      </a>
                     </Col>
                   ))}
                 </Row>
               </div>
+
 
               {/* Conditional "Add to Cart" / Login Message */}
               <div className="mt-4">
