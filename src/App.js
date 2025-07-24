@@ -1,4 +1,4 @@
-// src/App.js - Alternativa con rutas absolutas
+// src/App.js - Stats como páginas predeterminadas por rol
 import React, { useContext } from 'react';
 import {
   BrowserRouter as Router,
@@ -71,31 +71,31 @@ export default function App() {
           </Route>
         )}
 
-        {/* — STAFF ROUTES — CAMBIADO: Usar rutas absolutas en Navigate */}
+        {/* — STAFF ROUTES — CAMBIADO: Stats como página predeterminada */}
         {isAuthenticated && safeRole === 'ROL_COLABORADOR' && (
           <Route path="/" element={<HeaderStaff />}>
-            <Route index                   element={<Navigate to="/cargarProducto" replace />} />
+            <Route index                   element={<Navigate to="/stats/creador" replace />} />
+            <Route path="stats/creador"    element={<CreatorStatsView />} />
             <Route path="cargarProducto"   element={<UploadProductPage />} />
             <Route path="mis-productos"    element={<ColaboradorMisProductos />} />
             <Route path="editar-producto/:id" element={<ColaboradorEditarProducto />} />
             <Route path="perfil"           element={<ConfigPerfilPage />} />
-            <Route path="stats/creador"    element={<CreatorStatsView />} />
-            <Route path="*"                element={<Navigate to="/cargarProducto" replace />} />
+            <Route path="*"                element={<Navigate to="/stats/creador" replace />} />
           </Route>
         )}
 
-        {/* — ADMIN ROUTES — */}
+        {/* — ADMIN ROUTES — CAMBIADO: Stats como página predeterminada */}
         {isAuthenticated && safeRole === 'ROL_ADMIN' && (
           <Route path="/admin" element={<HeaderAdmin />}>
-            <Route index                       element={<Navigate to="revisar-productos" replace />} />
+            <Route index                       element={<Navigate to="stats/admin" replace />} />
+            <Route path="stats/admin"          element={<AdminStatsView />} />
             <Route path="revisar-productos"    element={<AdminProductosPendientes />} />
             <Route path="revisar-productos/:id" element={<AdminProductoDetalle />} />
             <Route path="crearUsuario"         element={<CrearUsuarioPage />} />
             <Route path="perfil"               element={<ConfigPerfilPage />} />
             <Route path="gestionarUsuarios"    element={<AdminManageUsersPage />} />
             <Route path="revisarPagos"         element={<ReviewPaymentsPage />} />
-            <Route path="stats/admin"          element={<AdminStatsView />} />
-            <Route path="*"                    element={<Navigate to="revisar-productos" replace />} />
+            <Route path="*"                    element={<Navigate to="stats/admin" replace />} />
           </Route>
         )}
 
