@@ -239,13 +239,11 @@ export default function CartPage() {
 
   const downloadOrderId = lastRelevantOrder?.orderId; // Asegúrate de obtener el ID de la orden para el nombre del archivo
 
-const showDownloadButton =
-  lastRelevantOrder?.paymentStatus === 'PAID' ||
-  lastRelevantOrder?.paymentStatus === 'PAID_PAYPAL'
-  ? cartItems.length === 0
-  : false;
-      
-      
+  const showDownloadButton =
+    lastRelevantOrder?.downloadUrl &&
+    (lastRelevantOrder.paymentStatus === 'PAID'
+      || lastRelevantOrder.paymentStatus === 'PAID_PAYPAL');
+
   const showCartAndPaymentOptions = itemsWithDetails.length > 0 && !currentOrderId && !isAwaitingManualPaymentReview && !hasDownloadUrl;
 
   return (
