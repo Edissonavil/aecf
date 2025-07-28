@@ -54,12 +54,9 @@ export default function ProductCard({ product }) {
         </p>
 
         {/* Tipo de archivos */}
-        {productFiles && (
-          <p className="text-muted mb-3">
-            <strong>Archivos:</strong> {productFiles}
-          </p>
-        )}
-
+        <p className="text-muted mb-3">
+          <strong>Archivos:</strong> {productFiles}
+        </p>
         {/* Botones al final */}
         <div className="mt-auto d-grid gap-2">
           <Link to={`/producto/${product.idProducto}`}
