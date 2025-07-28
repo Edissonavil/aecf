@@ -13,9 +13,10 @@ export default function ProductCard({ product }) {
   const productSpecialties = Array.isArray(product.especialidades) && product.especialidades.length > 0
     ? product.especialidades.join(', ')
     : 'N/A';
-const productFiles = Array.isArray(product.formatos) && product.formatos.length
-  ? product.formatos.join(', ')
-  : 'N/A';
+
+  const productFiles = Array.isArray(product.formatos) && product.formatos.length > 0
+    ? product.formatos.join(', ')
+    : '';
 
 
   // --- CORRECCIÓN AQUÍ: Determinar la URL de la imagen ---
@@ -53,15 +54,17 @@ const productFiles = Array.isArray(product.formatos) && product.formatos.length
         </p>
 
         {/* Tipo de archivos */}
-        <p className="text-muted mb-3">
-          <strong>Archivos:</strong> {productFiles}
-        </p>
+        {productFiles && (
+          <p className="text-muted mb-3">
+            <strong>Archivos:</strong> {productFiles}
+          </p>
+        )}
 
         {/* Botones al final */}
         <div className="mt-auto d-grid gap-2">
           <Link to={`/producto/${product.idProducto}`}
-          className="btn btn-warning btn-sm" >
-          Ver Detalles </Link>
+            className="btn btn-warning btn-sm" >
+            Ver Detalles </Link>
         </div>
       </div>
     </div>

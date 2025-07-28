@@ -120,20 +120,18 @@ export default function ProductDetail() {
                 {product.descripcionProd || 'No hay descripción disponible para este producto.'}
               </div>
 
-              <h3 className="fw-bold mb-3">Formatos de Archivos:</h3>
-              <Row className="g-2">
-                {(product.formatos || []).map((fmt, i) => (
-                  <Col key={i} xs="auto">
-                    <Badge bg="info" className="text-dark px-3 py-1 file-badge">.{fmt}</Badge>
-                  </Col>
-                ))}
-                {(!product.formatos || product.formatos.length === 0) && (
-                  <Col xs="auto"><span className="text-muted">N/A</span></Col>
-                )}
-              </Row>
-
-
-
+              {Array.isArray(product.formatos) && product.formatos.length > 0 && (
+                <>
+                  <h3 className="fw-bold mb-3">Formatos de Archivos:</h3>
+                  <Row className="g-2">
+                    {product.formatos.map((fmt, i) => (
+                      <Col key={i} xs="auto">
+                        <Badge bg="info" className="text-dark px-3 py-1 file-badge">.{fmt}</Badge>
+                      </Col>
+                    ))}
+                  </Row>
+                </>
+              )}
               {/* Conditional "Add to Cart" / Login Message */}
               <div className="mt-4">
                 {isAuthenticated ? (
