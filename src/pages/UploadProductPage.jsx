@@ -16,8 +16,16 @@ const SPECIALTY_OPTIONS = [
   'Estructuras',
   'Geotecnia',
   'Pavimentos',
-  'MEP',
-  'Construcción General',
+  'Hidrosanitaria',
+    'Hidráulica',
+  'Vialidad / Transporte',
+  'Construcción y Obra',
+  'BIM & Coordinación',
+  'Instalaciones MEP',
+    'Ingeniería Eléctrica ⚡',
+  'Telecomunicaciones / ICT 📡',
+  'Ambiental / Sostenibilidad',
+  'Topografía & GIS',
 ];
 
 const blank = {
