@@ -10,28 +10,17 @@ import '../styles/HomePage.css'; // Asegúrate de que este CSS contiene los esti
 const HomePage = () => {
 
   const [allApprovedProducts, setAllApprovedProducts] = useState([]);
-
   const [displayedProducts, setDisplayedProducts] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState(null);
-
   const [searchTerm, setSearchTerm] = useState('');
-
   const [activeCategoryFilter, setActiveCategoryFilter] = useState('all');
-
   const [activeCountryFilter, setActiveCountryFilter] = useState('all');
-
   const [activeSpecialtyFilter, setActiveSpecialtyFilter] = useState('all');
-
   const [availableCategories, setAvailableCategories] = useState([]);
-
   const [availableCountries, setAvailableCountries] = useState([]);
-
   const [availableSpecialties, setAvailableSpecialties] = useState([]);
 
-  // FILE_SERVICE_BASE_URL ya no es necesario aquí si ProductCard lo maneja
 
 
 
@@ -165,8 +154,8 @@ const HomePage = () => {
 
           <p className="hero-subtitle text-center mx-auto mb-4">
 
-            El marketplace definitivo para profesionales de Arquitectura, Ingeniería y Construcción. Accede a recursos digitales de alta calidad y optimiza tus proyectos.
-
+            El marketplace hecho por y para Arquitectos, Ingenieros y Constructores.
+            Sube tus recursos. Mejora tu flujo de trabajo. Comparte, soluciona, gana.
           </p>
 
           <div className="text-center">
@@ -235,9 +224,9 @@ const HomePage = () => {
 
           <div className="mb-4">
 
-             {/* Países */}
+            {/* Países */}
 
-             <div className="d-flex flex-wrap justify-content-center gap-2 mb-3">
+            <div className="d-flex flex-wrap justify-content-center gap-2 mb-3">
 
               <span className="fw-bold pe-2">País:</span>
 
@@ -247,15 +236,13 @@ const HomePage = () => {
 
                   key={cn}
 
-                  className={`btn ${
-
-                    activeCountryFilter === (cn === 'Todos' ? 'all' : cn)
+                  className={`btn ${activeCountryFilter === (cn === 'Todos' ? 'all' : cn)
 
                       ? 'btn-fuchsia-electric text-white'
 
                       : 'btn-outline-secondary'
 
-                  }`}
+                    }`}
 
                   onClick={() =>
 
@@ -289,15 +276,13 @@ const HomePage = () => {
 
                     key={cat}
 
-                    className={`btn ${
-
-                      activeCategoryFilter === value
+                    className={`btn ${activeCategoryFilter === value
 
                         ? 'btn-fuchsia-electric text-white'
 
                         : 'btn-outline-secondary'
 
-                    }`}
+                      }`}
 
                     onClick={() => setActiveCategoryFilter(value)}
 
@@ -325,15 +310,13 @@ const HomePage = () => {
 
                   key={sp}
 
-                  className={`btn ${
-
-                    activeSpecialtyFilter === (sp === 'Todos' ? 'all' : sp)
+                  className={`btn ${activeSpecialtyFilter === (sp === 'Todos' ? 'all' : sp)
 
                       ? 'btn-fuchsia-electric text-white'
 
                       : 'btn-outline-secondary'
 
-                  }`}
+                    }`}
 
                   onClick={() =>
 
@@ -371,7 +354,7 @@ const HomePage = () => {
             )}
           </div>
 
-     
+
 
 
 
@@ -385,7 +368,7 @@ const HomePage = () => {
 
         <div className="container">
 
-          <h2 className="benefits-title text-center mb-5">Diseñado para el Profesional Moderno</h2>
+          <h2 className="benefits-title text-center mb-5">Pensado para quienes construyen el futuro: arquitectos, ingenieros y constructores.</h2>
 
           <div className="row row-cols-1 row-cols-md-3 g-4">
 
@@ -395,9 +378,9 @@ const HomePage = () => {
 
                 <span className="icon">⚙️</span>
 
-                <h3 className="h5 mt-2">Optimización y Eficiencia</h3>
+                <h3 className="h5 mt-2">Optimización AEC</h3>
 
-                <p className="text-muted">Reduce horas de trabajo con familias paramétricas y scripts de automatización listos para usar.</p>
+                <p className="text-muted">Ahorra entre 30% y 60% del tiempo de modelado con scripts y familias listas para usar en tus flujos técnicos.</p>
 
               </div>
 
@@ -409,9 +392,9 @@ const HomePage = () => {
 
                 <span className="icon">✅</span>
 
-                <h3 className="h5 mt-2">Calidad Verificada</h3>
+                <h3 className="h5 mt-2">Calidad Profesional</h3>
 
-                <p className="text-muted">Cada producto en nuestro catálogo es revisado para asegurar los más altos estándares de calidad y compatibilidad.</p>
+                <p className="text-muted">Cada recurso es revisado por especialistas para asegurar compatibilidad, limpieza de datos y estándares BIM.</p>
 
               </div>
 
@@ -423,13 +406,53 @@ const HomePage = () => {
 
                 <span className="icon">💡</span>
 
-                <h3 className="h5 mt-2">Innovación Constante</h3>
+                <h3 className="h5 mt-2">Innovación Aplicada</h3>
 
-                <p className="text-muted">Mantente a la vanguardia con acceso a las últimas herramientas y tecnologías que están definiendo el futuro del AEC.</p>
+                <p className="text-muted">Accede a herramientas técnicas que ya están resolviendo problemas reales en oficinas de arquitectura e ingeniería.</p>
 
               </div>
 
             </div>
+            <div className="col">
+
+              <div className="benefit-item text-center p-4 shadow-sm rounded">
+
+                <span className="icon">⏳</span>
+
+                <h3 className="h5 mt-2">Tiempo Ganado</h3>
+
+                <p className="text-muted">Implementa recursos que reducen tareas repetitivas y te devuelven hasta 10 horas por semana de productividad.</p>
+
+              </div>
+
+            </div>
+            <div className="col">
+
+              <div className="benefit-item text-center p-4 shadow-sm rounded">
+
+                <span className="icon">🤝</span>
+
+                <h3 className="h5 mt-2">Comunidad Validada</h3>
+
+                <p className="text-muted">El 100% de nuestros productos han sido creados por profesionales activos del sector AEC, no por terceros genéricos.</p>
+
+              </div>
+
+            </div>
+            <div className="col">
+
+              <div className="benefit-item text-center p-4 shadow-sm rounded">
+
+                <span className="icon">📊</span>
+
+                <h3 className="h5 mt-2">Resultados Medibles</h3>
+
+                <p className="text-muted">Diseña con herramientas que aumentan la precisión y reducen el retrabajo técnico hasta en un 40%.</p>
+
+              </div>
+
+            </div>
+
 
           </div>
 
