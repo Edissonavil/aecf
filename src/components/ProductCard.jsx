@@ -13,9 +13,10 @@ export default function ProductCard({ product }) {
   const productSpecialties = Array.isArray(product.especialidades) && product.especialidades.length > 0
     ? product.especialidades.join(', ')
     : 'N/A';
-  const productFiles = Array.isArray(product.archivosAut) && product.archivosAut.length > 0
-    ? product.archivosAut.map(fname => fname.split('.').pop().toUpperCase()).join(', ')
-    : 'N/A';
+const productFiles = Array.isArray(product.formatos) && product.formatos.length
+  ? product.formatos.join(', ')
+  : 'N/A';
+
 
   // --- CORRECCIÓN AQUÍ: Determinar la URL de la imagen ---
   const imageUrl = product.fotografiaProd

@@ -436,7 +436,7 @@ export default function CartPage() {
               }
             }}
           >
-            Descargar archivos del pedido
+            Descarga tus archivos Aquí
           </button>
         )}
       </div>
