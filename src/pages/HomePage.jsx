@@ -1,14 +1,12 @@
 // src/pages/HomePage.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Container, Row, Col, Form, Button, Spinner, Alert } from 'react-bootstrap';
 import { getProductsByStatus } from '../services/productApi';
-import ProductCard from '../components/ProductCard'; // ¡Importa ProductCard!
-import '../styles/HomePage.css'; // Asegúrate de que este CSS contiene los estilos de 'product-card'
-
-
+import ProductCard from '../components/ProductCard';
+import '../styles/HomePage.css';
 
 const HomePage = () => {
-
   const [allApprovedProducts, setAllApprovedProducts] = useState([]);
   const [displayedProducts, setDisplayedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,451 +19,233 @@ const HomePage = () => {
   const [availableCountries, setAvailableCountries] = useState([]);
   const [availableSpecialties, setAvailableSpecialties] = useState([]);
 
-
-
-
   useEffect(() => {
-
     const fetchProducts = async () => {
-
       try {
-
         setLoading(true);
-
         const res = await getProductsByStatus('APROBADO', 0, 100);
-
         const data = res.data.content;
-
-        // ordenar por fecha o id
-
-        data.sort((a, b) => new Date(b.createdAt || b.idProducto) - new Date(a.createdAt || a.idProducto));
-
+        data.sort((a, b) =>
+          new Date(b.createdAt || b.idProducto) - new Date(a.createdAt || a.idProducto)
+        );
         setAllApprovedProducts(data);
-
         setDisplayedProducts(data);
 
-
-
-        // extraer filtros únicos
-
-        // Usar Set para asegurar unicidad y filter(Boolean) para quitar null/undefined/vacío
-
-        const cats = Array.from(new Set(data.flatMap(p => p.categorias || []))).filter(Boolean).sort();
-
+        const cats = Array.from(new Set(data.flatMap(p => p.categorias || [])))
+          .filter(Boolean)
+          .sort();
         const coun = Array.from(new Set(data.map(p => p.pais).filter(Boolean))).sort();
-
-        const specs = Array.from(new Set((data.flatMap(p => p.especialidades || []).filter(Boolean)))).sort();
-
-
+        const specs = Array.from(new Set(data.flatMap(p => p.especialidades || []).filter(Boolean))).sort();
 
         setAvailableCategories(['Todos', ...cats]);
-
-        setAvailableCountries(['Todos', ...coun.slice(0, 5)]); // sólo 5 países
-
+        setAvailableCountries(['Todos', ...coun.slice(0, 5)]);
         setAvailableSpecialties(['Todos', ...specs]);
-
       } catch (e) {
-
         console.error(e);
-
         setError('Error cargando productos');
-
       } finally {
-
         setLoading(false);
-
       }
-
     };
-
     fetchProducts();
-
   }, []);
 
-
-
   useEffect(() => {
-
-    let filtered = allApprovedProducts
-
+    const filtered = allApprovedProducts
       .filter(p =>
-
-        (p.nombre || p.title || '').toLowerCase().includes(searchTerm.toLowerCase())
-
+        (p.nombre || p.title || '')
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
       )
-
       .filter(p =>
-
-        activeCategoryFilter === 'all' || (p.categorias || []).includes(activeCategoryFilter) // Usar includes para arrays
-
+        activeCategoryFilter === 'all' ||
+        (p.categorias || []).includes(activeCategoryFilter)
       )
-
       .filter(p =>
-
-        activeCountryFilter === 'all' || p.pais === activeCountryFilter
-
+        activeCountryFilter === 'all' ||
+        p.pais === activeCountryFilter
       )
-
       .filter(p =>
-
-        activeSpecialtyFilter === 'all' || (p.especialidades || []).includes(activeSpecialtyFilter)
-
+        activeSpecialtyFilter === 'all' ||
+        (p.especialidades || []).includes(activeSpecialtyFilter)
       );
 
-
-
     setDisplayedProducts(filtered);
-
   }, [
-
     searchTerm,
-
     activeCategoryFilter,
-
     activeCountryFilter,
-
     activeSpecialtyFilter,
-
     allApprovedProducts
-
   ]);
 
-
-
-  if (loading) return <div className="text-center py-5">Cargando…</div>;
-
-  if (error) return <div className="text-center text-danger py-5">{error}</div>;
-
-
+  if (loading) {
+    return (
+      <Container className="py-5 text-center">
+        <Spinner animation="border" role="status" />
+      </Container>
+    );
+  }
+  if (error) {
+    return (
+      <Container className="py-5 text-center">
+        <Alert variant="danger">{error}</Alert>
+      </Container>
+    );
+  }
 
   return (
-
     <main>
-
-      <section className="hero-section py-5">
-
-        <div className="container">
-
-          <h1 className="hero-title text-center">
-
-            Más de <span className="highlight-text">300 herramientas</span> técnicas para transformar tu forma de construir
-
-          </h1>
-
-          <p className="hero-subtitle text-center mx-auto mb-4">
-
-            El marketplace hecho por y para Arquitectos, Ingenieros y Constructores.
-            Sube tus recursos. Mejora tu flujo de trabajo. Comparte, soluciona, gana.
-          </p>
-
-          <div className="text-center">
-
-            <Link to="/catalog" className="btn btn-primary btn-explore">Explorar Catálogo</Link>
-
-          </div>
-
-        </div>
-
+      {/* Hero */}
+      <section className="hero-section py-5 bg-light">
+        <Container>
+          <Row className="justify-content-center">
+            <Col xs={12} lg={8}>
+              <h1 className="hero-title text-center mb-3">
+                Más de <span className="highlight-text">300 herramientas</span>
+              </h1>
+              <p className="hero-subtitle text-center mb-4">
+                El marketplace hecho por y para Arquitectos, Ingenieros y Constructores.
+                Sube tus recursos. Mejora tu flujo de trabajo. Comparte, soluciona, gana.
+              </p>
+              <div className="text-center">
+                <Link to="/catalog" className="btn btn-primary btn-explore">
+                  Explorar Catálogo
+                </Link>
+              </div>
+            </Col>
+          </Row>
+        </Container>
       </section>
 
-
-
+      {/* Catalogo y Filtros */}
       <section id="catalogo" className="catalog-section py-5">
-
-        <div className="container">
-
-          <div className="search-wrapper mb-4">
-
-            <input
-
-              type="text"
-
-              className="form-control search-input"
-
-              placeholder="Buscar productos por palabra clave..."
-
-              value={searchTerm}
-
-              onChange={e => setSearchTerm(e.target.value)}
-
-            />
-
-            <svg
-
-              className="search-icon"
-
-              xmlns="http://www.w3.org/2000/svg"
-
-              width="20"
-
-              height="20"
-
-              fill="none"
-
-              stroke="currentColor"
-
-              strokeWidth="2"
-
-              strokeLinecap="round"
-
-              strokeLinejoin="round"
-
-            >
-
-              <circle cx="11" cy="11" r="8" />
-
-              <path d="m21 21-4.3-4.3" />
-
-            </svg>
-
-          </div>
+        <Container>
+          <Row className="mb-4">
+            <Col xs={12} md={6}>
+              <Form.Control
+                type="text"
+                placeholder="Buscar productos por palabra clave..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
+            </Col>
+          </Row>
 
           {/* Filtros */}
-
-          <div className="mb-4">
-
-            {/* Países */}
-
-            <div className="d-flex flex-wrap justify-content-center gap-2 mb-3">
-
-              <span className="fw-bold pe-2">País:</span>
-
-              {availableCountries.map(cn => (
-
-                <button
-
-                  key={cn}
-
-                  className={`btn ${activeCountryFilter === (cn === 'Todos' ? 'all' : cn)
-
-                      ? 'btn-fuchsia-electric text-white'
-
-                      : 'btn-outline-secondary'
-
-                    }`}
-
+          <Row className="mb-4 gx-2 gy-2">
+            <Col xs="auto" className="d-flex align-items-center">
+              <strong>País:</strong>
+            </Col>
+            {availableCountries.map(cn => (
+              <Col xs="auto" key={cn}>
+                <Button
+                  size="sm"
+                  variant={
+                    activeCountryFilter === (cn === 'Todos' ? 'all' : cn)
+                      ? 'primary'
+                      : 'outline-secondary'
+                  }
                   onClick={() =>
-
                     setActiveCountryFilter(cn === 'Todos' ? 'all' : cn)
-
                   }
-
                 >
-
                   {cn}
+                </Button>
+              </Col>
+            ))}
 
-                </button>
-
-              ))}
-
-            </div>
-
-            {/* Categorías */}
-
-            <div className="d-flex flex-wrap justify-content-center gap-2 mb-3">
-
-              <span className="fw-bold pe-2">Categorías:</span>
-
-              {availableCategories.map(cat => {
-
-                const value = (cat === 'Todos') ? 'all' : cat;
-
-                return (
-
-                  <button
-
-                    key={cat}
-
-                    className={`btn ${activeCategoryFilter === value
-
-                        ? 'btn-fuchsia-electric text-white'
-
-                        : 'btn-outline-secondary'
-
-                      }`}
-
+            <Col xs="auto" className="d-flex align-items-center">
+              <strong>Categorías:</strong>
+            </Col>
+            {availableCategories.map(cat => {
+              const value = cat === 'Todos' ? 'all' : cat;
+              return (
+                <Col xs="auto" key={cat}>
+                  <Button
+                    size="sm"
+                    variant={
+                      activeCategoryFilter === value
+                        ? 'primary'
+                        : 'outline-secondary'
+                    }
                     onClick={() => setActiveCategoryFilter(value)}
-
                   >
-
                     {cat}
+                  </Button>
+                </Col>
+              );
+            })}
 
-                  </button>
-
-                );
-
-              })}
-
-            </div>
-
-            {/* Especialidades */}
-
-            <div className="d-flex flex-wrap justify-content-center gap-2">
-
-              <span className="fw-bold pe-2">Especialidad:</span>
-
-              {availableSpecialties.map(sp => (
-
-                <button
-
-                  key={sp}
-
-                  className={`btn ${activeSpecialtyFilter === (sp === 'Todos' ? 'all' : sp)
-
-                      ? 'btn-fuchsia-electric text-white'
-
-                      : 'btn-outline-secondary'
-
-                    }`}
-
-                  onClick={() =>
-
-                    setActiveSpecialtyFilter(sp === 'Todos' ? 'all' : sp)
-
+            <Col xs="auto" className="d-flex align-items-center">
+              <strong>Especialidad:</strong>
+            </Col>
+            {availableSpecialties.map(sp => (
+              <Col xs="auto" key={sp}>
+                <Button
+                  size="sm"
+                  variant={
+                    activeSpecialtyFilter === (sp === 'Todos' ? 'all' : sp)
+                      ? 'primary'
+                      : 'outline-secondary'
                   }
-
+                  onClick={() =>
+                    setActiveSpecialtyFilter(sp === 'Todos' ? 'all' : sp)
+                  }
                 >
-
                   {sp}
+                </Button>
+              </Col>
+            ))}
+          </Row>
 
-                </button>
-
-              ))}
-
-            </div>
-
-          </div>
-
-
-
-          {/* -- Product Grid -- */}
-          <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+          {/* Grid de Productos */}
+          <Row xs={1} sm={2} md={3} lg={4} className="g-4">
             {displayedProducts.length > 0 ? (
-              // Sólo mostramos las primeras 6 tarjetas
               displayedProducts.slice(0, 6).map(product => (
-                <div key={product.idProducto} className="col">
+                <Col key={product.idProducto}>
                   <ProductCard product={product} />
-                </div>
+                </Col>
               ))
             ) : (
-              <p className="text-center col-12 text-muted">
-                No hay productos que coincidan con tus criterios.
-              </p>
+              <Col>
+                <p className="text-center text-muted">
+                  No hay productos que coincidan con tus criterios.
+                </p>
+              </Col>
             )}
-          </div>
-
-
-
-
-
-        </div>
-
+          </Row>
+        </Container>
       </section>
 
-
-
-      <section id="beneficios" className="benefits-section py-5">
-
-        <div className="container">
-
-          <h2 className="benefits-title text-center mb-5">Pensado para quienes construyen el futuro: arquitectos, ingenieros y constructores.</h2>
-
-          <div className="row row-cols-1 row-cols-md-3 g-4">
-
-            <div className="col">
-
-              <div className="benefit-item text-center p-4 shadow-sm rounded">
-
-                <span className="icon">⚙️</span>
-
-                <h3 className="h5 mt-2">Optimización AEC</h3>
-
-                <p className="text-muted">Ahorra entre 30% y 60% del tiempo de modelado con scripts y familias listas para usar en tus flujos técnicos.</p>
-
-              </div>
-
-            </div>
-
-            <div className="col">
-
-              <div className="benefit-item text-center p-4 shadow-sm rounded">
-
-                <span className="icon">✅</span>
-
-                <h3 className="h5 mt-2">Calidad Profesional</h3>
-
-                <p className="text-muted">Cada recurso es revisado por especialistas para asegurar compatibilidad, limpieza de datos y estándares BIM.</p>
-
-              </div>
-
-            </div>
-
-            <div className="col">
-
-              <div className="benefit-item text-center p-4 shadow-sm rounded">
-
-                <span className="icon">💡</span>
-
-                <h3 className="h5 mt-2">Innovación Aplicada</h3>
-
-                <p className="text-muted">Accede a herramientas técnicas que ya están resolviendo problemas reales en oficinas de arquitectura e ingeniería.</p>
-
-              </div>
-
-            </div>
-            <div className="col">
-
-              <div className="benefit-item text-center p-4 shadow-sm rounded">
-
-                <span className="icon">⏳</span>
-
-                <h3 className="h5 mt-2">Tiempo Ganado</h3>
-
-                <p className="text-muted">Implementa recursos que reducen tareas repetitivas y te devuelven hasta 10 horas por semana de productividad.</p>
-
-              </div>
-
-            </div>
-            <div className="col">
-
-              <div className="benefit-item text-center p-4 shadow-sm rounded">
-
-                <span className="icon">🤝</span>
-
-                <h3 className="h5 mt-2">Comunidad Validada</h3>
-
-                <p className="text-muted">El 100% de nuestros productos han sido creados por profesionales activos del sector AEC, no por terceros genéricos.</p>
-
-              </div>
-
-            </div>
-            <div className="col">
-
-              <div className="benefit-item text-center p-4 shadow-sm rounded">
-
-                <span className="icon">📊</span>
-
-                <h3 className="h5 mt-2">Resultados Medibles</h3>
-
-                <p className="text-muted">Diseña con herramientas que aumentan la precisión y reducen el retrabajo técnico hasta en un 40%.</p>
-
-              </div>
-
-            </div>
-
-
-          </div>
-
-        </div>
-
+      {/* Beneficios */}
+      <section id="beneficios" className="benefits-section py-5 bg-light">
+        <Container>
+          <h2 className="text-center mb-5">
+            Pensado para quienes construyen el futuro
+          </h2>
+          <Row xs={1} md={3} className="g-4">
+            {[
+              { icon: '⚙️', title: 'Optimización AEC', text: 'Ahorra entre 30% y 60% del tiempo de modelado con scripts y familias listas.' },
+              { icon: '✅', title: 'Calidad Profesional', text: 'Productos revisados por especialistas para asegurar estándares BIM.' },
+              { icon: '💡', title: 'Innovación Aplicada', text: 'Herramientas que ya resuelven problemas reales en AEC.' },
+              { icon: '⏳', title: 'Tiempo Ganado', text: 'Recupera hasta 10 horas por semana de productividad.' },
+              { icon: '🤝', title: 'Comunidad Validada', text: 'Creado por profesionales activos del sector AEC.' },
+              { icon: '📊', title: 'Resultados Medibles', text: 'Reduce el retrabajo técnico hasta en un 40%.' }
+            ].map((item, idx) => (
+              <Col key={idx}>
+                <div className="text-center p-4 shadow-sm rounded h-100">
+                  <div className="display-4">{item.icon}</div>
+                  <h5 className="mt-3">{item.title}</h5>
+                  <p className="text-muted">{item.text}</p>
+                </div>
+              </Col>
+            ))}
+          </Row>
+        </Container>
       </section>
-
     </main>
-
   );
-
 };
-
-
 
 export default HomePage;
