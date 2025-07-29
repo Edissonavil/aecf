@@ -2,10 +2,9 @@
 import React, { useState, useContext } from 'react'; // Removed useRef, useEffect
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { toast } from 'react-toastify'; // <-- ADDED: Import toast
+import { toast } from 'react-toastify'; 
 
-// Assume you have a CSS file for your LoginPage styles
-// import '../styles/LoginPage.css';
+
 
 const LoginPage = () => {
   const [username, setUsername]   = useState('');
@@ -116,7 +115,7 @@ const LoginPage = () => {
             </Link>
             <p>
               ¿No tienes una cuenta?{' '}
-              <Link to="/register" className="register-link">
+              <Link to="/registro" className="register-link">
                 Regístrate aquí
               </Link>
             </p>

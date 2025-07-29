@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { registerUser } from '../services/userService';
 import '../styles/RegisterPage.css'; // Asegúrate de que este archivo exista
+import '../styles/LoginPage.css';
 
 const RegisterPage = () => {
   const [form, setForm] = useState({
@@ -77,7 +78,7 @@ const RegisterPage = () => {
           <h1 className="register-title">
             AEC<span className="text-fuchsia-electric">Block</span>
           </h1>
-          <p className="register-subtitle">Crea tu nueva cuenta</p>
+          <p className="register-subtitle">Crea tu cuenta y compra con nosotros.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="register-form">
@@ -192,6 +193,15 @@ const RegisterPage = () => {
           </div>
         </form>
       </div>
+              <div className="login-card2">
+              <div className="login-card__inner">
+              <Link to="/login-colaborador">
+                <button className="btn-colaborador">
+                  ¿Quieres se un CREADOR AEC? Registrate aqui.
+                </button>
+              </Link>
+            </div>
+            </div>
     </div>
   );
 };
