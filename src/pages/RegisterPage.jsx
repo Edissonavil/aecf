@@ -195,7 +195,7 @@ const RegisterPage = () => {
       </div>
               <div className="login-card2">
               <div className="login-card__inner">
-              <Link to="/login-colaborador">
+              <Link to="/solicitudCreador">
                 <button className="btn-colaborador">
                   ¿Quieres se un CREADOR AEC? Registrate aqui.
                 </button>
