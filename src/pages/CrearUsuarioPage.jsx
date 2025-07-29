@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'; // Importa useEffect
-import { Container, Form, Button, Card, Alert, Spinner } from 'react-bootstrap'; // Importa Spinner
+import { Container, Form, Button, Card, Alert, Spinner, InputGroup } from 'react-bootstrap'; // Importa Spinner
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
