@@ -53,21 +53,16 @@ const HomePage = () => {
   useEffect(() => {
     const filtered = allApprovedProducts
       .filter(p =>
-        (p.nombre || p.title || '')
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase())
+        (p.nombre || p.title || '').toLowerCase().includes(searchTerm.toLowerCase())
       )
       .filter(p =>
-        activeCategoryFilter === 'all' ||
-        (p.categorias || []).includes(activeCategoryFilter)
+        activeCategoryFilter === 'all' || (p.categorias || []).includes(activeCategoryFilter)
       )
       .filter(p =>
-        activeCountryFilter === 'all' ||
-        p.pais === activeCountryFilter
+        activeCountryFilter === 'all' || p.pais === activeCountryFilter
       )
       .filter(p =>
-        activeSpecialtyFilter === 'all' ||
-        (p.especialidades || []).includes(activeSpecialtyFilter)
+        activeSpecialtyFilter === 'all' || (p.especialidades || []).includes(activeSpecialtyFilter)
       );
 
     setDisplayedProducts(filtered);
@@ -97,32 +92,30 @@ const HomePage = () => {
   return (
     <main>
       {/* Hero */}
-      <section className="hero-section py-5 bg-light">
+      <section className="hero-section py-5">
         <Container>
           <Row className="justify-content-center">
-            <Col xs={12} lg={8}>
-              <h1 className="hero-title text-center mb-3">
+            <Col xl={8} lg={10} className="text-center">
+              <h1 className="hero-title mb-3">
                 Más de <span className="highlight-text">300 herramientas</span>
               </h1>
-              <p className="hero-subtitle text-center mb-4">
+              <p className="hero-subtitle mb-4">
                 El marketplace hecho por y para Arquitectos, Ingenieros y Constructores.
                 Sube tus recursos. Mejora tu flujo de trabajo. Comparte, soluciona, gana.
               </p>
-              <div className="text-center">
-                <Link to="/catalog" className="btn btn-primary btn-explore">
-                  Explorar Catálogo
-                </Link>
-              </div>
+              <Link to="/catalog" className="btn btn-primary btn-explore">
+                Explorar Catálogo
+              </Link>
             </Col>
           </Row>
         </Container>
       </section>
 
-      {/* Catalogo y Filtros */}
+      {/* Catálogo y Filtros */}
       <section id="catalogo" className="catalog-section py-5">
         <Container>
           <Row className="mb-4">
-            <Col xs={12} md={6}>
+            <Col md={6}>
               <Form.Control
                 type="text"
                 placeholder="Buscar productos por palabra clave..."
@@ -132,8 +125,8 @@ const HomePage = () => {
             </Col>
           </Row>
 
-          {/* Filtros */}
           <Row className="mb-4 gx-2 gy-2">
+            {/* País */}
             <Col xs="auto" className="d-flex align-items-center">
               <strong>País:</strong>
             </Col>
@@ -155,6 +148,7 @@ const HomePage = () => {
               </Col>
             ))}
 
+            {/* Categorías */}
             <Col xs="auto" className="d-flex align-items-center">
               <strong>Categorías:</strong>
             </Col>
@@ -177,6 +171,7 @@ const HomePage = () => {
               );
             })}
 
+            {/* Especialidad */}
             <Col xs="auto" className="d-flex align-items-center">
               <strong>Especialidad:</strong>
             </Col>
@@ -219,7 +214,7 @@ const HomePage = () => {
       </section>
 
       {/* Beneficios */}
-      <section id="beneficios" className="benefits-section py-5 bg-light">
+      <section id="beneficios" className="benefits-section py-5">
         <Container>
           <h2 className="text-center mb-5">
             Pensado para quienes construyen el futuro
