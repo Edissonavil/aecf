@@ -118,33 +118,25 @@ const CrearUsuarioPage = () => {
               />
             </Form.Group>
 
-          <Form.Group className="mb-3 position-relative" controlId="formClave">
-        <Form.Label>Contraseña</Form.Label>
-        <div className="input-with-toggle">
+  <Form.Group className="mb-3 position-relative" controlId="formClave">
+        <Form.Label>Clave</Form.Label>
+        <InputGroup>
           <Form.Control
-            type={showPassword ? "text" : "password"}
-            placeholder="Ingresa una contraseña"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Ingresa la clave"
             value={clave}
-            onChange={handleClaveChange}
+            onChange={(e) => setClave(e.target.value)}
             required
             autoComplete="new-password"
           />
           <Button
-            variant="link"
-            type="button"
-            onClick={() => setShowPassword((prev) => !prev)}
-            className="password-toggle-btn position-absolute"
-            style={{ top: "50%", right: "0.75rem", transform: "translateY(-50%)" }}
-            aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            variant="outline-secondary"
+            onClick={() => setShowPassword(prev => !prev)}
+            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
           >
-            {showPassword ? "🔒" : "🔑"}
+            {showPassword ? '🔒' : '🔑'}
           </Button>
-        </div>
-        {errors.clave && (
-          <Form.Text className="text-danger">
-            {errors.clave}
-          </Form.Text>
-        )}
+        </InputGroup>
       </Form.Group>
 
             <Form.Group className="mb-3" controlId="formNombre">
