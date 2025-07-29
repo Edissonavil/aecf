@@ -20,17 +20,16 @@ const ConfigPerfilPage = () => {
     newPassword: '',
     confirmNewPassword: ''
   });
-
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [isPasswordChangeMode, setIsPasswordChangeMode] = useState(false);
 
-  // nuevos estados para toggle de visibilidad
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  // States para mostrar/ocultar cada contraseña
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -45,6 +44,7 @@ const ConfigPerfilPage = () => {
           rol: res.data.rol
         }));
       } catch (err) {
+        console.error(err);
         setError("No se pudieron cargar los datos de tu perfil.");
         toast.error("Error al cargar tu perfil.");
       } finally {
@@ -61,12 +61,16 @@ const ConfigPerfilPage = () => {
 
   const handleUpdateProfile = async e => {
     e.preventDefault();
-    if (!userData.currentPassword) {
-      setError("Por favor, ingresa tu contraseña actual para confirmar los cambios.");
-      return;
-    }
     setSaving(true);
     setError(null);
+    setSuccess(null);
+
+    if (!userData.currentPassword) {
+      setError("Por favor, ingresa tu contraseña actual para confirmar los cambios.");
+      setSaving(false);
+      return;
+    }
+
     try {
       await userApi.updateMyProfile({
         nombre: userData.nombre,
@@ -79,6 +83,7 @@ const ConfigPerfilPage = () => {
       toast.success("Perfil actualizado correctamente.");
       setUserData(prev => ({ ...prev, currentPassword: '' }));
     } catch (err) {
+      console.error(err);
       setError(err.response?.data?.message || "Error al actualizar el perfil.");
       toast.error("Error al actualizar el perfil.");
     } finally {
@@ -88,31 +93,44 @@ const ConfigPerfilPage = () => {
 
   const handleChangePassword = async e => {
     e.preventDefault();
+    setSaving(true);
+    setError(null);
+    setSuccess(null);
+
     const { currentPassword, newPassword, confirmNewPassword } = userData;
+
     if (!currentPassword || !newPassword || !confirmNewPassword) {
       setError("Todos los campos de contraseña son obligatorios.");
+      setSaving(false);
       return;
     }
     if (newPassword !== confirmNewPassword) {
       setError("La nueva contraseña y su confirmación no coinciden.");
+      setSaving(false);
       return;
     }
     if (newPassword.length < 6) {
       setError("La nueva contraseña debe tener al menos 6 caracteres.");
+      setSaving(false);
       return;
     }
-    setSaving(true);
-    setError(null);
+
     try {
       await userApi.changeMyPassword({ currentPassword, newPassword });
-      setSuccess("Contraseña cambiada exitosamente. Se cerrará la sesión por seguridad.");
+      setSuccess("Contraseña cambiada exitosamente. Se cerrará la sesión.");
       toast.success("Contraseña cambiada exitosamente.");
-      setUserData({ ...userData, currentPassword: '', newPassword: '', confirmNewPassword: '' });
+      setUserData(prev => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: ''
+      }));
       setTimeout(() => {
         logout();
         navigate('/login-colaborador');
       }, 3000);
     } catch (err) {
+      console.error(err);
       setError(err.response?.data?.message || "Error al cambiar la contraseña.");
       toast.error("Error al cambiar la contraseña.");
     } finally {
@@ -121,22 +139,27 @@ const ConfigPerfilPage = () => {
   };
 
   const handleDeleteAccount = async () => {
-    const confirmPassword = prompt("¡ADVERTENCIA! Vas a eliminar tu cuenta. Ingresa tu contraseña:");
-    if (!confirmPassword) {
-      setError("Eliminación de cuenta cancelada o contraseña no proporcionada.");
-      return;
-    }
     setSaving(true);
     setError(null);
+    setSuccess(null);
+
+    const confirmPassword = prompt("¡ADVERTENCIA! Esto eliminará tu cuenta. Ingresa tu contraseña:");
+    if (!confirmPassword) {
+      setError("Eliminación cancelada o contraseña no proporcionada.");
+      setSaving(false);
+      return;
+    }
+
     try {
       await userApi.deleteMyAccount(confirmPassword);
-      setSuccess("Tu cuenta ha sido eliminada exitosamente.");
+      setSuccess("Cuenta eliminada exitosamente.");
       toast.success("Cuenta eliminada exitosamente.");
       setTimeout(() => {
         logout();
         navigate('/');
       }, 2000);
     } catch (err) {
+      console.error(err);
       setError(err.response?.data?.message || "Error al eliminar la cuenta.");
       toast.error("Error al eliminar la cuenta.");
     } finally {
@@ -147,9 +170,7 @@ const ConfigPerfilPage = () => {
   if (loading) {
     return (
       <Container className="d-flex justify-content-center align-items-center profile-spinner-container">
-        <Spinner animation="border" role="status">
-          <span className="visually-hidden">Cargando datos de perfil...</span>
-        </Spinner>
+        <Spinner animation="border" />
       </Container>
     );
   }
@@ -164,7 +185,7 @@ const ConfigPerfilPage = () => {
           {success && <Alert variant="success" className="text-center">{success}</Alert>}
           {error && <Alert variant="danger" className="text-center">{error}</Alert>}
 
-          <div className="d-flex justify-content-center mb-4 profile-mode-toggle-buttons">
+          <div className="d-flex justify-content-center mb-4">
             <Button
               variant={!isPasswordChangeMode ? 'primary' : 'outline-primary'}
               onClick={() => setIsPasswordChangeMode(false)}
@@ -182,25 +203,57 @@ const ConfigPerfilPage = () => {
 
           {!isPasswordChangeMode ? (
             <Form onSubmit={handleUpdateProfile}>
-              {/* ...otros campos de perfil... */}
+              <Form.Group className="mb-3" controlId="formNombreUsuario">
+                <Form.Label>Nombre de Usuario</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="nombreUsuario"
+                  value={userData.nombreUsuario}
+                  readOnly
+                  disabled
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formNombre">
+                <Form.Label>Nombre Completo</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="nombre"
+                  value={userData.nombre}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formEmail">
+                <Form.Label>Correo Electrónico</Form.Label>
+                <Form.Control
+                  type="email"
+                  name="email"
+                  value={userData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
 
               <Form.Group className="mb-4 position-relative" controlId="formCurrentPasswordUpdate">
-                <Form.Label>Contraseña Actual (para confirmar cambios)</Form.Label>
+                <Form.Label>Contraseña Actual</Form.Label>
                 <InputGroup>
                   <Form.Control
-                    type={showCurrentPassword ? 'text' : 'password'}
+                    type={showCurrent ? 'text' : 'password'}
                     name="currentPassword"
                     value={userData.currentPassword}
                     onChange={handleChange}
                     placeholder="Ingresa tu contraseña actual"
                     required
+                    autoComplete="current-password"
                   />
                   <Button
                     variant="outline-secondary"
-                    onClick={() => setShowCurrentPassword(prev => !prev)}
-                    aria-label={showCurrentPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    onClick={() => setShowCurrent(prev => !prev)}
+                    aria-label={showCurrent ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
-                    {showCurrentPassword ? '🔒' : '🔑'}
+                    {showCurrent ? '🔒' : '🔑'}
                   </Button>
                 </InputGroup>
               </Form.Group>
@@ -220,19 +273,20 @@ const ConfigPerfilPage = () => {
                 <Form.Label>Contraseña Actual</Form.Label>
                 <InputGroup>
                   <Form.Control
-                    type={showCurrentPassword ? 'text' : 'password'}
+                    type={showCurrent ? 'text' : 'password'}
                     name="currentPassword"
                     value={userData.currentPassword}
                     onChange={handleChange}
                     placeholder="Ingresa tu contraseña actual"
                     required
+                    autoComplete="current-password"
                   />
                   <Button
                     variant="outline-secondary"
-                    onClick={() => setShowCurrentPassword(prev => !prev)}
-                    aria-label={showCurrentPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    onClick={() => setShowCurrent(prev => !prev)}
+                    aria-label={showCurrent ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
-                    {showCurrentPassword ? '🔒' : '🔑'}
+                    {showCurrent ? '🔒' : '🔑'}
                   </Button>
                 </InputGroup>
               </Form.Group>
@@ -241,19 +295,20 @@ const ConfigPerfilPage = () => {
                 <Form.Label>Nueva Contraseña</Form.Label>
                 <InputGroup>
                   <Form.Control
-                    type={showNewPassword ? 'text' : 'password'}
+                    type={showNew ? 'text' : 'password'}
                     name="newPassword"
                     value={userData.newPassword}
                     onChange={handleChange}
                     placeholder="Ingresa tu nueva contraseña"
                     required
+                    autoComplete="new-password"
                   />
                   <Button
                     variant="outline-secondary"
-                    onClick={() => setShowNewPassword(prev => !prev)}
-                    aria-label={showNewPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    onClick={() => setShowNew(prev => !prev)}
+                    aria-label={showNew ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
-                    {showNewPassword ? '🔒' : '🔑'}
+                    {showNew ? '🔒' : '🔑'}
                   </Button>
                 </InputGroup>
               </Form.Group>
@@ -262,19 +317,20 @@ const ConfigPerfilPage = () => {
                 <Form.Label>Confirmar Nueva Contraseña</Form.Label>
                 <InputGroup>
                   <Form.Control
-                    type={showConfirmNewPassword ? 'text' : 'password'}
+                    type={showConfirm ? 'text' : 'password'}
                     name="confirmNewPassword"
                     value={userData.confirmNewPassword}
                     onChange={handleChange}
                     placeholder="Confirma tu nueva contraseña"
                     required
+                    autoComplete="new-password"
                   />
                   <Button
                     variant="outline-secondary"
-                    onClick={() => setShowConfirmNewPassword(prev => !prev)}
-                    aria-label={showConfirmNewPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    onClick={() => setShowConfirm(prev => !prev)}
+                    aria-label={showConfirm ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
-                    {showConfirmNewPassword ? '🔒' : '🔑'}
+                    {showConfirm ? '🔒' : '🔑'}
                   </Button>
                 </InputGroup>
               </Form.Group>
@@ -293,8 +349,12 @@ const ConfigPerfilPage = () => {
           <Card className="mt-5 border-danger">
             <Card.Body>
               <h5 className="text-danger">Eliminar Cuenta</h5>
-              <p className="text-muted">Esta acción es irreversible.</p>
-              <Button variant="danger" onClick={handleDeleteAccount} disabled={saving}>
+              <p className="text-muted">Esta acción es irreversible y eliminará todos tus datos.</p>
+              <Button
+                variant="danger"
+                onClick={handleDeleteAccount}
+                disabled={saving}
+              >
                 Eliminar Mi Cuenta
               </Button>
             </Card.Body>
