@@ -13,6 +13,8 @@ const CrearUsuarioPage = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const navigate = useNavigate();
   const { authToken, isAuthLoading, role } = useAuth(); // Obtén isAuthLoading y role del contexto
