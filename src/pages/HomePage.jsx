@@ -108,9 +108,10 @@ const HomePage = () => {
           {/* align-items-center para centrado vertical, justify-content-center para centrado horizontal, gap-3 para espacio */}
           <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 mb-4">
             {/* El botón "Vende con Nosotros" */}
-            {/* button-outer-wrapper es el contenedor que maneja el ancho responsivo para el botón */}
-            <div className="button-outer-wrapper w-100 w-md-auto">
-                {/* custom-button-group es el contenedor principal para el efecto 3D */}
+            {/* custom-button-outer-wrapper es el contenedor que maneja el ancho responsivo para el botón */}
+            {/* w-100 en sm y abajo para que ocupe todo el ancho, w-md-auto en md y arriba */}
+            <div className="custom-button-outer-wrapper w-100 w-md-auto">
+                {/* custom-button-group es el contenedor principal del efecto 3D */}
                 <div className="custom-button-group">
                     {/* Capa de sombra superior (rosa claro) */}
                     <div className="custom-button-layer custom-button-shadow-top"></div>

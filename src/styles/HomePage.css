@@ -119,6 +119,7 @@
   /* Altura ajustada para coincidir con el botón */
   height: 3.5rem; /* Base height for h-14 */
   font-size: 1.25rem; /* text-xl */
+  border: 1px solid #ced4da; /* Default Bootstrap border color */
 }
 
 @media (min-width: 992px) { /* lg breakpoint */
@@ -253,10 +254,9 @@
   position: relative;
   display: inline-block; /* Crucial: permite que el tamaño del padre se adapte al hijo */
   overflow: hidden; /* Oculta cualquier parte de las sombras que se salga del contenedor */
-  /* El margin crea el espacio para que la sombra se "asome" */
-  margin: 8px; /* Equivalente a Tailwind's translate-x-2/y-2 offset (0.5rem = 8px) */
+  /* El padding crea el espacio para que la sombra se "asome" */
+  padding: 8px; /* Equivalente a Tailwind's translate-x-2/y-2 offset (0.5rem = 8px) */
   border-radius: 0.5rem; /* Bordes redondeados para el grupo */
-  /* El borde exterior se aplicará al custom-button-main */
 }
 
 /* Clase base para las capas internas (sombras y botón principal) */
@@ -319,8 +319,21 @@
   .custom-button-main {
     height: 4rem; /* Equivalente a lg:h-16 (64px) */
     padding: 0 2.5rem; /* Equivalente a lg:px-10 (40px total horizontal padding) */
+    /* font-size: 1.25rem; ya es text-xl, no necesita cambio */
   }
 }
 
+/* Search input height alignment */
+.search-input {
+  /* ... existing styles ... */
+  height: 3.5rem; /* Matches h-14 (56px) */
+}
+@media (min-width: 992px) { /* lg breakpoint */
+  .search-input {
+    height: 4rem; /* Matches lg:h-16 (64px) */
+  }
+}
+
+/* Responsive adjustments for layout (button and search bar) */
 @media (max-width: 767.98px) { /* Para pantallas pequeñas (xs y sm en Bootstrap) */
 }
