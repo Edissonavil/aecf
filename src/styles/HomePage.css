@@ -281,7 +281,6 @@
   /* El color de fondo y texto vienen de .btn-fuchsia-electric */
 }
 
-/* Efecto hover: al pasar el ratón sobre el contenedor principal */
 .button-shadow-wrapper:hover .button-shadow-layer-bottom {
   transform: translate(8px, 8px); /* Se mueve 8px (0.5rem) hacia abajo y a la derecha */
 }
@@ -290,7 +289,6 @@
   transform: translate(-8px, -8px); /* Se mueve 8px (0.5rem) hacia arriba y a la izquierda */
 }
 
-/* Media queries para ajustar el tamaño del botón y el input en pantallas grandes */
 @media (min-width: 992px) { /* lg breakpoint */
   .button-main-content {
     height: 4rem; /* lg:h-16 (64px) */
@@ -299,7 +297,6 @@
   }
 }
 
-/* Media queries para la responsividad del botón y la barra de búsqueda */
 @media (max-width: 767.98px) { /* Para pantallas pequeñas (xs y sm en Bootstrap) */
     /* El contenedor padre d-flex flex-column flex-md-row ya maneja el apilamiento */
     .button-shadow-wrapper {
