@@ -43,52 +43,30 @@ const HomePage = () => {
 
       } catch (e) {
         console.error(e);
-
         setError('Error cargando productos');
-
       } finally {
-
         setLoading(false);
-
       }
-
     };
-
     fetchProducts();
-
   }, []);
 
 
 
   useEffect(() => {
-
     let filtered = allApprovedProducts
-
       .filter(p =>
-
         (p.nombre || p.title || '').toLowerCase().includes(searchTerm.toLowerCase())
-
       )
-
       .filter(p =>
-
         activeCategoryFilter === 'all' || (p.categorias || []).includes(activeCategoryFilter) // Usar includes para arrays
-
       )
-
       .filter(p =>
-
         activeCountryFilter === 'all' || p.pais === activeCountryFilter
-
       )
-
       .filter(p =>
-
         activeSpecialtyFilter === 'all' || (p.especialidades || []).includes(activeSpecialtyFilter)
-
       );
-
-
 
     setDisplayedProducts(filtered);
 
@@ -109,39 +87,33 @@ const HomePage = () => {
 
 
   if (loading) return <div className="text-center py-5">Cargando…</div>;
-
   if (error) return <div className="text-center text-danger py-5">{error}</div>;
 
 
 
   return (
-
     <main>
-
       <section className="hero-section py-5">
-
         <div className="container">
-
           <h1 className="hero-title text-center">
-
             Más de <span className="highlight-text">300 herramientas</span> técnicas para transformar tu forma de construir
-
           </h1>
-
-          <p className="hero-subtitle text-center mx-auto mb-4">
-
+          <p className="hero-subtitle text-center mx-auto mb-4" style={{ transform: 'skewX(-5deg)' }}>
             El marketplace hecho por y para Arquitectos, Ingenieros y Constructores.
+          </p>
+          <p className="hero-subtitle text-center mx-auto mb-4">
             Sube tus recursos. Mejora tu flujo de trabajo. Comparte, soluciona, gana.
           </p>
-
+          <p className="hero-subtitle text-center mx-auto mb-4">
+            Mejora tu flujo de trabajo. Comparte, soluciona, gana.
+          </p>
+          <p className="hero-subtitle text-center mx-auto mb-4">
+            Comparte, soluciona, gana.
+          </p>
           <div className="text-center">
-
             <Link to="/catalog" className="btn btn-primary btn-explore">Explorar Catálogo</Link>
-
           </div>
-
         </div>
-
       </section>
 
 
@@ -149,171 +121,100 @@ const HomePage = () => {
       <section id="catalogo" className="catalog-section py-5">
 
         <div className="container">
+          <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 mb-4">
+            {/* El botón "Vende con Nosotros" */}
+            <div className="button-wrapper">
+                <div className="button-shadow-top"></div>
+                <div className="button-shadow-bottom"></div>
+                <a className="button-main btn btn-fuchsia-electric" href="/solicitar-colaborador">
+                    Vende con Nosotros
+                </a>
+            </div>
 
-          <div className="search-wrapper mb-4">
-
-            <input
-
-              type="text"
-
-              className="form-control search-input"
-
-              placeholder="Buscar productos por palabra clave..."
-
-              value={searchTerm}
-
-              onChange={e => setSearchTerm(e.target.value)}
-
-            />
-
-            <svg
-
-              className="search-icon"
-
-              xmlns="http://www.w3.org/2000/svg"
-
-              width="20"
-
-              height="20"
-
-              fill="none"
-
-              stroke="currentColor"
-
-              strokeWidth="2"
-
-              strokeLinecap="round"
-
-              strokeLinejoin="round"
-
-            >
-
-              <circle cx="11" cy="11" r="8" />
-
-              <path d="m21 21-4.3-4.3" />
-
-            </svg>
-
+            {/* Barra de búsqueda - ahora toma el espacio restante */}
+            {/* flex-grow-1 permite que el input crezca, w-100 asegura que ocupe todo el ancho disponible */}
+            <div className="search-wrapper flex-grow-1 w-100">
+                <input
+                  type="text"
+                  className="form-control search-input w-100"
+                  placeholder="Buscar productos por palabra clave..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+                <svg
+                  className="search-icon"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+            </div>
           </div>
-
           {/* Filtros */}
-
           <div className="mb-4">
-
             {/* Países */}
-
             <div className="d-flex flex-wrap justify-content-center gap-2 mb-3">
-
               <span className="fw-bold pe-2">País:</span>
-
               {availableCountries.map(cn => (
-
                 <button
-
                   key={cn}
-
                   className={`btn ${activeCountryFilter === (cn === 'Todos' ? 'all' : cn)
-
-                      ? 'btn-fuchsia-electric text-white'
-
-                      : 'btn-outline-secondary'
-
+                    ? 'btn-fuchsia-electric text-white'
+                    : 'btn-outline-secondary'
                     }`}
-
                   onClick={() =>
-
                     setActiveCountryFilter(cn === 'Todos' ? 'all' : cn)
-
                   }
-
                 >
-
                   {cn}
-
                 </button>
-
               ))}
-
             </div>
-
             {/* Categorías */}
-
             <div className="d-flex flex-wrap justify-content-center gap-2 mb-3">
-
               <span className="fw-bold pe-2">Categorías:</span>
-
               {availableCategories.map(cat => {
-
                 const value = (cat === 'Todos') ? 'all' : cat;
-
                 return (
-
                   <button
-
                     key={cat}
-
                     className={`btn ${activeCategoryFilter === value
-
-                        ? 'btn-fuchsia-electric text-white'
-
-                        : 'btn-outline-secondary'
-
-                      }`}
-
-                    onClick={() => setActiveCategoryFilter(value)}
-
-                  >
-
-                    {cat}
-
-                  </button>
-
-                );
-
-              })}
-
-            </div>
-
-            {/* Especialidades */}
-
-            <div className="d-flex flex-wrap justify-content-center gap-2">
-
-              <span className="fw-bold pe-2">Especialidad:</span>
-
-              {availableSpecialties.map(sp => (
-
-                <button
-
-                  key={sp}
-
-                  className={`btn ${activeSpecialtyFilter === (sp === 'Todos' ? 'all' : sp)
-
                       ? 'btn-fuchsia-electric text-white'
-
                       : 'btn-outline-secondary'
-
-                    }`}
-
-                  onClick={() =>
-
-                    setActiveSpecialtyFilter(sp === 'Todos' ? 'all' : sp)
-
-                  }
-
-                >
-
-                  {sp}
-
-                </button>
-
-              ))}
-
+                      }`}
+                    onClick={() => setActiveCategoryFilter(value)}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
             </div>
-
+            {/* Especialidades */}
+            <div className="d-flex flex-wrap justify-content-center gap-2">
+              <span className="fw-bold pe-2">Especialidad:</span>
+              {availableSpecialties.map(sp => (
+                <button
+                  key={sp}
+                  className={`btn ${activeSpecialtyFilter === (sp === 'Todos' ? 'all' : sp)
+                    ? 'btn-fuchsia-electric text-white'
+                    : 'btn-outline-secondary'
+                    }`}
+                  onClick={() =>
+                    setActiveSpecialtyFilter(sp === 'Todos' ? 'all' : sp)
+                  }
+                >
+                  {sp}
+                </button>
+              ))}
+            </div>
           </div>
-
-
-
           {/* -- Product Grid -- */}
           <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
             {displayedProducts.length > 0 ? (
@@ -329,89 +230,46 @@ const HomePage = () => {
               </p>
             )}
           </div>
-
-
-
-
-
         </div>
-
       </section>
-
-
-
       <section id="beneficios" className="benefits-section py-5">
-
         <div className="container">
-
-          <h2 className="benefits-title text-center mb-5">Pensado para quienes construyen el futuro: arquitectos, ingenieros y constructores.</h2>
-
+          <h2 className="benefits-title text-center mb-5">Pensado para quienes construyen el futuro:</h2>
+          <h2 className="benefits-title text-center mb-5">arquitectos, ingenieros y constructores.</h2>
           <div className="row row-cols-1 row-cols-md-3 g-4">
-
             <div className="col">
-
               <div className="benefit-item text-center p-4 shadow-sm rounded">
-
                 <span className="icon">⚙️</span>
-
                 <h3 className="h5 mt-2">Optimización AEC</h3>
-
                 <p className="text-muted">Ahorra entre 30% y 60% del tiempo de modelado con scripts y familias listas para usar en tus flujos técnicos.</p>
-
               </div>
-
             </div>
-
             <div className="col">
-
               <div className="benefit-item text-center p-4 shadow-sm rounded">
-
                 <span className="icon">✅</span>
-
                 <h3 className="h5 mt-2">Calidad Profesional</h3>
-
                 <p className="text-muted">Cada recurso es revisado por especialistas para asegurar compatibilidad, limpieza de datos y estándares BIM.</p>
-
               </div>
-
             </div>
-
             <div className="col">
-
               <div className="benefit-item text-center p-4 shadow-sm rounded">
-
                 <span className="icon">💡</span>
-
                 <h3 className="h5 mt-2">Innovación Aplicada</h3>
-
                 <p className="text-muted">Accede a herramientas técnicas que ya están resolviendo problemas reales en oficinas de arquitectura e ingeniería.</p>
-
               </div>
-
             </div>
             <div className="col">
-
               <div className="benefit-item text-center p-4 shadow-sm rounded">
-
                 <span className="icon">⏳</span>
-
                 <h3 className="h5 mt-2">Tiempo Ganado</h3>
-
                 <p className="text-muted">Implementa recursos que reducen tareas repetitivas y te devuelven hasta 10 horas por semana de productividad.</p>
-
               </div>
-
             </div>
             <div className="col">
-
               <div className="benefit-item text-center p-4 shadow-sm rounded">
-
                 <span className="icon">🤝</span>
-
                 <h3 className="h5 mt-2">Comunidad Validada</h3>
-
                 <p className="text-muted">El 100% de nuestros productos han sido creados por profesionales activos del sector AEC, no por terceros genéricos.</p>
-
               </div>
 
             </div>
