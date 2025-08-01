@@ -238,32 +238,23 @@
 }
 
 /* --- Estilos para el botón con efecto 3D (Bootstrap) --- */
+/* ------------- botón 3D final y sin duplicados ------------- */
 
-/* Wrapper para controlar el ancho responsivo del botón dentro de un flexbox */
-.button-outer-wrapper {
-    width: auto; /* Por defecto, se ajusta al contenido */
-}
-@media (max-width: 767.98px) { /* Para pantallas pequeñas (xs, sm) */
-    .button-outer-wrapper {
-        width: 100%; /* Ocupa todo el ancho disponible */
-    }
-}
-/* Contenedor para controlar ancho responsivo */
+/* Wrapper responsivo: queda una sola declaración */
 .button-outer-wrapper {
   width: auto;
 }
 @media (max-width: 767.98px) {
-  .button-outer-wrapper {
-    width: 100%;
-  }
+  .button-outer-wrapper { width: 100%; }
 }
 
-/* Grupo 3D: sin padding extra */
+/* Grupo 3D sin padding ni overflow */
 .custom-button-group {
-  padding: 0 !important;        /* quita el marco extra            */
-  overflow: visible !important; /* deja que la sombra roja se vea  */
+  position: relative;
+  display: inline-block;
+  padding: 0 !important;
+  overflow: visible !important;
 }
-
 
 /* Capas absolutas */
 .custom-button-layer {
@@ -274,50 +265,43 @@
   transition: transform 0.15s ease;
 }
 
-/* Capa amarilla fija (z-20) */
-.custom-button-shadow-top {
-  background-color: yellow;
-  z-index: 20;
-}
+/* Sombras */
+.custom-button-shadow-top    { background: yellow; z-index: 20; }
+.custom-button-shadow-bottom { background: red;    z-index: 10; }
 
-/* Capa roja desplazable (z-10) */
-.custom-button-shadow-bottom {
-  background-color: red;
-  z-index: 10;
-}
-
-/* Botón negro principal (z-30) */
+/* Botón principal */
 .custom-button-main {
   position: relative;
+  z-index: 30;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  z-index: 30;
   text-decoration: none;
-  background-color: #000;
+  background: #000;
   color: #fff;
   border: 1px solid #000;
 
-  /* TAMAÑOS idénticos a Tailwind */
-  height: 3.5rem;      /* h-14 */
-  padding: 0 2rem;     /* px-8 */
-  font-size: 1.25rem;  /* text-xl */
+  /* ←– ESTAS DOS LÍNEAS GARANTIZAN MISMO TAMAÑO –→ */
+  width: 100%;   /* ocupa todo el ancho del grupo */
+  height: 100%;  /* ocupa todo el alto del grupo  */
+
+  /* Tamaño base Tailwind */
+  min-height: 3.5rem;   /* h-14 */
+  padding: 0 2rem;      /* px-8 */
+  font-size: 1.25rem;   /* text-xl */
+  box-sizing: border-box;
 
   transition: transform 0.15s ease;
 }
 
-/* Hover: mover capas igual que group-hover:translate-2 */
-.custom-button-group:hover .custom-button-shadow-bottom {
-  transform: translate(8px, 8px);
-}
-.custom-button-group:hover .custom-button-main {
-  transform: translate(-8px, -8px);
-}
+/* Hover */
+.custom-button-group:hover .custom-button-shadow-bottom { transform: translate(8px, 8px); }
+.custom-button-group:hover .custom-button-main          { transform: translate(-8px, -8px); }
 
-/* Ajuste lg:h-16 y lg:px-10 */
+/* Variante grande (lg) */
 @media (min-width: 992px) {
   .custom-button-main {
-    height: 4rem;       /* lg:h-16 */
-    padding: 0 2.5rem;  /* lg:px-10 */
+    min-height: 4rem;      /* lg:h-16 */
+    padding: 0 2.5rem;     /* lg:px-10 */
   }
 }
