@@ -122,12 +122,6 @@ export default function ReviewPaymentsPage() {
                     Documento PDF cargado. Haz clic en "Ver Comprobante".
                   </p>
                 )}
-                {getFileType(order.receiptFilename) === 'document' && (
-                  <p style={{ marginTop: 10 }}>
-                    <img src="/document-icon.png" alt="Doc" style={{ width: 32, marginRight: 10 }} />
-                    Archivo cargado. Haz clic en "Ver Comprobante".
-                  </p>
-                )}
               </div>
             )}
 
