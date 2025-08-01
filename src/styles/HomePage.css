@@ -236,18 +236,18 @@
 }
 
 /* --- Estilos para el botón con efecto 3D (Bootstrap) --- */
-.custom-button-wrapper {
+.custom-button-group {
   position: relative;
   display: inline-block; /* Crucial: permite que el tamaño del padre se adapte al hijo */
-  /* No definimos width/height aquí. El .custom-button-main lo dictará. */
+  /* El tamaño de este grupo será dictado por el .custom-button-main */
 }
 
 /* Clase base para las capas internas (sombras y botón principal) */
 .custom-button-layer {
   position: absolute;
-  border-radius: 0.5rem; /* Bordes redondeados */
+  border-radius: 0.5rem;
   border: 1px solid black;
-  transition: transform 0.15s ease-out; /* Misma duración de transición que el original */
+  transition: transform 0.15s ease-out;
 }
 
 .custom-button-shadow-top {
@@ -271,7 +271,7 @@
 }
 
 .custom-button-main {
-  position: relative; /* Importante: para que z-index y transform funcionen correctamente */
+  position: relative; /* Crucial: Este elemento define su propio tamaño y actúa como referencia */
   z-index: 3; /* El botón principal siempre encima */
   display: inline-flex; /* Para centrar el texto */
   align-items: center;
@@ -281,18 +281,23 @@
   
   /* Estilos de tamaño y fuente del botón original de Tailwind */
   height: 3.5rem; /* Equivalente a h-14 (56px) */
-  padding: 0 2rem; /* Equivalente a px-8 (32px) */
+  padding: 0 2rem; /* Equivalente a px-8 (32px total horizontal padding) */
   font-size: 1.25rem; /* Equivalente a text-xl (20px) */
   
   /* El color de fondo y texto vienen de .btn-fuchsia-electric */
+  background-color: #FF00FF;
+  color: #fff;
+  border-color: #FF00FF;
+  border-radius: 0.5rem; /* Apply border-radius here too */
+  border: 1px solid black; /* Apply border here too */
 }
 
 /* Efecto hover: al pasar el ratón sobre el contenedor principal */
-.custom-button-wrapper:hover .custom-button-shadow-bottom {
+.custom-button-group:hover .custom-button-shadow-bottom {
   transform: translate(8px, 8px); /* Se mueve 8px (0.5rem) hacia abajo y a la derecha */
 }
 
-.custom-button-wrapper:hover .custom-button-main {
+.custom-button-group:hover .custom-button-main {
   transform: translate(-8px, -8px); /* Se mueve 8px (0.5rem) hacia arriba y a la izquierda */
 }
 
@@ -300,15 +305,28 @@
 @media (min-width: 992px) { /* lg breakpoint */
   .custom-button-main {
     height: 4rem; /* Equivalente a lg:h-16 (64px) */
-    padding: 0 2.5rem; /* Equivalente a lg:px-10 (40px) */
+    padding: 0 2.5rem; /* Equivalente a lg:px-10 (40px total horizontal padding) */
     /* font-size: 1.25rem; ya es text-xl, no necesita cambio */
   }
 }
 
-/* Media queries para la responsividad del botón y la barra de búsqueda */
+/* Search input height alignment */
+.search-input {
+  /* ... existing styles ... */
+  height: calc(3.5rem + 2px); /* Matches h-14 (56px) + 2px for border */
+  /* El custom-button-main tiene 1px de borde a cada lado, lo que suma 2px a su altura visual. */
+  /* Por eso, el input de búsqueda debe tener la misma altura + sus 2px de borde. */
+}
+@media (min-width: 992px) { /* lg breakpoint */
+  .search-input {
+    height: calc(4rem + 2px); /* Matches lg:h-16 (64px) + 2px for border */
+  }
+}
+
+/* Responsive adjustments for layout (button and search bar) */
 @media (max-width: 767.98px) { /* Para pantallas pequeñas (xs y sm en Bootstrap) */
     /* El contenedor padre d-flex flex-column flex-md-row ya maneja el apilamiento */
-    .custom-button-wrapper {
+    .custom-button-group {
         width: 100%; /* El botón ocupa todo el ancho en móviles */
         margin-bottom: 1rem; /* Espacio entre el botón y la barra de búsqueda */
     }
