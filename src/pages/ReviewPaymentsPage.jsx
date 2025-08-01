@@ -112,14 +112,10 @@ export default function ReviewPaymentsPage() {
                     onError={e => { e.currentTarget.src = '/placeholder.png'; }}
                   />
                 )}
-                {getFileType(order.receiptFilename) === 'pdf' && (
+                {getFileType(order.receiptFilename) === 'document' && (
                   <p style={{ marginTop: 10 }}>
-                    <img
-                      src={`${process.env.PUBLIC_URL}/pdf-icon.png`}
-                      alt="PDF"
-                      style={{ width: 32, marginRight: 10 }}
-                    />
-                    Documento PDF cargado. Haz clic en "Ver Comprobante".
+                    <img src="/pdf-icon.png" alt="Doc" style={{ width: 32, marginRight: 10 }} />
+                    Archivo cargado. Haz clic en "Ver Comprobante".
                   </p>
                 )}
               </div>
