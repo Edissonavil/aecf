@@ -235,46 +235,39 @@
   font-weight: 700;
 }
 
-/* --- Estilos corregidos para el botón con efecto (Bootstrap) --- */
-.button-effect-container {
+/* --- Estilos para el botón con efecto 3D (Bootstrap) --- */
+.button-shadow-wrapper {
   position: relative;
-  display: inline-block; /* Permite que el contenedor se ajuste al contenido */
-  /* El padding aquí crea el espacio para que las sombras se "asomen" */
-  padding: 8px; /* Equivalente a translate-x-2/y-2 de Tailwind (0.5rem = 8px) */
-  box-sizing: content-box; /* Asegura que el padding se añada al tamaño total */
-  border-radius: 0.5rem; /* Bordes redondeados para el contenedor */
-  overflow: hidden; /* Recorta cualquier contenido que se salga de los límites */
-  /* Definir el tamaño base del contenedor para que los elementos internos tengan una referencia */
-  height: 3.5rem + 16px; /* h-14 (3.5rem) + 2*padding (2*8px) */
-  min-width: 240px; /* Ancho mínimo para el texto "Vende con Nosotros" */
+  display: inline-block; /* Permite que el contenedor se ajuste al tamaño del botón */
+  border-radius: 0.5rem; /* Bordes redondeados */
+  overflow: hidden; /* Oculta cualquier parte de las sombras que se salga del contenedor */
+  /* El tamaño de este wrapper será dictado por el .button-main-content */
 }
 
-/* Capas internas del botón (sombras y botón principal) */
-.button-effect-shadow-top,
-.button-effect-shadow-bottom,
-.button-effect-main {
+.button-shadow-layer-top,
+.button-shadow-layer-bottom,
+.button-main-content {
   position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   border-radius: 0.5rem; /* Bordes redondeados */
   border: 1px solid black;
-  transition: transform 0.15s ease-out; /* Misma duración que el original */
-  /* Posicionar estas capas para que cubran el área *visible* del botón */
-  top: 8px; /* Desplazado por el padding del contenedor */
-  left: 8px;
-  right: 8px;
-  bottom: 8px;
+  transition: transform 0.15s ease-out; /* Misma duración de transición que el original */
 }
 
-.button-effect-shadow-top {
-  background-color: #F8BBD0; /* Rosa claro (similar a pink-300) */
+.button-shadow-layer-top {
+  background-color: #F8BBD0; /* Rosa claro */
   z-index: 2; /* Por encima de la sombra inferior */
 }
 
-.button-effect-shadow-bottom {
-  background-color: #880E4F; /* Fucsia oscuro (similar a fuchsia-700) */
+.button-shadow-layer-bottom {
+  background-color: #880E4F; /* Fucsia oscuro */
   z-index: 1; /* La capa más baja */
 }
 
-.button-effect-main {
+.button-main-content {
   z-index: 3; /* El botón principal siempre encima */
   display: inline-flex; /* Para centrar el texto */
   align-items: center;
@@ -282,39 +275,36 @@
   text-decoration: none; /* Quita el subrayado del enlace */
   white-space: nowrap; /* Evita que el texto se rompa */
   /* Estilos de tamaño y fuente del botón original */
-  height: 3.5rem; /* h-14 */
-  padding: 0 2rem; /* px-8 */
-  font-size: 1.25rem; /* text-xl */
+  height: 3.5rem; /* h-14 (56px) */
+  padding: 0 2rem; /* px-8 (32px) */
+  font-size: 1.25rem; /* text-xl (20px) */
   /* El color de fondo y texto vienen de .btn-fuchsia-electric */
 }
 
 /* Efecto hover: al pasar el ratón sobre el contenedor principal */
-.button-effect-container:hover .button-effect-shadow-bottom {
+.button-shadow-wrapper:hover .button-shadow-layer-bottom {
   transform: translate(8px, 8px); /* Se mueve 8px (0.5rem) hacia abajo y a la derecha */
 }
 
-.button-effect-container:hover .button-effect-main {
+.button-shadow-wrapper:hover .button-main-content {
   transform: translate(-8px, -8px); /* Se mueve 8px (0.5rem) hacia arriba y a la izquierda */
 }
 
 /* Media queries para ajustar el tamaño del botón y el input en pantallas grandes */
 @media (min-width: 992px) { /* lg breakpoint */
-  .button-effect-container {
-    height: 4rem + 16px; /* h-16 (4rem) + 2*padding */
-  }
-  .button-effect-main {
-    height: 4rem; /* lg:h-16 */
-    padding: 0 2.5rem; /* lg:px-10 */
-    font-size: 1.25rem; /* lg:text-xl, ya es 1.25rem */
+  .button-main-content {
+    height: 4rem; /* lg:h-16 (64px) */
+    padding: 0 2.5rem; /* lg:px-10 (40px) */
+    /* font-size: 1.25rem; ya es text-xl, no necesita cambio */
   }
 }
 
 /* Media queries para la responsividad del botón y la barra de búsqueda */
-@media (max-width: 575.98px) { /* Para pantallas extra pequeñas (xs en Bootstrap) */
-    .button-effect-container {
+@media (max-width: 767.98px) { /* Para pantallas pequeñas (xs y sm en Bootstrap) */
+    /* El contenedor padre d-flex flex-column flex-md-row ya maneja el apilamiento */
+    .button-shadow-wrapper {
         width: 100%; /* El botón ocupa todo el ancho en móviles */
-        display: block; /* Asegura que el contenedor se comporte como bloque */
-        margin-bottom: 1rem; /* Espacio entre el botón y el input en móviles */
+        margin-bottom: 1rem; /* Espacio entre el botón y la barra de búsqueda */
     }
     .search-wrapper {
         width: 100%; /* La barra de búsqueda ocupa todo el ancho en móviles */
