@@ -108,17 +108,19 @@ const HomePage = () => {
           {/* align-items-center para centrado vertical, justify-content-center para centrado horizontal, gap-3 para espacio */}
           <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 mb-4">
             {/* El botón "Vende con Nosotros" */}
-            {/* custom-button-group es el contenedor principal para el efecto 3D */}
-            {/* w-100 en sm y abajo para que ocupe todo el ancho, w-md-auto en md y arriba */}
-            <div className="custom-button-group w-100 w-md-auto">
-                {/* Capa de sombra superior (rosa claro) */}
-                <div className="custom-button-layer custom-button-shadow-top"></div>
-                {/* Capa de sombra inferior (fucsia oscuro), se mueve al hacer hover */}
-                <div className="custom-button-layer custom-button-shadow-bottom"></div>
-                {/* El botón principal (fucsia eléctrico), se mueve en dirección opuesta al hacer hover */}
-                <a className="custom-button-layer custom-button-main btn btn-fuchsia-electric" href="/users/sign_up">
-                    Vende con Nosotros
-                </a>
+            {/* button-outer-wrapper es el contenedor que maneja el ancho responsivo para el botón */}
+            <div className="button-outer-wrapper w-100 w-md-auto">
+                {/* custom-button-group es el contenedor principal para el efecto 3D */}
+                <div className="custom-button-group">
+                    {/* Capa de sombra superior (rosa claro) */}
+                    <div className="custom-button-layer custom-button-shadow-top"></div>
+                    {/* Capa de sombra inferior (fucsia oscuro), se mueve al hacer hover */}
+                    <div className="custom-button-layer custom-button-shadow-bottom"></div>
+                    {/* El botón principal (fucsia eléctrico), se mueve en dirección opuesta al hacer hover */}
+                    <a className="custom-button-layer custom-button-main btn btn-fuchsia-electric" href="/users/sign_up">
+                        Vende con Nosotros
+                    </a>
+                </div>
             </div>
             {/* Barra de búsqueda - ahora toma el espacio restante */}
             <div className="search-wrapper flex-grow-1 w-100">

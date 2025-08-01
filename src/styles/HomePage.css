@@ -116,13 +116,14 @@
 .search-input {
   padding-left: 2.5rem; /* Espacio para el ícono */
   border-radius: 0.5rem;
-  height: 3.5rem; /* Ajusta la altura del input para que coincida con el botón (h-14) */
+  /* Altura ajustada para coincidir con el botón */
+  height: 3.5rem; /* Base height for h-14 */
   font-size: 1.25rem; /* text-xl */
 }
 
 @media (min-width: 992px) { /* lg breakpoint */
   .search-input {
-    height: 4rem; /* h-16 */
+    height: 4rem; /* lg:h-16 */
   }
 }
 
@@ -236,24 +237,39 @@
 }
 
 /* --- Estilos para el botón con efecto 3D (Bootstrap) --- */
+
+/* Wrapper para controlar el ancho responsivo del botón dentro de un flexbox */
+.button-outer-wrapper {
+    width: auto; /* Por defecto, se ajusta al contenido */
+}
+@media (max-width: 767.98px) { /* Para pantallas pequeñas (xs, sm) */
+    .button-outer-wrapper {
+        width: 100%; /* Ocupa todo el ancho disponible */
+    }
+}
+
+/* Contenedor principal del botón con efecto 3D */
 .custom-button-group {
   position: relative;
   display: inline-block; /* Crucial: permite que el tamaño del padre se adapte al hijo */
-  /* El tamaño de este grupo será dictado por el .custom-button-main */
+  overflow: hidden; /* Oculta cualquier parte de las sombras que se salga del contenedor */
+  /* El margin crea el espacio para que la sombra se "asome" */
+  margin: 8px; /* Equivalente a Tailwind's translate-x-2/y-2 offset (0.5rem = 8px) */
+  border-radius: 0.5rem; /* Bordes redondeados para el grupo */
+  /* El borde exterior se aplicará al custom-button-main */
 }
 
 /* Clase base para las capas internas (sombras y botón principal) */
 .custom-button-layer {
   position: absolute;
   border-radius: 0.5rem;
-  border: 1px solid black;
-  transition: transform 0.15s ease-out;
+  border: 1px solid black; /* Todas las capas tienen un borde */
+  transition: transform 0.15s ease-out; /* Misma duración de transición que el original */
 }
 
 .custom-button-shadow-top {
   background-color: #F8BBD0; /* Rosa claro */
   z-index: 2; /* Por encima de la sombra inferior */
-  /* Posicionamiento para que ocupe todo el espacio del custom-button-main */
   top: 0;
   left: 0;
   width: 100%;
@@ -263,7 +279,6 @@
 .custom-button-shadow-bottom {
   background-color: #880E4F; /* Fucsia oscuro */
   z-index: 1; /* La capa más baja */
-  /* Posicionamiento para que ocupe todo el espacio del custom-button-main */
   top: 0;
   left: 0;
   width: 100%;
@@ -271,7 +286,7 @@
 }
 
 .custom-button-main {
-  position: relative; /* Crucial: Este elemento define su propio tamaño y actúa como referencia */
+  position: relative; /* Crucial: Este elemento dicta el tamaño del .custom-button-group */
   z-index: 3; /* El botón principal siempre encima */
   display: inline-flex; /* Para centrar el texto */
   align-items: center;
@@ -287,9 +302,7 @@
   /* El color de fondo y texto vienen de .btn-fuchsia-electric */
   background-color: #FF00FF;
   color: #fff;
-  border-color: #FF00FF;
-  border-radius: 0.5rem; /* Apply border-radius here too */
-  border: 1px solid black; /* Apply border here too */
+  border-color: #FF00FF; /* Borde del color principal */
 }
 
 /* Efecto hover: al pasar el ratón sobre el contenedor principal */
@@ -306,31 +319,8 @@
   .custom-button-main {
     height: 4rem; /* Equivalente a lg:h-16 (64px) */
     padding: 0 2.5rem; /* Equivalente a lg:px-10 (40px total horizontal padding) */
-    /* font-size: 1.25rem; ya es text-xl, no necesita cambio */
   }
 }
 
-/* Search input height alignment */
-.search-input {
-  /* ... existing styles ... */
-  height: calc(3.5rem + 2px); /* Matches h-14 (56px) + 2px for border */
-  /* El custom-button-main tiene 1px de borde a cada lado, lo que suma 2px a su altura visual. */
-  /* Por eso, el input de búsqueda debe tener la misma altura + sus 2px de borde. */
-}
-@media (min-width: 992px) { /* lg breakpoint */
-  .search-input {
-    height: calc(4rem + 2px); /* Matches lg:h-16 (64px) + 2px for border */
-  }
-}
-
-/* Responsive adjustments for layout (button and search bar) */
 @media (max-width: 767.98px) { /* Para pantallas pequeñas (xs y sm en Bootstrap) */
-    /* El contenedor padre d-flex flex-column flex-md-row ya maneja el apilamiento */
-    .custom-button-group {
-        width: 100%; /* El botón ocupa todo el ancho en móviles */
-        margin-bottom: 1rem; /* Espacio entre el botón y la barra de búsqueda */
-    }
-    .search-wrapper {
-        width: 100%; /* La barra de búsqueda ocupa todo el ancho en móviles */
-    }
 }
