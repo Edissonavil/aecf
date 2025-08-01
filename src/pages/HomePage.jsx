@@ -157,14 +157,18 @@ const HomePage = () => {
 
         <div className="container">
           {/* Contenedor flex para el botón y la barra de búsqueda */}
-          {/* d-flex para flexbox, flex-column para apilar en móviles, flex-md-row para lado a lado en medianos/grandes */}
+          {/* d-flex para flexbox, flex-row por defecto (lado a lado), flex-sm-column para apilar en pantallas pequeñas */}
           {/* align-items-center para centrado vertical, justify-content-center para centrado horizontal, gap-3 para espacio */}
-          <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 mb-4">
+          <div className="d-flex flex-row flex-sm-column align-items-center justify-content-center gap-3 mb-4">
             {/* El botón "Vende con Nosotros" */}
-            {/* button-effect-wrapper es el contenedor principal para el efecto 3D */}
-            <div className="button-effect-wrapper d-block w-100 d-md-inline-block">
+            {/* button-effect-container es el contenedor principal para el efecto 3D */}
+            {/* w-auto para que el botón tome su ancho natural, w-100 en sm y abajo para que ocupe todo el ancho */}
+            <div className="button-effect-container w-auto w-sm-100">
+                {/* Capa de sombra superior (rosa claro) */}
                 <div className="button-effect-shadow-top"></div>
+                {/* Capa de sombra inferior (fucsia oscuro), se mueve al hacer hover */}
                 <div className="button-effect-shadow-bottom"></div>
+                {/* El botón principal (fucsia eléctrico), se mueve en dirección opuesta al hacer hover */}
                 <a className="button-effect-main btn btn-fuchsia-electric" href="/users/sign_up">
                     Vende con Nosotros
                 </a>
