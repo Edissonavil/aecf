@@ -7,7 +7,7 @@ import {
 import { Spinner, Alert, Button, Form, Modal } from 'react-bootstrap';
 import '../styles/ReviewPaymentsPage.css';
 
-const FILE_SERVICE_BASE_URL = "https://gateway-production-129e.up.railway.app/api/users/solicitud-creador";
+const FILE_SERVICE_BASE_URL = "https://gateway-production-129e.up.railway.app/api/files";
 
 export default function ReviewPaymentsPage() {
   const [orders, setOrders] = useState([]);
