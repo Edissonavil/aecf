@@ -248,92 +248,76 @@
         width: 100%; /* Ocupa todo el ancho disponible */
     }
 }
-
-/* Contenedor principal del botón con efecto 3D */
-.custom-button-group {
-  position: relative;
-  display: inline-block; /* Crucial: permite que el tamaño del padre se adapte al hijo */
-  overflow: hidden; /* Oculta cualquier parte de las sombras que se salga del contenedor */
-  /* El padding crea el espacio para que la sombra se "asome" */
-  padding: 8px; /* Equivalente a Tailwind's translate-x-2/y-2 offset (0.5rem = 8px) */
-  border-radius: 0.5rem; /* Bordes redondeados para el grupo */
+/* Contenedor para controlar ancho responsivo */
+.button-outer-wrapper {
+  width: auto;
+}
+@media (max-width: 767.98px) {
+  .button-outer-wrapper {
+    width: 100%;
+  }
 }
 
-/* Clase base para las capas internas (sombras y botón principal) */
+/* Grupo 3D: sin padding extra */
+.custom-button-group {
+  padding: 0 !important;        /* quita el marco extra            */
+  overflow: visible !important; /* deja que la sombra roja se vea  */
+}
+
+
+/* Capas absolutas */
 .custom-button-layer {
   position: absolute;
+  inset: 0;
+  border: 1px solid #000;
   border-radius: 0.5rem;
-  border: 1px solid black; /* Todas las capas tienen un borde */
-  transition: transform 0.15s ease-out; /* Misma duración de transición que el original */
+  transition: transform 0.15s ease;
 }
 
+/* Capa amarilla fija (z-20) */
 .custom-button-shadow-top {
-  background-color: #F8BBD0; /* Rosa claro */
-  z-index: 2; /* Por encima de la sombra inferior */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  background-color: yellow;
+  z-index: 20;
 }
 
+/* Capa roja desplazable (z-10) */
 .custom-button-shadow-bottom {
-  background-color: #880E4F; /* Fucsia oscuro */
-  z-index: 1; /* La capa más baja */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  background-color: red;
+  z-index: 10;
 }
 
+/* Botón negro principal (z-30) */
 .custom-button-main {
-  position: relative; /* Crucial: Este elemento dicta el tamaño del .custom-button-group */
-  z-index: 3; /* El botón principal siempre encima */
-  display: inline-flex; /* Para centrar el texto */
+  position: relative;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  text-decoration: none; /* Quita el subrayado del enlace */
-  white-space: nowrap; /* Evita que el texto se rompa */
-  
-  /* Estilos de tamaño y fuente del botón original de Tailwind */
-  height: 3.5rem; /* Equivalente a h-14 (56px) */
-  padding: 0 2rem; /* Equivalente a px-8 (32px total horizontal padding) */
-  font-size: 1.25rem; /* Equivalente a text-xl (20px) */
-  
-  /* El color de fondo y texto vienen de .btn-fuchsia-electric */
-  background-color: #FF00FF;
+  z-index: 30;
+  text-decoration: none;
+  background-color: #000;
   color: #fff;
-  border-color: #FF00FF; /* Borde del color principal */
+  border: 1px solid #000;
+
+  /* TAMAÑOS idénticos a Tailwind */
+  height: 3.5rem;      /* h-14 */
+  padding: 0 2rem;     /* px-8 */
+  font-size: 1.25rem;  /* text-xl */
+
+  transition: transform 0.15s ease;
 }
 
-/* Efecto hover: al pasar el ratón sobre el contenedor principal */
+/* Hover: mover capas igual que group-hover:translate-2 */
 .custom-button-group:hover .custom-button-shadow-bottom {
-  transform: translate(8px, 8px); /* Se mueve 8px (0.5rem) hacia abajo y a la derecha */
+  transform: translate(8px, 8px);
 }
-
 .custom-button-group:hover .custom-button-main {
-  transform: translate(-8px, -8px); /* Se mueve 8px (0.5rem) hacia arriba y a la izquierda */
+  transform: translate(-8px, -8px);
 }
 
-/* Media queries para ajustar el tamaño del botón y el input en pantallas grandes */
-@media (min-width: 992px) { /* lg breakpoint */
+/* Ajuste lg:h-16 y lg:px-10 */
+@media (min-width: 992px) {
   .custom-button-main {
-    height: 4rem; /* Equivalente a lg:h-16 (64px) */
-    padding: 0 2.5rem; /* Equivalente a lg:px-10 (40px total horizontal padding) */
-    /* font-size: 1.25rem; ya es text-xl, no necesita cambio */
+    height: 4rem;       /* lg:h-16 */
+    padding: 0 2.5rem;  /* lg:px-10 */
   }
-}
-
-/* Search input height alignment */
-.search-input {
-  /* ... existing styles ... */
-  height: 3.5rem; /* Matches h-14 (56px) */
-}
-@media (min-width: 992px) { /* lg breakpoint */
-  .search-input {
-    height: 4rem; /* Matches lg:h-16 (64px) */
-  }
-}
-
-/* Responsive adjustments for layout (button and search bar) */
-@media (max-width: 767.98px) { /* Para pantallas pequeñas (xs y sm en Bootstrap) */
 }
