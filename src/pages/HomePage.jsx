@@ -103,49 +103,43 @@ const HomePage = () => {
       </section>
       <section id="catalogo" className="catalog-section py-5">
         <div className="container">
-          {/* Contenedor flex para el botón y la barra de búsqueda */}
-          {/* flex-column para apilar en pantallas pequeñas (xs, sm), flex-md-row para lado a lado en medianas y grandes */}
-          {/* align-items-center para centrado vertical, justify-content-center para centrado horizontal, gap-3 para espacio */}
           <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 mb-4">
-            {/* El botón "Vende con Nosotros" */}
-            {/* custom-button-outer-wrapper es el contenedor que maneja el ancho responsivo para el botón */}
-            {/* w-100 en sm y abajo para que ocupe todo el ancho, w-md-auto en md y arriba */}
-            <div className="custom-button-outer-wrapper w-100 w-md-auto">
-                {/* custom-button-group es el contenedor principal del efecto 3D */}
-                <div className="custom-button-group">
-                    {/* Capa de sombra superior (rosa claro) */}
-                    <div className="custom-button-layer custom-button-shadow-top"></div>
-                    {/* Capa de sombra inferior (fucsia oscuro), se mueve al hacer hover */}
-                    <div className="custom-button-layer custom-button-shadow-bottom"></div>
-                    {/* El botón principal (fucsia eléctrico), se mueve en dirección opuesta al hacer hover */}
-                    <a className="custom-button-layer custom-button-main btn btn-fuchsia-electric" href="/users/sign_up">
-                        Vende con Nosotros
-                    </a>
-                </div>
-            </div>
-            {/* Barra de búsqueda - ahora toma el espacio restante */}
-            <div className="search-wrapper flex-grow-1 w-100">
-                <input
-                  type="text"
-                  className="form-control search-input w-100" // w-100 para que ocupe todo el ancho de su contenedor
-                  placeholder="Buscar productos por palabra clave..."
-                  value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
-                />
-                <svg
-                  className="search-icon"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+            {/* Vende con Nosotros */}
+            <div className="button-outer-wrapper w-100 w-md-auto">
+              <div className="custom-button-group">
+                <div className="custom-button-layer custom-button-shadow-top"></div>
+                <div className="custom-button-layer custom-button-shadow-bottom"></div>
+                <a
+                  href="/users/sign_up"
+                  className="custom-button-layer custom-button-main btn btn-fuchsia-electric"
                 >
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.3-4.3" />
-                </svg>
+                  Vende con Nosotros
+                </a>
+              </div>
+            </div>
+            {/* Barra de búsqueda */}
+            <div className="search-wrapper flex-grow-1 w-100">
+              <input
+                type="text"
+                className="form-control search-input w-100"
+                placeholder="Buscar productos por palabra clave..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
+              <svg
+                className="search-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
             </div>
           </div>
           {/* Filtros */}
