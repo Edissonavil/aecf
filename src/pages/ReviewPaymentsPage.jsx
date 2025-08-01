@@ -7,6 +7,7 @@ import {
 import { Spinner, Alert, Button, Form, Modal } from 'react-bootstrap';
 import '../styles/ReviewPaymentsPage.css';
 
+
 const FILE_SERVICE_BASE_URL = "https://gateway-production-129e.up.railway.app/api/files";
 
 export default function ReviewPaymentsPage() {
@@ -62,7 +63,7 @@ export default function ReviewPaymentsPage() {
   const getFileType = (filename) => {
     if (!filename) return 'unknown';
     const ext = filename.split('.').pop().toLowerCase();
-    if (['jpg','jpeg','png','gif','bmp','webp','svg'].includes(ext)) return 'image';
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(ext)) return 'image';
     if (ext === 'pdf') return 'pdf';
     return 'document';
   };
@@ -107,19 +108,23 @@ export default function ReviewPaymentsPage() {
                   <img
                     src={`${FILE_SERVICE_BASE_URL}/${order.receiptFilename}`}
                     alt="Comprobante"
-                    style={{maxWidth:200, maxHeight:200, objectFit:'contain', border:'1px solid #ddd', marginTop:10}}
-                    onError={e=>{e.currentTarget.src='/placeholder.png';}}
+                    style={{ maxWidth: 200, maxHeight: 200, objectFit: 'contain', border: '1px solid #ddd', marginTop: 10 }}
+                    onError={e => { e.currentTarget.src = '/placeholder.png'; }}
                   />
                 )}
                 {getFileType(order.receiptFilename) === 'pdf' && (
-                  <p style={{marginTop:10}}>
-                    <img src="/pdf-icon.png" alt="PDF" style={{width:32,marginRight:10}}/>
+                  <p style={{ marginTop: 10 }}>
+                    <img
+                      src={`${process.env.PUBLIC_URL}/pdf-icon.png`}
+                      alt="PDF"
+                      style={{ width: 32, marginRight: 10 }}
+                    />
                     Documento PDF cargado. Haz clic en "Ver Comprobante".
                   </p>
                 )}
                 {getFileType(order.receiptFilename) === 'document' && (
-                  <p style={{marginTop:10}}>
-                    <img src="/document-icon.png" alt="Doc" style={{width:32,marginRight:10}}/>
+                  <p style={{ marginTop: 10 }}>
+                    <img src="/document-icon.png" alt="Doc" style={{ width: 32, marginRight: 10 }} />
                     Archivo cargado. Haz clic en "Ver Comprobante".
                   </p>
                 )}
@@ -183,7 +188,7 @@ export default function ReviewPaymentsPage() {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="danger"  onClick={() => handleReviewAction(false)}>Rechazar Pago</Button>
+          <Button variant="danger" onClick={() => handleReviewAction(false)}>Rechazar Pago</Button>
           <Button variant="success" onClick={() => handleReviewAction(true)}>Aprobar Pago</Button>
         </Modal.Footer>
       </Modal>
