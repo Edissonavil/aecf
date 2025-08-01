@@ -96,7 +96,7 @@ export default function ReviewPaymentsPage() {
               <div className="mb-3">
                 <h6>Comprobante:</h6>
                 <a
-                  href={`${FILE_SERVICE_BASE_URL}/${order.id}/${order.receiptFilename}`}
+                  href={`${FILE_SERVICE_BASE_URL}/${order.receiptFilename}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-info btn-sm me-2"
