@@ -105,7 +105,7 @@ export default function ReviewPaymentsPage() {
                 </a>
                 {getFileType(order.receiptFilename) === 'image' && (
                   <img
-                    src={`${FILE_SERVICE_BASE_URL}/${order.id}/${order.receiptFilename}`}
+                    src={`${FILE_SERVICE_BASE_URL}/${order.receiptFilename}`}
                     alt="Comprobante"
                     style={{maxWidth:200, maxHeight:200, objectFit:'contain', border:'1px solid #ddd', marginTop:10}}
                     onError={e=>{e.currentTarget.src='/placeholder.png';}}
