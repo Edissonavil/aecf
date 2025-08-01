@@ -102,23 +102,27 @@ const HomePage = () => {
         </div>
       </section>
       <section id="catalogo" className="catalog-section py-5">
-        <div className="container">
-          <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-3 mb-4">
+       <div className="container">
+          {/* Aquí fuerza siempre flex-row para que estén uno al lado del otro */}
+          <div className="d-flex flex-row align-items-center justify-content-center gap-3 mb-4">
+            
             {/* Vende con Nosotros */}
-            <div className="button-outer-wrapper w-100 w-md-auto">
+            <div className="button-outer-wrapper">
               <div className="custom-button-group">
                 <div className="custom-button-layer custom-button-shadow-top"></div>
                 <div className="custom-button-layer custom-button-shadow-bottom"></div>
+                {/* Sólo tu clase custom; quita .btn para respetar height/padding exactos */}
                 <a
                   href="/users/sign_up"
-                  className="custom-button-layer custom-button-main btn btn-fuchsia-electric"
+                  className="custom-button-layer custom-button-main"
                 >
                   Vende con Nosotros
                 </a>
               </div>
             </div>
-            {/* Barra de búsqueda */}
-            <div className="search-wrapper flex-grow-1 w-100">
+            
+            {/* Barra de búsqueda al lado, ocupa el espacio restante */}
+            <div className="search-wrapper flex-grow-1">
               <input
                 type="text"
                 className="form-control search-input w-100"
@@ -141,6 +145,7 @@ const HomePage = () => {
                 <path d="m21 21-4.3-4.3" />
               </svg>
             </div>
+            
           </div>
           {/* Filtros */}
           <div className="mb-4">
