@@ -1,5 +1,8 @@
 /* src/styles/HomePage.css */
 
+/* --- Importación de Fuentes (Asegúrate de que estén importadas globalmente en tu proyecto o en index.html) --- */
+/* @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&family=Inter:wght@400;600;700&display=swap'); */
+
 /* Colores personalizados */
 .text-fuchsia-electric { color: #FF00FF !important; }
 .bg-fuchsia-electric { background-color: #FF00FF !important; }
@@ -108,9 +111,6 @@
 /* Search bar styles */
 .search-wrapper {
   position: relative;
-  /* Eliminamos max-width y margin:auto para que flexbox controle el tamaño */
-  /* max-width: 500px; */
-  /* margin: 0 auto; */
 }
 
 .search-input {
@@ -228,83 +228,64 @@
   font-weight: 700;
 }
 
-/* --- Estilos personalizados para el botón con efecto (Bootstrap) --- */
-.button-wrapper {
+/* --- Estilos corregidos para el botón con efecto (Bootstrap) --- */
+.button-effect-wrapper {
   position: relative;
-  display: inline-block; /* Para que el wrapper se ajuste al tamaño del botón */
-  /* Ajusta el padding para que el efecto de sombra sea visible */
-  padding: 8px; /* Este padding crea el espacio para que las sombras se desplacen */
+  display: inline-block; /* Importante para que el contenedor se ajuste al tamaño del botón */
+  min-width: 240px; /* Ancho mínimo para el texto "Vende con Nosotros" */
+  height: 3.5rem; /* Altura del botón, igual que el input de búsqueda */
+  border-radius: 0.5rem; /* Bordes redondeados */
+  overflow: hidden; /* Recorta el contenido que se sale de los límites del wrapper */
 }
 
-.button-shadow-top,
-.button-shadow-bottom,
-.button-main {
+.button-effect-shadow-top,
+.button-effect-shadow-bottom,
+.button-effect-main {
   position: absolute;
-  border-radius: 0.5rem; /* Ajusta según el radio de borde de tu botón */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
   border: 1px solid black;
   transition: transform 0.15s ease-out; /* Transición suave para el efecto */
 }
 
-.button-shadow-top {
-  background-color: #F8BBD0; /* Rosa claro (similar a pink-300 de Tailwind) */
+.button-effect-shadow-top {
+  background-color: #F8BBD0; /* Rosa claro */
   z-index: 2;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
-.button-shadow-bottom {
-  background-color: #880E4F; /* Fucsia oscuro (similar a fuchsia-700 de Tailwind) */
+.button-effect-shadow-bottom {
+  background-color: #880E4F; /* Fucsia oscuro */
   z-index: 1;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
 }
 
-.button-main {
-  background-color: #FF00FF; /* Fucsia eléctrico */
-  color: white;
-  z-index: 3;
+.button-effect-main {
+  z-index: 3; /* Siempre encima de las sombras */
   display: inline-flex; /* Para centrar el texto dentro del botón */
   align-items: center;
   justify-content: center;
-  text-decoration: none; /* Quita el subrayado del enlace */
-  /* Estas propiedades deben coincidir con las del botón original para el tamaño */
-  height: 3.5rem; /* Altura del botón */
-  padding: 0 2rem; /* Padding horizontal */
-  font-size: 1.15rem; /* Tamaño de fuente */
-  font-weight: 700;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  text-decoration: none;
+  white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+  /* El color de fondo y texto vienen de .btn-fuchsia-electric */
 }
 
-/* Efecto hover */
-.button-wrapper:hover .button-shadow-bottom {
-  transform: translate(8px, 8px); /* Se mueve hacia abajo y a la derecha */
+/* Efecto hover: al pasar el ratón sobre el wrapper */
+.button-effect-wrapper:hover .button-effect-shadow-bottom {
+  transform: translate(8px, 8px); /* La sombra inferior se mueve hacia abajo y a la derecha */
 }
 
-.button-wrapper:hover .button-main {
-  transform: translate(-8px, -8px); /* Se mueve hacia arriba y a la izquierda */
+.button-effect-wrapper:hover .button-effect-main {
+  transform: translate(-8px, -8px); /* El botón principal se mueve hacia arriba y a la izquierda */
 }
 
-.button-wrapper .button-main {
-    min-width: 200px; /* Ajusta el ancho mínimo del botón para que el texto quepa */
-    white-space: nowrap; /* Evita que el texto se rompa */
-}
-
-/* Media queries para ajustar el tamaño del botón y el input en pantallas pequeñas */
+/* Media queries para la responsividad del botón y la barra de búsqueda */
 @media (max-width: 767.98px) { /* Para pantallas pequeñas (sm en Bootstrap) */
-    .button-wrapper {
+    .button-effect-wrapper {
         width: 100%; /* El botón ocupa todo el ancho en móviles */
         display: block; /* Asegura que el wrapper se comporte como bloque */
         margin-bottom: 1rem; /* Espacio entre el botón y el input en móviles */
-    }
-    .button-wrapper .button-main {
-        width: 100%; /* El botón principal ocupa todo el ancho del wrapper */
     }
     .search-wrapper {
         width: 100%; /* La barra de búsqueda ocupa todo el ancho en móviles */
