@@ -236,70 +236,79 @@
 }
 
 /* --- Estilos para el botón con efecto 3D (Bootstrap) --- */
-.button-shadow-wrapper {
+.custom-button-wrapper {
   position: relative;
-  display: inline-block; /* Permite que el contenedor se ajuste al tamaño del botón */
-  border-radius: 0.5rem; /* Bordes redondeados */
-  overflow: hidden; /* Oculta cualquier parte de las sombras que se salga del contenedor */
-  /* El tamaño de este wrapper será dictado por el .button-main-content */
+  display: inline-block; /* Crucial: permite que el tamaño del padre se adapte al hijo */
+  /* No definimos width/height aquí. El .custom-button-main lo dictará. */
 }
 
-.button-shadow-layer-top,
-.button-shadow-layer-bottom,
-.button-main-content {
+/* Clase base para las capas internas (sombras y botón principal) */
+.custom-button-layer {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   border-radius: 0.5rem; /* Bordes redondeados */
   border: 1px solid black;
   transition: transform 0.15s ease-out; /* Misma duración de transición que el original */
 }
 
-.button-shadow-layer-top {
+.custom-button-shadow-top {
   background-color: #F8BBD0; /* Rosa claro */
   z-index: 2; /* Por encima de la sombra inferior */
+  /* Posicionamiento para que ocupe todo el espacio del custom-button-main */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.button-shadow-layer-bottom {
+.custom-button-shadow-bottom {
   background-color: #880E4F; /* Fucsia oscuro */
   z-index: 1; /* La capa más baja */
+  /* Posicionamiento para que ocupe todo el espacio del custom-button-main */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.button-main-content {
+.custom-button-main {
+  position: relative; /* Importante: para que z-index y transform funcionen correctamente */
   z-index: 3; /* El botón principal siempre encima */
   display: inline-flex; /* Para centrar el texto */
   align-items: center;
   justify-content: center;
   text-decoration: none; /* Quita el subrayado del enlace */
   white-space: nowrap; /* Evita que el texto se rompa */
-  /* Estilos de tamaño y fuente del botón original */
-  height: 3.5rem; /* h-14 (56px) */
-  padding: 0 2rem; /* px-8 (32px) */
-  font-size: 1.25rem; /* text-xl (20px) */
+  
+  /* Estilos de tamaño y fuente del botón original de Tailwind */
+  height: 3.5rem; /* Equivalente a h-14 (56px) */
+  padding: 0 2rem; /* Equivalente a px-8 (32px) */
+  font-size: 1.25rem; /* Equivalente a text-xl (20px) */
+  
   /* El color de fondo y texto vienen de .btn-fuchsia-electric */
 }
 
-.button-shadow-wrapper:hover .button-shadow-layer-bottom {
+/* Efecto hover: al pasar el ratón sobre el contenedor principal */
+.custom-button-wrapper:hover .custom-button-shadow-bottom {
   transform: translate(8px, 8px); /* Se mueve 8px (0.5rem) hacia abajo y a la derecha */
 }
 
-.button-shadow-wrapper:hover .button-main-content {
+.custom-button-wrapper:hover .custom-button-main {
   transform: translate(-8px, -8px); /* Se mueve 8px (0.5rem) hacia arriba y a la izquierda */
 }
 
+/* Media queries para ajustar el tamaño del botón y el input en pantallas grandes */
 @media (min-width: 992px) { /* lg breakpoint */
-  .button-main-content {
-    height: 4rem; /* lg:h-16 (64px) */
-    padding: 0 2.5rem; /* lg:px-10 (40px) */
+  .custom-button-main {
+    height: 4rem; /* Equivalente a lg:h-16 (64px) */
+    padding: 0 2.5rem; /* Equivalente a lg:px-10 (40px) */
     /* font-size: 1.25rem; ya es text-xl, no necesita cambio */
   }
 }
 
+/* Media queries para la responsividad del botón y la barra de búsqueda */
 @media (max-width: 767.98px) { /* Para pantallas pequeñas (xs y sm en Bootstrap) */
     /* El contenedor padre d-flex flex-column flex-md-row ya maneja el apilamiento */
-    .button-shadow-wrapper {
+    .custom-button-wrapper {
         width: 100%; /* El botón ocupa todo el ancho en móviles */
         margin-bottom: 1rem; /* Espacio entre el botón y la barra de búsqueda */
     }
