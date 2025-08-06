@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Form, Row, Col, InputGroup, Button, Container } from 'react-bootstrap';
 import ProductCard from '../components/ProductCard';
 import { getProductsByStatus } from '../services/productApi';
-import { Search } from 'lucide-react'; // Importamos el ícono de búsqueda de lucide-react para un look moderno
 
 export default function CatalogPage() {
   const [loading, setLoading] = useState(true);
@@ -141,13 +140,7 @@ export default function CatalogPage() {
               value={searchTerm}
               onChange={handleSearchChange}
             />
-            <Button 
-              variant="outline-secondary" 
-              onClick={() => setSearchTerm('')}
-              disabled={!searchTerm}
-            >
-              Borrar
-            </Button>
+            {/* Se ha eliminado el botón "Borrar" según tu solicitud */}
             <Button variant="outline-primary" type="button">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
