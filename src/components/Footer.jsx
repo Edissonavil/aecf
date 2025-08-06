@@ -21,7 +21,7 @@ const Footer = () => (
         <h4 className="footer__subtitle">Compañía</h4>
         <ul className="footer__list">
           <li><a href="/nosotros" className="footer__link">Sobre Nosotros</a></li>
-          <li><a href="/contact" className="footer__link">Contacto</a></li>
+          <li><a href="/contacto" className="footer__link">Contacto</a></li>
         </ul>
       </div>
       <div className="footer__section">

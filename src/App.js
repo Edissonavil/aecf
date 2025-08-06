@@ -38,6 +38,7 @@ import ForgotPasswordPage   from './pages/ForgotPasswordPage';
 import ReviewPaymentsPage   from './pages/ReviewPaymentsPage';
 import CreatorStatsView     from './pages/CreatorStatsView';
 import AdminStatsView       from './pages/AdminStatsView';
+import ContactPage from './pages/Contacto';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -119,6 +120,7 @@ export default function App() {
           <Route path="terminosYcondiciones" element={<TermsAndConditionsPage />} />
           <Route path="nosotros"            element={<SobreNosotros />} />
           <Route path="resetearClave"       element={<ForgotPasswordPage />} />
+          <Route path="contacto"            element={<ContactPage />} />
           <Route path="*"                   element={<Navigate to="/" replace />} />
         </Route>
 
