@@ -330,7 +330,7 @@ const AdminStatsView = () => {
               <YAxis />
               <Tooltip formatter={(value) => [value, 'Cantidad Vendida']} />
               <Legend />
-              <Bar dataKey="Productos vendidos" fill="#00C49F" />
+              <Bar dataKey="Cantidad total" fill="#00C49F" />
             </BarChart>
           </ResponsiveContainer>
         </div>
