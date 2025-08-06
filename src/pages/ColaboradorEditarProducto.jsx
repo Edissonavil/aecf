@@ -256,7 +256,7 @@ const ColaboradorEditarProducto = () => {
             name="archivosAut"
             multiple 
             onChange={handleFileChange}
-            accept=".pdf,.doc,.docx,.zip,.jpg,.jpeg,.png,.gif,.pln,.pla,.gyn,.rvt,.rfa,.xls,.xlsx"
+            // Eliminado el atributo 'accept' para permitir cualquier tipo de archivo
           />
           {formData.archivosAutActuales && formData.archivosAutActuales.length > 0 && (
             <div className="mt-2">
