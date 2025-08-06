@@ -303,9 +303,10 @@ const AdminStatsView = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis tickFormatter={(value) => `$${value}`} />
-              <Tooltip formatter={(value) => [formatCurrency(value), 'Ventas']} />
+              <Tooltip formatter={(value) => [formatCurrency(value), 'Venta Mensual']} />
               <Legend />
-              <Line type="monotone" dataKey="Venta Mensual" stroke="#FF00FF" strokeWidth={3} />
+              {/* Se usa 'revenue' como dataKey para obtener el valor del JSON, pero 'name' para la etiqueta en la vista */}
+              <Line type="monotone" dataKey="revenue" name="Venta Mensual" stroke="#FF00FF" strokeWidth={3} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -328,9 +329,10 @@ const AdminStatsView = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="productName" angle={-45} textAnchor="end" height={100} />
               <YAxis />
+              {/* Se usa 'totalQuantity' como dataKey para obtener el valor del JSON, pero 'name' para la etiqueta en la vista */}
               <Tooltip formatter={(value) => [value, 'Cantidad Vendida']} />
               <Legend />
-              <Bar dataKey="Cantidad total" fill="#00C49F" />
+              <Bar dataKey="totalQuantity" name="Cantidad Vendida" fill="#00C49F" />
             </BarChart>
           </ResponsiveContainer>
         </div>
