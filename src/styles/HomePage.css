@@ -276,9 +276,9 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  background: #000;
+  background: #FF00FF;
   color: #fff;
-  border: 1px solid #000;
+  border: 1px solid #FF00FF;
 
   /* ←– ESTAS DOS LÍNEAS GARANTIZAN MISMO TAMAÑO –→ */
   width: 100%;   /* ocupa todo el ancho del grupo */

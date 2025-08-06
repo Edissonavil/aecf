@@ -29,8 +29,8 @@ const SPECIALTY_OPTIONS = [
 ];
 
 const MAX_DESCRIPTION_LENGTH = 1500;
-const MAX_FILE_SIZE_MB = 10; // Límite de tamaño por archivo en MB
-const MAX_PHOTO_SIZE_MB = 5;  // Límite de tamaño para la foto en MB
+const MAX_FILE_SIZE_MB = 200; // Límite de tamaño por archivo en MB
+const MAX_PHOTO_SIZE_MB = 10;  // Límite de tamaño para la foto en MB
 
 const blank = {
   nombre: '',
