@@ -5,7 +5,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import {
-  ShoppingBag, Package, TrendingUp,DollarSign,
+  ShoppingBag, Package, TrendingUp, DollarSign,
   User, MapPin, CreditCard, Award, CheckCircle, Rocket, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -103,7 +103,10 @@ const CreatorStatsView = () => {
         ...(selectedMonth && { month: selectedMonth }),
       });
 
+      // La API de estadísticas ya devuelve todo lo que necesitamos en un solo objeto.
       const data = await apiCall(`/collaborator/my-stats?${params}`);
+
+      // Asignamos directamente la respuesta completa al estado myStats
       setMyStats(data);
     } catch (err) {
       setError('Error al cargar mis estadísticas: ' + err.message);
@@ -123,8 +126,11 @@ const CreatorStatsView = () => {
         ...(selectedMonth && { month: selectedMonth }),
       });
 
-      const data = await apiCall(`/collaborator/my-products?${params}`);
-      setMyProducts(data);
+      // A menos que haya una API específica para productos, usamos los del objeto myStats
+      // Si existiera, la llamada sería algo como `apiCall('/collaborator/my-products?${params}')`
+      // Pero según el JSON, están en la misma respuesta.
+      const data = await apiCall(`/collaborator/my-stats?${params}`);
+      setMyProducts(data?.productSales || []);
     } catch (err) {
       setError('Error al cargar mis productos: ' + err.message);
     } finally {
@@ -132,19 +138,28 @@ const CreatorStatsView = () => {
     }
   }, [selectedYear, selectedMonth, apiCall, authToken]);
 
+
   // Efecto para cargar datos cuando cambian los filtros o el token está disponible
   useEffect(() => {
     if (!isAuthLoading && authToken) {
       setError(null);
+      // Cuando la pestaña es "overview", se cargan ambas cosas si es necesario
       if (activeTab === 'overview') {
         loadMyStats();
       } else if (activeTab === 'products') {
-        loadMyProducts();
+        // En este caso, el JSON que nos pasaste no tiene una API separada para productos.
+        // Si el backend es así, ambas llamadas a la API cargarían los mismos datos.
+        // Asumiendo que `loadMyStats` ya carga `productSales` dentro del objeto,
+        // no necesitaríamos esta llamada `loadMyProducts` separada, podríamos
+        // simplemente referenciar `myStats.productSales`.
+        // Mantengamos la lógica de `loadMyStats` para cargar todo.
+        loadMyStats();
       }
     } else if (!isAuthLoading && !authToken) {
       setError("Token de autenticación no encontrado. Por favor, inicie sesión.");
     }
   }, [authToken, isAuthLoading, selectedYear, selectedMonth, activeTab, loadMyStats, loadMyProducts]);
+
 
   // Formatear moneda
   const formatCurrency = (amount) => {
@@ -215,7 +230,7 @@ const CreatorStatsView = () => {
   const CollaboratorInfo = () => {
     const currentUsername = authUsername;
     // Buscar el país en los productos si están cargados, si no, 'N/A'
-    const countryFromProduct = myProducts.length > 0 ? myProducts[0].country : 'N/A';
+    const countryFromProduct = myStats?.productSales && myStats.productSales.length > 0 ? myStats.productSales[0].country : 'N/A';
 
     return (
       <div className="stats-card-minimal mb-4">
@@ -250,7 +265,7 @@ const CreatorStatsView = () => {
     const netRevenue = (myStats?.totalRevenue || 0) * 0.5;
     // Calcular productos por revisar (asumiendo que hay un campo 'productsUnderReview' en myStats o se puede inferir)
     // Por ahora, lo dejamos en 0 o un valor de ejemplo si no hay datos reales
-    const productsUnderReview = myStats?.productsUnderReview || 0; // Asumiendo que el backend envía este dato
+    const productsUnderReview = myStats?.productsPendingReview || 0; // Asumiendo que el backend envía este dato
 
     return (
       <div className="d-grid gap-4">
@@ -270,7 +285,7 @@ const CreatorStatsView = () => {
           <div className="col">
             <StatCard
               title="Órdenes Recibidas"
-              value={myStats?.totalOrders?.toLocaleString()}
+              value={myStats?.totalOrders?.toLocaleString() || '0'}
               icon={ShoppingBag}
               color="blue"
               subtitle="Pedidos completados"
@@ -305,7 +320,7 @@ const CreatorStatsView = () => {
             </div>
           </div>
         )}
-        {myProducts.length < 2 && ( // Ejemplo: si tienes menos de 2 productos activos
+        {myStats?.productSales && myStats.productSales.length < 2 && ( // Ejemplo: si tienes menos de 2 productos activos
           <div className="alert alert-info d-flex align-items-center rounded-3 shadow-sm p-3" role="alert">
             <Rocket className="me-2 text-info" style={{ width: '1.5rem', height: '1.5rem' }} />
             <div>
@@ -396,6 +411,136 @@ const CreatorStatsView = () => {
       </div>
     );
   }
+
+  // Renderizado principal
+  return (
+    <div className="creator-stats-view container-fluid py-4">
+      <div className="row mb-4 align-items-center">
+        <div className="col">
+          <h1 className="stats-title fs-2 fw-bold mb-0">Mis Estadísticas</h1>
+          <p className="stats-subtitle text-secondary">Resumen de tu rendimiento como creador.</p>
+        </div>
+        <div className="col-auto">
+          <div className="d-flex align-items-center">
+            {/* Filtros de año y mes */}
+            <select
+              className="form-select me-2"
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+            >
+              {yearOptions.map((year) => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+            <select
+              className="form-select"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+            >
+              {monthOptions.map((month) => (
+                <option key={month.value} value={month.value}>{month.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="tabs-container mb-4">
+        <button
+          className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          Resumen General
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'products' ? 'active' : ''}`}
+          onClick={() => setActiveTab('products')}
+        >
+          Mis Productos
+        </button>
+      </div>
+
+      {loading && (
+        <div className="text-center p-5">
+          <div className="spinner-border text-fuchsia-custom" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          <p className="mt-3 text-secondary">Cargando tus estadísticas...</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
+
+      {!loading && !error && myStats && (
+        <>
+          {activeTab === 'overview' && <OverviewTab />}
+          {activeTab === 'products' && (
+            <div className="products-table-container">
+              {myStats.productSales && myStats.productSales.length > 0 ? (
+                <div className="stats-card-minimal p-4">
+                  <h3 className="card-title fs-5 fw-bold mb-4 d-flex align-items-center text-dark">
+                    <Package className="w-6 h-6 me-2 text-fuchsia-custom" />
+                    Detalles de Mis Productos
+                  </h3>
+                  <div className="table-responsive">
+                    <table className="table table-hover align-middle mb-0">
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Nombre del Producto</th>
+                          <th>Vendedor</th>
+                          <th>Ingresos Totales</th>
+                          <th>Cantidad Vendida</th>
+                          <th># de Órdenes</th>
+                          <th>País</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {myStats.productSales.map((product) => (
+                          <tr key={product.productId}>
+                            <td>{product.productId}</td>
+                            <td>{product.productName}</td>
+                            <td>{product.uploaderUsername}</td>
+                            <td>{formatCurrency(product.totalSales)}</td>
+                            <td>{product.totalQuantity}</td>
+                            <td>{product.ordersCount}</td>
+                            <td>{product.country}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <div className="stats-card-minimal text-center p-5">
+                  <Package className="mx-auto mb-4 text-secondary" style={{ width: '4rem', height: '4rem' }} />
+                  <h3 className="mt-2 fs-5 fw-bold text-dark">No hay productos vendidos</h3>
+                  <p className="mt-1 fs-6 text-secondary">
+                    Parece que aún no tienes productos vendidos en este período.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {!loading && !error && !myStats && (
+        <div className="stats-card-minimal text-center p-5">
+          <MessageSquare className="mx-auto mb-4 text-secondary" style={{ width: '4rem', height: '4rem' }} />
+          <h3 className="mt-2 fs-5 fw-bold text-dark">Sin datos disponibles</h3>
+          <p className="mt-1 fs-6 text-secondary">
+            No se encontraron datos para el período de tiempo seleccionado.
+          </p>
+        </div>
+      )}
+    </div>
+  );
 };
+
 
 export default CreatorStatsView;
