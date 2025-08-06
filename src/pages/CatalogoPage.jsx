@@ -1,6 +1,6 @@
 // src/pages/CatalogPage.jsx
 import React, { useEffect, useState } from 'react';
-import { Form, Row, Col, InputGroup, Button, Container } from 'react-bootstrap';
+import { Form, Row, Col, InputGroup, Button, Container, Alert } from 'react-bootstrap';
 import ProductCard from '../components/ProductCard';
 import { getProductsByStatus } from '../services/productApi';
 
@@ -88,43 +88,52 @@ export default function CatalogPage() {
 
   // 2. Apply all filters (including search term) whenever products or selected filters change
   useEffect(() => {
-    let currentFiltered = products;
+    try {
+      let currentFiltered = products;
 
-    // Filter by Categories
-    if (selectedCategories.length > 0) {
-      currentFiltered = currentFiltered.filter(product =>
-        product.categorias && selectedCategories.some(cat => product.categorias.includes(cat))
-      );
-    }
+      // Filter by Categories
+      if (selectedCategories.length > 0) {
+        currentFiltered = currentFiltered.filter(product =>
+          product.categorias && selectedCategories.some(cat => product.categorias.includes(cat))
+        );
+      }
 
-    // Filter by Countries
-    if (selectedCountries.length > 0) {
-      currentFiltered = currentFiltered.filter(product =>
-        selectedCountries.includes(product.pais)
-      );
-    }
+      // Filter by Countries
+      if (selectedCountries.length > 0) {
+        currentFiltered = currentFiltered.filter(product =>
+          selectedCountries.includes(product.pais)
+        );
+      }
 
-    // Filter by Specialties
-    if (selectedSpecialties.length > 0) {
-      currentFiltered = currentFiltered.filter(product =>
-        product.especialidades && selectedSpecialties.some(spec => product.especialidades.includes(spec))
-      );
-    }
-    
-    // NEW: Filter by Search Term
-    if (searchTerm.trim() !== '') {
-      const lowercasedSearchTerm = searchTerm.toLowerCase();
-      currentFiltered = currentFiltered.filter(product =>
-        product.productName.toLowerCase().includes(lowercasedSearchTerm) ||
-        (product.descripcion && product.descripcion.toLowerCase().includes(lowercasedSearchTerm))
-      );
-    }
+      // Filter by Specialties
+      if (selectedSpecialties.length > 0) {
+        currentFiltered = currentFiltered.filter(product =>
+          product.especialidades && selectedSpecialties.some(spec => product.especialidades.includes(spec))
+        );
+      }
+      
+      // NEW: Filter by Search Term with defensive checks
+      if (searchTerm.trim() !== '') {
+        const lowercasedSearchTerm = searchTerm.toLowerCase();
+        currentFiltered = currentFiltered.filter(product => {
+          const productName = product.productName ? product.productName.toLowerCase() : '';
+          const descripcion = product.descripcion ? product.descripcion.toLowerCase() : '';
+          return productName.includes(lowercasedSearchTerm) || descripcion.includes(lowercasedSearchTerm);
+        });
+      }
 
-    setFilteredProducts(currentFiltered);
+      setFilteredProducts(currentFiltered);
+    } catch (e) {
+      // Catch any unexpected errors during filtering and prevent the app from crashing
+      console.error('Error durante el proceso de filtrado:', e);
+      // Muestra un mensaje de error al usuario
+      setError('Hubo un error al aplicar los filtros. Por favor, inténtalo de nuevo.');
+      setFilteredProducts([]); // Asegura que la página no se queda en blanco
+    }
   }, [products, selectedCategories, selectedCountries, selectedSpecialties, searchTerm]);
 
   if (loading) return <div className="text-center py-5">Cargando productos…</div>;
-  if (error) return <div className="text-center text-danger py-5">{error}</div>;
+  if (error) return <Alert variant="danger" className="text-center my-5">{error}</Alert>;
 
   return (
     <Container className="my-5">
