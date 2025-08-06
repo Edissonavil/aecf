@@ -1,13 +1,18 @@
 // src/pages/CatalogPage.jsx
 import React, { useEffect, useState } from 'react';
+import { Form, Row, Col, InputGroup, Button, Container } from 'react-bootstrap';
 import ProductCard from '../components/ProductCard';
 import { getProductsByStatus } from '../services/productApi';
+import { Search } from 'lucide-react'; // Importamos el ícono de búsqueda de lucide-react para un look moderno
 
 export default function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  
+  // Nuevo estado para la barra de búsqueda
+  const [searchTerm, setSearchTerm] = useState('');
 
   // States for selected filters - NOW ARRAYS FOR MULTI-SELECTION
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -24,7 +29,8 @@ export default function CatalogPage() {
     async function fetchProducts() {
       try {
         setLoading(true);
-        const response = await getProductsByStatus('APROBADO', 0, 100);
+        // Ajustamos la paginación para obtener más productos
+        const response = await getProductsByStatus('APROBADO', 0, 200); 
         const fetchedProducts = response.data.content || [];
 
         setProducts(fetchedProducts);
@@ -75,8 +81,13 @@ export default function CatalogPage() {
         : [...prev, specialty]
     );
   };
+  
+  // Handler para la barra de búsqueda
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
 
-  // 2. Apply filters whenever products or selected filters change
+  // 2. Apply all filters (including search term) whenever products or selected filters change
   useEffect(() => {
     let currentFiltered = products;
 
@@ -100,16 +111,61 @@ export default function CatalogPage() {
         product.especialidades && selectedSpecialties.some(spec => product.especialidades.includes(spec))
       );
     }
+    
+    // NEW: Filter by Search Term
+    if (searchTerm.trim() !== '') {
+      const lowercasedSearchTerm = searchTerm.toLowerCase();
+      currentFiltered = currentFiltered.filter(product =>
+        product.productName.toLowerCase().includes(lowercasedSearchTerm) ||
+        (product.descripcion && product.descripcion.toLowerCase().includes(lowercasedSearchTerm))
+      );
+    }
 
     setFilteredProducts(currentFiltered);
-  }, [products, selectedCategories, selectedCountries, selectedSpecialties]);
+  }, [products, selectedCategories, selectedCountries, selectedSpecialties, searchTerm]);
 
   if (loading) return <div className="text-center py-5">Cargando productos…</div>;
   if (error) return <div className="text-center text-danger py-5">{error}</div>;
 
   return (
-    <div className="container my-5">
+    <Container className="my-5">
       <h2 className="mb-4 text-center">Catálogo de Productos</h2>
+
+      {/* NEW: Search Bar */}
+      <Row className="mb-4 justify-content-center">
+        <Col md={6}>
+          <InputGroup>
+            <Form.Control
+              type="text"
+              placeholder="Buscar por nombre o descripción..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            <Button 
+              variant="outline-secondary" 
+              onClick={() => setSearchTerm('')}
+              disabled={!searchTerm}
+            >
+              Borrar
+            </Button>
+            <Button variant="outline-primary" type="button">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </Button>
+          </InputGroup>
+        </Col>
+      </Row>
 
       {/* Filter Section - Professional Multi-Select Checkboxes */}
       <div className="row mb-4 g-4 align-items-start"> {/* Align items to start for better multi-line checkboxes */}
@@ -134,12 +190,13 @@ export default function CatalogPage() {
             ))}
           </div>
           {selectedCategories.length > 0 && (
-            <button
-              className="btn btn-sm btn-outline-secondary mt-2"
+            <Button
+              variant="sm"
+              className="btn-outline-secondary mt-2"
               onClick={() => setSelectedCategories([])}
             >
               Limpiar Categorías
-            </button>
+            </Button>
           )}
         </div>
 
@@ -164,12 +221,13 @@ export default function CatalogPage() {
             ))}
           </div>
           {selectedCountries.length > 0 && (
-            <button
-              className="btn btn-sm btn-outline-secondary mt-2"
+            <Button
+              variant="sm"
+              className="btn-outline-secondary mt-2"
               onClick={() => setSelectedCountries([])}
             >
               Limpiar Países
-            </button>
+            </Button>
           )}
         </div>
 
@@ -194,12 +252,13 @@ export default function CatalogPage() {
             ))}
           </div>
           {selectedSpecialties.length > 0 && (
-            <button
-              className="btn btn-sm btn-outline-secondary mt-2"
+            <Button
+              variant="sm"
+              className="btn-outline-secondary mt-2"
               onClick={() => setSelectedSpecialties([])}
             >
               Limpiar Especialidades
-            </button>
+            </Button>
           )}
         </div>
       </div>
@@ -210,9 +269,9 @@ export default function CatalogPage() {
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
         {filteredProducts.length > 0 ? (
           filteredProducts.map(product => (
-            <div key={product.idProducto} className="col">
+            <Col key={product.idProducto}>
               <ProductCard product={product} />
-            </div>
+            </Col>
           ))
         ) : (
           <p className="text-center col-12 text-muted">
@@ -220,7 +279,6 @@ export default function CatalogPage() {
           </p>
         )}
       </div>
-    </div>
+    </Container>
   );
-
 }
