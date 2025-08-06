@@ -8,7 +8,7 @@ const GATEWAY_BASE_URL = 'https://gateway-production-129e.up.railway.app';
 // PRODUCTS_API ahora apunta al Gateway, y el Gateway se encargará de enrutar a /api/products
 export const PRODUCTS_API = axios.create({
   baseURL: `${GATEWAY_BASE_URL}/api/products`, // CAMBIO AQUÍ: Apunta al Gateway
-  headers: { 'Content-Type': 'application/json' }
+  headers: { 'Content-Type': 'application/json' } // Este es el default, se sobrescribe para FormData
 });
 
 // 2) Inyectar token en defaults en cada solicitud
@@ -47,7 +47,7 @@ export function createProduct(formData) {
   return PRODUCTS_API.post(
     '',            // sin slash al principio
     formData,
-    { headers: { 'Content-Type': 'multipart/form-data' } }
+    { headers: { 'Content-Type': 'multipart/form-data' } } // Correcto para FormData
   );
 }
 
@@ -92,9 +92,14 @@ export function getMyProducts(page = 0, size = 50) {
 
 /**
  * PUT /{id} (Se convierte en GATEWAY_BASE_URL/api/products/{id})
+ * body: FormData
  */
 export function updateProduct(id, productData) {
-  return PRODUCTS_API.put(`${id}`, productData);
+  return PRODUCTS_API.put(
+    `${id}`,
+    productData,
+    { headers: { 'Content-Type': 'multipart/form-data' } } // <-- CORRECCIÓN AQUÍ
+  );
 }
 
 /**
