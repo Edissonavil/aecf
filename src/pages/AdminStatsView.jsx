@@ -2,13 +2,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  PieChart, Pie, Cell, ResponsiveContainer
+  ResponsiveContainer, LineChart, Line
 } from 'recharts';
-import { Calendar, DollarSign, ShoppingBag, Package, Users, TrendingUp, AlertCircle } from 'lucide-react';
+import {
+  Calendar, DollarSign, ShoppingBag, Package, Users, TrendingUp, AlertCircle,
+  Download, FileText, CheckCircle, XCircle, UserCheck, UserX, Eye, ShoppingCart
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import '../styles/AdminStatsView.css'; // Importa el archivo CSS personalizado
+import '../styles/AdminStatsView.css';
 
-const STATS_API_BASE_URL = 'https://gateway-production-129e.up.railway.app/api/stats'; // CAMBIO CLAVE AQUÍ
+const STATS_API_BASE_URL = 'https://gateway-production-129e.up.railway.app/api/stats';
 
 const AdminStatsView = () => {
   const { authToken, isAuthLoading } = useAuth();
@@ -29,7 +32,6 @@ const AdminStatsView = () => {
     new Date().getFullYear() - i
   );
 
-  // Opciones de meses
   const monthOptions = [
     { value: '', label: 'Todo el año' },
     { value: '1', label: 'Enero' },
@@ -46,7 +48,6 @@ const AdminStatsView = () => {
     { value: '12', label: 'Diciembre' }
   ];
 
-  // Función para hacer llamadas a la API
   const apiCall = useCallback(async (path, options = {}) => {
     if (!authToken) {
       throw new Error("No hay token de autenticación disponible. Por favor, inicie sesión.");
@@ -88,7 +89,6 @@ const AdminStatsView = () => {
     return response.json();
   }, [authToken]);
 
-  // Cargar estadísticas completas
   const loadCompleteStats = useCallback(async () => {
     if (!authToken) return;
     try {
@@ -108,7 +108,6 @@ const AdminStatsView = () => {
     }
   }, [selectedYear, selectedMonth, apiCall, authToken]);
 
-  // Cargar ventas por colaborador
   const loadCollaboratorSales = useCallback(async () => {
     if (!authToken) return;
     try {
@@ -128,7 +127,6 @@ const AdminStatsView = () => {
     }
   }, [selectedYear, selectedMonth, apiCall, authToken]);
 
-  // Cargar ventas por producto
   const loadProductSales = useCallback(async () => {
     if (!authToken) return;
     try {
@@ -149,7 +147,6 @@ const AdminStatsView = () => {
     }
   }, [selectedYear, selectedMonth, selectedCollaborator, apiCall, authToken]);
 
-  // Efecto para cargar datos cuando cambian los filtros o el token está disponible
   useEffect(() => {
     if (!isAuthLoading && authToken) {
       setError(null);
@@ -165,7 +162,6 @@ const AdminStatsView = () => {
     }
   }, [authToken, isAuthLoading, selectedYear, selectedMonth, selectedCollaborator, activeTab, loadCompleteStats, loadCollaboratorSales, loadProductSales]);
 
-  // Formatear moneda
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('es-EC', {
       style: 'currency',
@@ -174,7 +170,6 @@ const AdminStatsView = () => {
     }).format(amount || 0);
   };
 
-  // Función para formatear el nombre del método de pago
   const formatPaymentMethodName = (methodName) => {
     switch (methodName) {
       case 'MANUAL_TRANSFER':
@@ -186,9 +181,25 @@ const AdminStatsView = () => {
     }
   };
 
-  // Componente de tarjeta estadística
-  const StatCard = ({ title, value, icon: Icon, color }) => (
-    <div className={`stat-card-item card-border-${color}`}>
+  const exportToCSV = (data, filename) => {
+    if (!data || data.length === 0) {
+      alert('No hay datos para exportar.');
+      return;
+    }
+    const header = Object.keys(data[0]).join(',');
+    const rows = data.map(row => Object.values(row).join(','));
+    const csvContent = "data:text/csv;charset=utf-8," + [header, ...rows].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${filename}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const StatCard = ({ title, value, icon: Icon, color, subtitle, onClick }) => (
+    <div className={`stat-card-item card-border-${color}`} onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
       <div className="d-flex align-items-center">
         <div className={`icon-circle icon-bg-${color}`}>
           <Icon className={`w-6 h-6 icon-text-${color}`} />
@@ -196,22 +207,71 @@ const AdminStatsView = () => {
         <div className="ms-3">
           <h3 className="card-title fs-6 fw-medium text-secondary mb-1">{title}</h3>
           <p className="card-text fs-3 fw-bold text-dark mb-0">{value}</p>
+          {subtitle && <p className="card-text text-sm text-secondary mb-0">{subtitle}</p>}
         </div>
       </div>
     </div>
   );
 
-  // Pestaña de resumen general
   const OverviewTab = () => (
-    <div className="d-grid gap-4"> {/* Usando d-grid gap-4 para espacio entre secciones */}
+    <div className="d-grid gap-4">
+      {/* Panel de resumen estratégico */}
+      <div className="stats-card-minimal p-4 mb-4">
+        <h3 className="card-title fs-5 fw-bold mb-3 d-flex align-items-center text-dark">
+          <TrendingUp className="w-6 h-6 me-2 text-fuchsia-custom" />
+          Panel de Resumen Estratégico
+        </h3>
+        <div className="row g-3">
+          <div className="col-md-4">
+            <div className="d-flex align-items-center">
+              <Users className="w-6 h-6 me-2 text-primary" />
+              <div>
+                <div className="fs-5 fw-bold text-dark">{completeStats?.totalCollaborators?.toLocaleString() || '0'}</div>
+                <div className="text-secondary">Colaboradores Totales</div>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="d-flex align-items-center">
+              <Package className="w-6 h-6 me-2 text-success" />
+              <div>
+                <div className="fs-5 fw-bold text-dark">{completeStats?.totalProductsCount?.toLocaleString() || '0'}</div>
+                <div className="text-secondary">Productos Totales</div>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-4">
+            <div className="d-flex align-items-center">
+              <TrendingUp className="w-6 h-6 me-2 text-info" />
+              <div>
+                <div className="fs-5 fw-bold text-dark">
+                  {completeStats?.monthlyGrowthPercentage ? `${completeStats.monthlyGrowthPercentage.toFixed(2)}%` : 'N/A'}
+                </div>
+                <div className="text-secondary">Crecimiento Último Mes</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Tarjetas de estadísticas principales */}
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
         <div className="col">
           <StatCard
-            title="Ingresos Totales"
+            title="Ingresos Brutos"
             value={formatCurrency(completeStats?.totalRevenue)}
+            subtitle="Ingresos generados antes de comisión"
             icon={DollarSign}
             color="fuchsia"
+          />
+        </div>
+        <div className="col">
+          <StatCard
+            title="Comisión AECBlock"
+            value={formatCurrency((completeStats?.totalRevenue || 0) * 0.5)}
+            subtitle="50% de los ingresos brutos"
+            icon={DollarSign}
+            color="blue"
           />
         </div>
         <div className="col">
@@ -219,174 +279,174 @@ const AdminStatsView = () => {
             title="Órdenes Completadas"
             value={completeStats?.totalOrders?.toLocaleString()}
             icon={ShoppingBag}
-            color="blue"
-          />
-        </div>
-        <div className="col">
-          <StatCard
-            title="Productos Vendidos"
-            value={completeStats?.totalProducts?.toLocaleString()}
-            icon={Package}
             color="purple"
+            onClick={() => setActiveTab('products')}
           />
         </div>
         <div className="col">
           <StatCard
-            title="Colaboradores Activos"
-            value={completeStats?.collaboratorSales?.length?.toLocaleString()}
+            title="Clientes Adquiridos"
+            value={completeStats?.totalCustomers?.toLocaleString() || '0'}
             icon={Users}
             color="orange"
+            onClick={() => alert('Funcionalidad de desglose de clientes no implementada.')}
           />
         </div>
       </div>
 
-      {/* Nuevo título para la sección de métodos de pago */}
-      <h2 className="fs-4 fw-bold mb-0 text-dark">Análisis de Métodos de Pago</h2>
-
-      {/* Gráficos de ventas por método de pago */}
-      {completeStats?.paymentMethods && completeStats.paymentMethods.length > 0 && (
-        <div className="stats-card-minimal">
-          <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Ventas por Método de Pago</h3>
-          <div className="row g-4">
-            <div className="col-lg-6">
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={completeStats.paymentMethods.map(p => ({
-                      ...p,
-                      name: formatPaymentMethodName(p.paymentMethod)
-                    }))}
-                    dataKey="totalAmount"
-                    nameKey="name" /* Usar 'name' para la etiqueta */
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    label={({ name, totalAmount }) =>
-                      `${name}: ${formatCurrency(totalAmount)}`
-                    }
-                  >
-                    {completeStats.paymentMethods.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => formatCurrency(value)} />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="col-lg-6">
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={completeStats.paymentMethods.map(p => ({
-                  ...p,
-                  paymentMethod: formatPaymentMethodName(p.paymentMethod)
-                }))}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="paymentMethod" />
-                  <YAxis tickFormatter={(value) => `$${value}`} />
-                  <Tooltip formatter={(value) => formatCurrency(value)} />
-                  <Bar dataKey="totalAmount" fill="#FF00FF" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Gráfico adicional de tendencias si hay datos mensuales */}
-      {completeStats && completeStats.monthlySales && completeStats.monthlySales.length > 0 && (
+      {/* Gráfico de Ventas Mensuales (Line Chart) */}
+      {completeStats && completeStats.monthlySales && completeStats.monthlySales.length > 0 ? (
         <div className="stats-card-minimal">
           <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Tendencia de Ventas Mensuales</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={completeStats.monthlySales}>
+            <LineChart data={completeStats.monthlySales}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis tickFormatter={(value) => `$${value}`} />
               <Tooltip formatter={(value) => [formatCurrency(value), 'Ventas']} />
-              <Bar dataKey="revenue" fill="#FF00FF" />
+              <Legend />
+              <Line type="monotone" dataKey="revenue" stroke="#FF00FF" strokeWidth={3} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="stats-card-minimal text-center p-5">
+          <TrendingUp className="mx-auto mb-4 text-secondary" style={{ width: '4rem', height: '4rem' }} />
+          <h3 className="mt-2 fs-5 fw-bold text-dark">Sin datos de ventas mensuales</h3>
+          <p className="mt-1 fs-6 text-secondary">
+            No hay datos de ventas mensuales para el período seleccionado.
+          </p>
+        </div>
+      )}
+
+      {/* Top productos vendidos (últimos 30 días) */}
+      {completeStats?.topProductsLast30Days && completeStats.topProductsLast30Days.length > 0 ? (
+        <div className="stats-card-minimal">
+          <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Top Productos Vendidos (Últimos 30 Días)</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={completeStats.topProductsLast30Days}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="productName" angle={-45} textAnchor="end" height={100} />
+              <YAxis />
+              <Tooltip formatter={(value) => [value, 'Cantidad Vendida']} />
+              <Legend />
+              <Bar dataKey="totalQuantity" fill="#00C49F" />
             </BarChart>
           </ResponsiveContainer>
         </div>
+      ) : (
+        <div className="stats-card-minimal text-center p-5">
+          <ShoppingCart className="mx-auto mb-4 text-secondary" style={{ width: '4rem', height: '4rem' }} />
+          <h3 className="mt-2 fs-5 fw-bold text-dark">Sin datos de top productos</h3>
+          <p className="mt-1 fs-6 text-secondary">
+            No se encontraron datos de los productos más vendidos para el período.
+          </p>
+        </div>
       )}
+
+      {/* Indicador de conversión (Placeholder) */}
+      <div className="stats-card-minimal p-4">
+        <h3 className="card-title fs-5 fw-bold mb-3 text-dark">Indicador de Conversión (Ventas / Visitas)</h3>
+        <p className="text-secondary">
+          Esta métrica requiere datos de visitas a productos. Actualmente no disponible.
+          <br/>
+          *Para implementar esta funcionalidad, tu backend necesitaría proporcionar datos de `visits` para cada producto.
+        </p>
+      </div>
+
     </div>
   );
 
-  // Pestaña de colaboradores
   const CollaboratorsTab = () => (
     <div className="stats-card-minimal">
       <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Ventas por Colaborador</h3>
 
+      {/* Botones de filtro Activos/Inactivos para colaboradores (eliminados si no hay status) */}
+      {/* Se mantiene el botón de exportar CSV */}
+      <div className="mb-4 d-flex gap-2">
+        <button className="btn btn-outline-info btn-sm" onClick={() => exportToCSV(collaboratorSales, 'ventas_colaboradores')}>
+          <Download className="me-1" size={16} /> Exportar CSV
+        </button>
+      </div>
+
       {/* Gráfico de barras */}
       <div className="mb-4">
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={collaboratorSales.slice(0, 10)}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="collaboratorUsername" angle={-45} textAnchor="end" height={80} />
-            <YAxis tickFormatter={(value) => `$${value}`} />
-            <Tooltip formatter={(value) => formatCurrency(value)} />
-            <Bar dataKey="totalSales" fill="#FF00FF" />
-          </BarChart>
-        </ResponsiveContainer>
+        {collaboratorSales && collaboratorSales.length > 0 ? (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={collaboratorSales.slice(0, 10)}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="collaboratorUsername" angle={-45} textAnchor="end" height={80} />
+              <YAxis tickFormatter={(value) => `$${value}`} />
+              <Tooltip formatter={(value) => formatCurrency(value)} />
+              <Bar dataKey="totalSales" fill="#FF00FF" />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="text-center p-5 text-secondary">No hay datos de ventas por colaborador para el período seleccionado.</div>
+        )}
       </div>
 
       {/* Tabla de colaboradores */}
       <div className="table-responsive">
-        <table className="table table-striped table-hover align-middle">
-          <thead className="table-light">
-            <tr>
-              <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                Colaborador
-              </th>
-              <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                País
-              </th>
-              <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                Órdenes
-              </th>
-              <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                Cantidad Vendida
-              </th>
-
-              <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                Ventas Totales
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {collaboratorSales.map((collaborator, index) => (
-              <tr key={index}>
-                <td className="fs-6 fw-medium text-dark">
-                  {collaborator.collaboratorUsername}
-                </td>
-                <td className="fs-6 text-secondary">
-                  {collaborator.country}
-                </td>
-
-                <td className="fs-6 text-secondary">
-                  {collaborator.ordersCount?.toLocaleString()}
-                </td>
-                <td className="fs-6 text-secondary">
-                  {collaborator.totalQuantity?.toLocaleString()}
-                </td>
-                <td className="fs-6 text-dark">
-                  {formatCurrency(collaborator.totalSales)}
-                </td>
+        {collaboratorSales && collaboratorSales.length > 0 ? (
+          <table className="table table-striped table-hover align-middle">
+            <thead className="table-light">
+              <tr>
+                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
+                  Colaborador
+                </th>
+                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
+                  País
+                </th>
+                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
+                  Órdenes
+                </th>
+                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
+                  Cantidad Vendida
+                </th>
+                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
+                  Ventas Totales
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {collaboratorSales.map((collaborator, index) => (
+                <tr key={index}>
+                  <td className="fs-6 fw-medium text-dark">
+                    {collaborator.collaboratorUsername}
+                  </td>
+                  <td className="fs-6 text-secondary">
+                    {collaborator.country}
+                  </td>
+                  <td className="fs-6 text-secondary">
+                    {collaborator.ordersCount?.toLocaleString()}
+                  </td>
+                  <td className="fs-6 text-secondary">
+                    {collaborator.totalQuantity?.toLocaleString()}
+                  </td>
+                  <td className="fs-6 text-dark">
+                    {formatCurrency(collaborator.totalSales)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center p-5 text-secondary">No hay colaboradores para mostrar.</div>
+        )}
       </div>
     </div>
   );
 
-  // Pestaña de productos
   const ProductsTab = () => (
     <div className="stats-card-minimal">
       <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Ventas por Producto</h3>
 
-      {/* Filtro adicional por colaborador */}
-      <div className="mb-4">
+      {/* Filtro adicional por colaborador y botón de exportar */}
+      <div className="mb-4 d-flex gap-2 align-items-center">
+        <label htmlFor="selectCollaborator" className="form-label fs-6 fw-semibold text-secondary mb-0">Filtrar por Colaborador:</label>
         <select
+          id="selectCollaborator"
           value={selectedCollaborator}
           onChange={(e) => setSelectedCollaborator(e.target.value)}
           className="form-select form-select-custom w-auto d-inline-block"
@@ -398,60 +458,65 @@ const AdminStatsView = () => {
             </option>
           ))}
         </select>
+        <button className="btn btn-outline-info btn-sm ms-auto" onClick={() => exportToCSV(productSales, 'ventas_productos')}>
+          <Download className="me-1" size={16} /> Exportar CSV
+        </button>
       </div>
 
       {/* Tabla de productos */}
       <div className="table-responsive">
-        <table className="table table-striped table-hover align-middle">
-          <thead className="table-light">
-            <tr>
-              <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                Producto
-              </th>
-              <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                Colaborador
-              </th>
-              <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                País
-              </th>
-              <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                Precio Unit.
-              </th>
-              <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                Cantidad
-              </th>
-              <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                Ventas Totales
-              </th>
-
-            </tr>
-          </thead>
-          <tbody>
-            {productSales.slice(0, 20).map((product, index) => (
-              <tr key={index}>
-                <td className="fs-6 fw-medium text-dark">
-                  {product.productName}
-                </td>
-                <td className="fs-6 text-secondary">
-                  {product.uploaderUsername}
-                </td>
-                <td className="fs-6 text-secondary">
-                  {product.country}
-                </td>
-                <td className="fs-6 text-secondary">
-                  {formatCurrency(product.unitPrice)}
-                </td>
-
-                <td className="fs-6 text-secondary">
-                  {product.totalQuantity?.toLocaleString()}
-                </td>
-                <td className="fs-6 text-dark">
-                  {formatCurrency(product.totalSales)}
-                </td>
+        {productSales && productSales.length > 0 ? (
+          <table className="table table-striped table-hover align-middle">
+            <thead className="table-light">
+              <tr>
+                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
+                  Producto
+                </th>
+                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
+                  Colaborador
+                </th>
+                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
+                  País
+                </th>
+                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
+                  Precio Unit.
+                </th>
+                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
+                  Cantidad
+                </th>
+                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
+                  Ventas Totales
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {productSales.slice(0, 20).map((product, index) => (
+                <tr key={index}>
+                  <td className="fs-6 fw-medium text-dark">
+                    {product.productName}
+                  </td>
+                  <td className="fs-6 text-secondary">
+                    {product.uploaderUsername}
+                  </td>
+                  <td className="fs-6 text-secondary">
+                    {product.country}
+                  </td>
+                  <td className="fs-6 text-secondary">
+                    {formatCurrency(product.unitPrice)}
+                  </td>
+                  <td className="fs-6 text-secondary">
+                    {product.totalQuantity?.toLocaleString()}
+                  </td>
+                  <td className="fs-6 text-dark">
+                    {formatCurrency(product.totalSales)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <div className="text-center p-5 text-secondary">No hay productos para mostrar.</div>
+        )}
       </div>
     </div>
   );
@@ -539,6 +604,27 @@ const AdminStatsView = () => {
           </div>
         )}
 
+        {/* Alerta de revisión de comprobantes */}
+        {completeStats && (completeStats.paymentsToVerify > 0 || completeStats.paymentErrors > 0) ? (
+          <div className={`alert alert-${completeStats.paymentErrors > 0 ? 'danger' : 'warning'} d-flex align-items-center rounded-3 shadow-sm p-3 mb-4`} role="alert">
+            {completeStats.paymentErrors > 0 ? (
+              <XCircle className="me-2" size={20} />
+            ) : (
+              <AlertCircle className="me-2" size={20} />
+            )}
+            <div>
+              {completeStats.paymentsToVerify > 0 && `Hay ${completeStats.paymentsToVerify} pagos pendientes de verificación. `}
+              {completeStats.paymentErrors > 0 && `Se detectaron ${completeStats.paymentErrors} errores en comprobantes de pago.`}
+            </div>
+            <button
+              type="button"
+              className="btn-close ms-auto"
+              aria-label="Cerrar"
+              onClick={() => setCompleteStats(prev => ({ ...prev, paymentsToVerify: 0, paymentErrors: 0 }))}
+            ></button>
+          </div>
+        ) : null}
+
         {/* Tabs */}
         <div className="stats-card-minimal mb-4">
           <ul className="nav nav-tabs nav-tabs-minimal card-header-tabs">
@@ -567,6 +653,11 @@ const AdminStatsView = () => {
               >
                 <Package className="d-inline-block me-2" style={{ width: '1.25rem', height: '1.25rem' }} />
                 Productos
+                {completeStats?.productsPendingReview > 0 && (
+                  <span className="badge bg-danger ms-2 rounded-pill">
+                    {completeStats.productsPendingReview}
+                  </span>
+                )}
               </button>
             </li>
           </ul>

@@ -298,8 +298,8 @@ export default function CartPage() {
               onChange={e => setSelectedPaymentMethod(e.target.value)}
               disabled={!cartItems.length}
             >
-              <option value="MANUAL_TRANSFER">Pagar con DeUna</option>
               <option value="PAYPAL">Pagar con PayPal</option>
+              <option value="MANUAL_TRANSFER">Pagar con DeUna</option>
             </select>
 
             {selectedPaymentMethod === 'PAYPAL' ? (

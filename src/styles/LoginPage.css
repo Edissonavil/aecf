@@ -210,11 +210,11 @@ body, .font-inter {
 }
 
 .register-link {
-  color: #FFD700;
+  color: #000000;
 }
 
 .register-link:hover {
-  color: #cca300;
+  color: #000000;
 }
 
 /* -----------------------------------------------------------------

@@ -237,14 +237,14 @@ body, .font-inter {
 }
 
 .link-text-yellow {
-  color: #FFD700;
+  color: #000000;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
 }
 
 .link-text-yellow:hover {
-  color: #cca300;
+  color: #000000;
 }
 
 .error-text {

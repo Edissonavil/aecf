@@ -260,15 +260,14 @@
 .custom-button-layer {
   position: absolute;
   inset: 0;
-  border: 1px solid #000;
+  border: 1px solid #FF00FF;
   border-radius: 0.5rem;
   transition: transform 0.15s ease;
 }
 
 /* Sombras */
-.custom-button-shadow-top    { background: yellow; z-index: 20; }
-.custom-button-shadow-bottom { background: red;    z-index: 10; }
-
+.custom-button-shadow-top    { background: #FFB6C1; z-index: 20; } /* Rosa claro */
+.custom-button-shadow-bottom { background: #C71585; z-index: 10; } /* Fucsia oscuro */
 /* Botón principal */
 .custom-button-main {
   position: relative;
@@ -304,4 +303,37 @@
     min-height: 4rem;      /* lg:h-16 */
     padding: 0 2.5rem;     /* lg:px-10 */
   }
+}
+
+/* Estilos para los nuevos filtros desplegables */
+
+.filter-dropdown-toggle {
+    /* Altura ajustada para que sean más grandes */
+    height: 3.5rem; 
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    white-space: nowrap; 
+    min-width: 150px; /* Ancho mínimo para los botones */
+}
+
+/* Para pantallas más grandes, hacer los botones aún más grandes */
+@media (min-width: 992px) {
+    .filter-dropdown-toggle {
+        min-height: 4rem; 
+        font-size: 1.1rem;
+    }
+}
+
+.dropdown-menu-wide {
+  min-width: 20rem; /* Ancho amplio para el menú desplegable */
+  padding: 1rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item-checkbox:hover {
+  background-color: #f8f9fa; /* Color de fondo al pasar el mouse */
 }
