@@ -14,13 +14,13 @@ const ColaboradorEditarProducto = () => {
   
   const [formData, setFormData] = useState({
     nombre: '',
-    descripcionProd: '', // <-- ¡CAMBIO AQUÍ! Ahora coincide con el backend
+    descripcionProd: '',
     precioIndividual: '',
     // Archivos para subir (File object para foto, FileList para archivosAut)
     foto: null,          
     archivosAut: null, 
     // Nombres de archivos actuales (URLs o nombres para mostrar)
-    fotografiaProdActual: '',
+    fotografiaProdActual: '', // <-- Ahora guardará la URL completa
     archivosAutActuales: [], 
     // Campos para controlar si se mantienen los archivos actuales (para eliminación sin reemplazo)
     keepFotografiaProd: true, 
@@ -36,13 +36,14 @@ const ColaboradorEditarProducto = () => {
         setProduct(res.data);
         setFormData({
           nombre: res.data.nombre || '',
-          descripcionProd: res.data.descripcionProd || '', // <-- ¡CAMBIO AQUÍ! Extrae de descripcionProd
+          descripcionProd: res.data.descripcionProd || '',
           precioIndividual: res.data.precioIndividual || '',
           foto: null,
           archivosAut: null, 
-          fotografiaProdActual: res.data.fotografiaProd || '', 
+          // Usamos la URL completa si está disponible, si no, el nombre de archivo
+          fotografiaProdActual: res.data.fotografiaUrl || res.data.fotografiaProd || '',
           archivosAutActuales: res.data.archivosAut || [],         
-          keepFotografiaProd: !!res.data.fotografiaProd, 
+          keepFotografiaProd: !!(res.data.fotografiaUrl || res.data.fotografiaProd), 
           keepArchivosAut: !!(res.data.archivosAut && res.data.archivosAut.length > 0), 
         });
       })
@@ -103,7 +104,7 @@ const ColaboradorEditarProducto = () => {
     const dataToSend = new FormData();
 
     dataToSend.append('nombre', formData.nombre);
-    dataToSend.append('descripcionProd', formData.descripcionProd); // <-- ¡CAMBIO AQUÍ!
+    dataToSend.append('descripcionProd', formData.descripcionProd);
     dataToSend.append('precioIndividual', formData.precioIndividual);
 
     if (formData.foto) { 
@@ -119,9 +120,6 @@ const ColaboradorEditarProducto = () => {
     } else if (!formData.keepArchivosAut && formData.archivosAutActuales.length > 0) {
       dataToSend.append('archivosAut', 'DELETE_ALL'); 
     }
-    // Si se quiere mantener algunos y no se suben nuevos, la lógica para enviar 
-    // `archivosAutToKeep` (JSON.stringify(formData.archivosAutActuales)) sería aquí.
-    // Esto requiere que el backend también reciba y procese ese campo.
 
     try {
       await productApi.updateProduct(id, dataToSend); 
@@ -150,7 +148,14 @@ const ColaboradorEditarProducto = () => {
     );
   }
 
+  // La URL base ahora solo se usará si no tenemos una URL completa del producto
   const BASE_FILES_URL = "https://gateway-production-129e.up.railway.app/api/files/"; 
+
+  // Función de ayuda para obtener el nombre del archivo de una URL
+  const getFileNameFromUrl = (url) => {
+    const parts = url.split('/');
+    return parts[parts.length - 1];
+  };
 
   return (
     <div className="container my-4">
@@ -172,13 +177,13 @@ const ColaboradorEditarProducto = () => {
 
         {/* Descripción */}
         <div className="mb-3">
-          <label htmlFor="descripcionProd" className="form-label">Descripción</label> {/* <-- ¡CAMBIO AQUÍ! */}
+          <label htmlFor="descripcionProd" className="form-label">Descripción</label>
           <textarea
             className="form-control"
-            id="descripcionProd" // <-- ¡CAMBIO AQUÍ!
-            name="descripcionProd" // <-- ¡CAMBIO AQUÍ!
+            id="descripcionProd"
+            name="descripcionProd"
             rows="4"
-            value={formData.descripcionProd} // <-- ¡CAMBIO AQUÍ!
+            value={formData.descripcionProd}
             onChange={handleChange}
             required
           ></textarea>
@@ -210,18 +215,19 @@ const ColaboradorEditarProducto = () => {
             accept="image/*"
             onChange={handleFileChange}
           />
+          {/* Muestra la imagen si existe una URL */}
           {formData.fotografiaProdActual && ( 
             <div className="mt-2 d-flex align-items-center">
               <small className="form-text text-muted me-2">
-                Actual: <a href={`${BASE_FILES_URL}${formData.fotografiaProdActual}`} target="_blank" rel="noopener noreferrer">{formData.fotografiaProdActual}</a>
+                Actual: <a href={formData.fotografiaProdActual} target="_blank" rel="noopener noreferrer">{getFileNameFromUrl(formData.fotografiaProdActual)}</a>
               </small>
               {/* Intentar mostrar la imagen si es una extensión de imagen */}
-              {formData.fotografiaProdActual.match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
-                <img src={`${BASE_FILES_URL}${formData.fotografiaProdActual}`} alt="Vista previa actual" style={{maxWidth: '80px', maxHeight: '80px', marginRight: '10px'}}/>
+              {getFileNameFromUrl(formData.fotografiaProdActual).match(/\.(jpeg|jpg|gif|png|webp)$/i) ? (
+                <img src={formData.fotografiaProdActual} alt="Vista previa actual" style={{maxWidth: '80px', maxHeight: '80px', marginRight: '10px'}}/>
               ) : (
                 <small className="form-text text-muted ms-2">Archivo no visualizable (no es imagen).</small>
               )}
-              <div className="form-check ms-auto"> {/* ms-auto para moverlo a la derecha */}
+              <div className="form-check ms-auto">
                 <input
                   type="checkbox"
                   className="form-check-input"
@@ -242,7 +248,7 @@ const ColaboradorEditarProducto = () => {
 
         {/* Archivos de Autorización (Múltiples) */}
         <div className="mb-3">
-          <label htmlFor="archivosAut" className="form-label">Archivos(s) del Producto (varios, opcional)</label> {/* <-- Texto ajustado */}
+          <label htmlFor="archivosAut" className="form-label">Archivos(s) del Producto (varios, opcional)</label>
           <input
             type="file"
             className="form-control"
@@ -250,7 +256,7 @@ const ColaboradorEditarProducto = () => {
             name="archivosAut"
             multiple 
             onChange={handleFileChange}
-            accept=".pdf,.doc,.docx,.zip,.jpg,.jpeg,.png,.gif" // Ajusta tipos MIME según necesites
+            accept=".pdf,.doc,.docx,.zip,.jpg,.jpeg,.png,.gif,.pln,.pla,.gyn,.rvt,.rfa,.xls,.xlsx"
           />
           {formData.archivosAutActuales && formData.archivosAutActuales.length > 0 && (
             <div className="mt-2">
