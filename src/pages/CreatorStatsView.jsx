@@ -1,7 +1,7 @@
 // src/pages/CollaboratorStatsView.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer
 } from 'recharts';
 import {
@@ -103,7 +103,10 @@ const CreatorStatsView = () => {
         ...(selectedMonth && { month: selectedMonth }),
       });
 
+      // La API de estadísticas ya devuelve todo lo que necesitamos en un solo objeto.
       const data = await apiCall(`/collaborator/my-stats?${params}`);
+
+      // Asignamos directamente la respuesta completa al estado myStats
       setMyStats(data);
     } catch (err) {
       setError('Error al cargar mis estadísticas: ' + err.message);
@@ -123,6 +126,9 @@ const CreatorStatsView = () => {
         ...(selectedMonth && { month: selectedMonth }),
       });
 
+      // A menos que haya una API específica para productos, usamos los del objeto myStats
+      // Si existiera, la llamada sería algo como `apiCall('/collaborator/my-products?${params}')`
+      // Pero según el JSON, están en la misma respuesta.
       const data = await apiCall(`/collaborator/my-stats?${params}`);
       setMyProducts(data?.productSales || []);
     } catch (err) {
@@ -132,13 +138,21 @@ const CreatorStatsView = () => {
     }
   }, [selectedYear, selectedMonth, apiCall, authToken]);
 
+
   // Efecto para cargar datos cuando cambian los filtros o el token está disponible
   useEffect(() => {
     if (!isAuthLoading && authToken) {
       setError(null);
+      // Cuando la pestaña es "overview", se cargan ambas cosas si es necesario
       if (activeTab === 'overview') {
         loadMyStats();
       } else if (activeTab === 'products') {
+        // En este caso, el JSON que nos pasaste no tiene una API separada para productos.
+        // Si el backend es así, ambas llamadas a la API cargarían los mismos datos.
+        // Asumiendo que `loadMyStats` ya carga `productSales` dentro del objeto,
+        // no necesitaríamos esta llamada `loadMyProducts` separada, podríamos
+        // simplemente referenciar `myStats.productSales`.
+        // Mantengamos la lógica de `loadMyStats` para cargar todo.
         loadMyStats();
       }
     } else if (!isAuthLoading && !authToken) {
@@ -156,23 +170,33 @@ const CreatorStatsView = () => {
     }).format(amount || 0);
   };
 
-  // Calcular próxima fecha de pago (5to día del mes siguiente)
+  // Calcular próxima fecha de pago (estimada al último día hábil del mes siguiente)
   const getNextPaymentDate = () => {
     const today = new Date();
     let year = today.getFullYear();
-    let month = today.getMonth(); // Mes actual (0-11)
-    const day = 5; // Quinto día del mes
+    let month = today.getMonth() + 1; // Mes actual (0-11) + 1
 
-    // Si ya es el día 5 o posterior del mes actual, el pago es el próximo mes
-    if (today.getDate() >= day) {
+    // Si ya pasó el último día hábil del mes actual, el pago es el próximo mes
+    if (today.getDate() > 25) { // Asumimos que el "último día hábil" es alrededor del 25 para estimar al mes siguiente
       month += 1;
-      if (month > 11) {
-        month = 0;
+      if (month > 12) {
+        month = 1;
         year += 1;
       }
     }
 
-    const paymentDate = new Date(year, month, day);
+    // Calcular el último día del mes
+    const lastDayOfMonth = new Date(year, month, 0);
+    let day = lastDayOfMonth.getDate();
+
+    // Ajustar al último día hábil (viernes si es fin de semana)
+    if (lastDayOfMonth.getDay() === 0) { // Domingo
+      day -= 2;
+    } else if (lastDayOfMonth.getDay() === 6) { // Sábado
+      day -= 1;
+    }
+
+    const paymentDate = new Date(year, month - 1, day); // month - 1 porque Date usa 0-11
     return paymentDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
   };
 
@@ -191,9 +215,8 @@ const CreatorStatsView = () => {
           </div>
         </div>
         {trend && (
-          <div className={`d-flex align-items-center text-sm ${
-            trend > 0 ? 'text-success' : trend < 0 ? 'text-danger' : 'text-secondary'
-          }`}>
+          <div className={`d-flex align-items-center text-sm ${trend > 0 ? 'text-success' : trend < 0 ? 'text-danger' : 'text-secondary'
+            }`}>
             <TrendingUp className={`w-4 h-4 me-1 ${trend < 0 ? 'rotate-180' : ''}`} />
             {Math.abs(trend)}%
           </div>
@@ -205,6 +228,7 @@ const CreatorStatsView = () => {
   // Componente de información del colaborador
   const CollaboratorInfo = () => {
     const currentUsername = authUsername;
+    // Buscar el país en los productos si están cargados, si no, 'N/A'
     const countryFromProduct = myStats?.productSales && myStats.productSales.length > 0 ? myStats.productSales[0].country : 'N/A';
 
     return (
@@ -236,25 +260,11 @@ const CreatorStatsView = () => {
 
   // Pestaña de resumen general
   const OverviewTab = () => {
+    // Calcular ingresos netos (50% del total)
     const netRevenue = (myStats?.totalRevenue || 0) * 0.5;
-    const productsUnderReview = myStats?.productsPendingReview || 0;
-    const monthlySalesData = myStats?.monthlySales || [];
-
-    // Calcular la acumulación de ventas mensuales para el gráfico de ojiva
-    let cumulativeRevenue = 0;
-    const cumulativeMonthlySales = monthlySalesData.map(sale => {
-      cumulativeRevenue += sale.revenue;
-      return { ...sale, cumulativeRevenue: cumulativeRevenue };
-    });
-
-    const productSalesData = myStats?.productSales || [];
-
-    // Calcular la acumulación de ventas por producto para el gráfico de ojiva
-    let cumulativeProductSales = 0;
-    const cumulativeProductSalesData = productSalesData.map(sale => {
-      cumulativeProductSales += sale.totalSales;
-      return { ...sale, cumulativeSales: cumulativeProductSales };
-    });
+    // Calcular productos por revisar (asumiendo que hay un campo 'productsUnderReview' en myStats o se puede inferir)
+    // Por ahora, lo dejamos en 0 o un valor de ejemplo si no hay datos reales
+    const productsUnderReview = myStats?.productsPendingReview || 0; // Asumiendo que el backend envía este dato
 
     return (
       <div className="d-grid gap-4">
@@ -309,7 +319,7 @@ const CreatorStatsView = () => {
             </div>
           </div>
         )}
-        {myStats?.productSales && myStats.productSales.length < 2 && (
+        {myStats?.productSales && myStats.productSales.length < 2 && ( // Ejemplo: si tienes menos de 2 productos activos
           <div className="alert alert-info d-flex align-items-center rounded-3 shadow-sm p-3" role="alert">
             <Rocket className="me-2 text-info" style={{ width: '1.5rem', height: '1.5rem' }} />
             <div>
@@ -317,6 +327,7 @@ const CreatorStatsView = () => {
             </div>
           </div>
         )}
+        {/* Este mensaje es más general, se puede mostrar siempre */}
         <div className="alert alert-warning d-flex align-items-center rounded-3 shadow-sm p-3" role="alert">
           <MessageSquare className="me-2 text-warning" style={{ width: '1.5rem', height: '1.5rem' }} />
           <div>
@@ -330,21 +341,21 @@ const CreatorStatsView = () => {
         {/* Gráficos de ventas mensuales y top productos */}
         <div className="row g-4">
           <div className="col-lg-6">
-            {cumulativeMonthlySales.length > 0 ? (
+            {myStats && myStats.monthlySales && myStats.monthlySales.length > 0 ? (
               <div className="stats-card-minimal">
                 <h3 className="card-title fs-5 fw-bold mb-4 d-flex align-items-center text-dark">
                   <TrendingUp className="w-6 h-6 me-2 text-fuchsia-custom" />
-                  Ventas Acumuladas Mensuales (Ingresos)
+                  Ventas Mensuales (Ingresos)
                 </h3>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={cumulativeMonthlySales}>
+                  <BarChart data={myStats.monthlySales}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" label={{ value: "Meses", position: "insideBottom", offset: -5 }} />
-                    <YAxis label={{ value: 'Ingresos Acumulados (USD)', angle: -90, position: "insideLeft" }} />
-                    <Tooltip formatter={(value) => formatCurrency(value)} />
+                    <YAxis label={{ value: 'Ingresos (USD)', angle: -90, position: "insideLeft" }} />
+                    <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="cumulativeRevenue" stroke="#FF00FF" name="Ingresos Acumulados" />
-                  </LineChart>
+                    <Bar dataKey="revenue" fill="#FF00FF" name="Ingresos" />
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
             ) : (
@@ -359,21 +370,21 @@ const CreatorStatsView = () => {
           </div>
 
           <div className="col-lg-6">
-            {cumulativeProductSalesData.length > 0 ? (
+            {myStats?.productSales && myStats.productSales.length > 0 ? (
               <div className="stats-card-minimal">
                 <h3 className="card-title fs-5 fw-bold mb-4 d-flex align-items-center text-dark">
                   <Package className="w-6 h-6 me-2 text-fuchsia-custom" />
-                  Ventas Acumuladas por Producto
+                  Mis Productos Más Vendidos
                 </h3>
                 <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={cumulativeProductSalesData.slice(0, 5)}>
+                  <BarChart data={myStats.productSales.slice(0, 5)}> {/* Mostrar top 5 */}
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="productName" angle={-45} textAnchor="end" height={100} />
-                    <YAxis label={{ value: 'Unidades Acumuladas', angle: -90, position: "insideLeft" }} />
+                    <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="cumulativeSales" stroke="#00C49F" name="Unidades Acumuladas" />
-                  </LineChart>
+                    <Bar dataKey="totalSales" fill="#00C49F" name="Unidades Vendidas" />
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
             ) : (
@@ -392,9 +403,10 @@ const CreatorStatsView = () => {
         <div className="alert alert-light border border-gray-200 rounded-3 p-3 d-flex align-items-start">
           <img src="https://placehold.co/24x24/E0E0E0/555555?text=🔒" alt="Candado" className="me-2 mt-1" />
           <p className="mb-0 text-secondary small">
-            AECBlock retiene el 50% de cada venta. Los pagos se consolidan mensualmente y se procesan el 5to día hábil del mes. Más detalles en los <a href="/solicitudCreador" className="text-fuchsia-custom fw-semibold">Términos del Creador</a>.
+            AECBlock retiene el 50% de cada venta. Los pagos se consolidan mensualmente y se procesan 5to día del mes. Más detalles en los <a href="/solicitudCreador" className="text-fuchsia-custom fw-semibold">Términos del Creador</a>.
           </p>
         </div>
+
       </div>
     );
   }
@@ -431,20 +443,32 @@ const CreatorStatsView = () => {
           </div>
         </div>
       </div>
-
-      <div className="tabs-container mb-4">
-        <button
-          className={`tab-button ${activeTab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveTab('overview')}
-        >
-          Resumen General
-        </button>
-        <button
-          className={`tab-button ${activeTab === 'products' ? 'active' : ''}`}
-          onClick={() => setActiveTab('products')}
-        >
-          Mis Productos
-        </button>
+      <div className="stats-card-minimal mb-4">
+        <ul className="nav nav-tabs nav-tabs-minimal card-header-tabs">
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
+              onClick={() => setActiveTab('overview')}
+            >
+              <TrendingUp className="d-inline-block me-2" style={{ width: '1.25rem', height: '1.25rem' }} />
+              Resumen General
+            </button>
+          </li>
+          <li className="nav-item">
+            <button
+              className={`nav-link ${activeTab === 'products' ? 'active' : ''}`}
+              onClick={() => setActiveTab('products')}
+            >
+              <Package className="d-inline-block me-2" style={{ width: '1.25rem', height: '1.25rem' }} />
+              Mis Productos
+              {completeStats?.productsPendingReview > 0 && (
+                <span className="badge bg-danger ms-2 rounded-pill">
+                  {completeStats.productsPendingReview}
+                </span>
+              )}
+            </button>
+          </li>
+        </ul>
       </div>
 
       {loading && (
