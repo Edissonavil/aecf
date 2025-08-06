@@ -19,6 +19,8 @@ const CreatorStatsView = () => {
   const [error, setError] = useState(null);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState('');
+    const [completeStats, setCompleteStats] = useState(null);
+  
 
   // Estados para los datos
   const [myStats, setMyStats] = useState(null);
