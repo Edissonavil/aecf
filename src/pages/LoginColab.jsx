@@ -38,61 +38,61 @@ const LoginColab = () => {
     <div className="login-wrapper font-inter">
       <div className="login-card">
         <div className="login-card__inner">
-        <div className="login-header">
-          <h1 className="login-title">AEC<span className="text-fuchsia-electric">Block</span></h1>
-          <p className="login-subtitle">Bienvenido Creador AEC</p>
-        </div>
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="username">Nombre de Usuario</label>
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Ingresa tu nombre de usuario"
-              required
-            />
+          <div className="login-header">
+            <h1 className="login-title">AEC<span className="text-fuchsia-electric">Block</span></h1>
+            <p className="login-subtitle">Bienvenido Creador AEC</p>
           </div>
-          <div className="position-relative"> {/* Asegúrate de que este div tiene position-relative */}
-            <label htmlFor="password">Contraseña</label>
+          <form onSubmit={handleSubmit} className="login-form">
+            <div className="form-group">
+              <label htmlFor="username">Nombre de Usuario</label>
+              <input
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Ingresa tu nombre de usuario"
+                required
+              />
+            </div>
+            <div className="position-relative"> {/* Asegúrate de que este div tiene position-relative */}
+              <label htmlFor="password">Contraseña</label>
               <div className="input-with-toggle position-relative">
-    <input
-      type={showPassword ? 'text' : 'password'}
-      id="password"
-      name="password"
-      autoComplete="current-password"
-      value={password}
-      onChange={e => setPassword(e.target.value)}
-      placeholder="Ingresa tu contraseña"
-      required
-    />
-    <button
-      type="button"
-      onClick={() => setShowPassword(prev => !prev)}
-      className="password-toggle-btn"
-      aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-    >
-      {showPassword ? '🔒' : '🔑'}
-    </button>
-  </div>
-          </div>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Ingresa tu contraseña"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(prev => !prev)}
+                  className="password-toggle-btn"
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
+                  {showPassword ? '🔒' : '🔑'}
+                </button>
+              </div>
+            </div>
 
-          <button type="submit" className="btn-login">Iniciar Sesión</button>
-          <div className="login-links">
-            <Link to="/resetearClave" className="login-link">
-              ¿Olvidaste tu contraseña?
-            </Link>
-            <p>
-              ¿No tienes una cuenta?{' '}
-              <Link to="/solicitudCreador" className="register-link">
-                Solicita ser un Creador Aec aquí
+            <button type="submit" className="btn-login">Iniciar Sesión</button>
+            <div className="login-links">
+              <Link to="/resetearClave" className="login-link">
+                ¿Olvidaste tu contraseña?
               </Link>
-            </p>
-          </div>
-        </form>
+              <p>
+                ¿No tienes una cuenta?{' '}
+                <Link to="/solicitudCreador" className="register-link">
+                  Solicita ser un Creador Aec aquí
+                </Link>
+              </p>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

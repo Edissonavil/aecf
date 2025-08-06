@@ -2,16 +2,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, LineChart, Line
+  ResponsiveContainer
 } from 'recharts';
 import {
-  Calendar, DollarSign, ShoppingBag, Package, TrendingUp,
-  User, MapPin, CreditCard, Award, AlertCircle, CheckCircle, Rocket, MessageSquare
+  ShoppingBag, Package, TrendingUp,
+  User, MapPin, CreditCard, Award, CheckCircle, Rocket, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import '../styles/CreatorStatsView.css'; // Importa el archivo CSS personalizado
+import '../styles/CreatorStatsView.css';
 
-// Define la URL base para el Stats Service
 const STATS_API_BASE_URL = 'https://gateway-production-129e.up.railway.app/api/stats';
 
 const CreatorStatsView = () => {
@@ -332,16 +331,16 @@ const CreatorStatsView = () => {
               <div className="stats-card-minimal">
                 <h3 className="card-title fs-5 fw-bold mb-4 d-flex align-items-center text-dark">
                   <TrendingUp className="w-6 h-6 me-2 text-fuchsia-custom" />
-                  Ventas Mensuales (Productos Vendidos)
+                  Ventas Mensuales (Ingresos)
                 </h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={myStats.monthlySales}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" label={{ value: "Meses", position: "insideBottom", offset: -5 }} />
-                    <YAxis label={{ value: "Número de Productos Vendidos", angle: -90, position: "insideLeft" }} />
+                    <YAxis label={{ value: 'Ingresos (USD)', angle: -90, position: "insideLeft" }} />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="totalProducts" fill="#FF00FF" name="Productos Vendidos" />
+                    <Bar dataKey="revenue" fill="#FF00FF" name="Ingresos" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -370,7 +369,7 @@ const CreatorStatsView = () => {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="totalQuantity" fill="#00C49F" name="Unidades Vendidas" />
+                    <Bar dataKey="totalSales" fill="#00C49F" name="Unidades Vendidas" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
