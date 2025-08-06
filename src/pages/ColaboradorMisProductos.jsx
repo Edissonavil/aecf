@@ -3,8 +3,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import * as productApi from '../services/productApi';
 import { toast } from 'react-toastify';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger'; // Importa OverlayTrigger
-import Tooltip from 'react-bootstrap/Tooltip';           // Importa Tooltip
+import Modal from 'react-bootstrap/Modal'; // Importa el componente Modal
+import Button from 'react-bootstrap/Button'; // Necesario para el botón de cerrar
 
 const statusToBadge = {
   PENDIENTE: 'warning text-dark',
@@ -16,13 +16,14 @@ const ColaboradorMisProductos = () => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [currentComment, setCurrentComment] = useState('');
 
   const fetchMyProducts = useCallback(() => {
     setLoading(true);
     setError(null);
     productApi.getMyProducts()
       .then(res => {
-        // Asegúrate de que res.data.content es un array. Si viene paginado, puede ser res.data.content
         const items = Array.isArray(res.data.content) ? res.data.content : [];
         setProductos(items);
       })
@@ -52,6 +53,13 @@ const ColaboradorMisProductos = () => {
     }
   };
 
+  const handleShowModal = (comment) => {
+    setCurrentComment(comment);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => setShowModal(false);
+
   if (loading) return <p className="text-center py-4">Cargando tus productos…</p>;
   if (error)   return <p className="text-danger text-center">Error al cargar tus productos. {error.message}</p>;
 
@@ -66,16 +74,14 @@ const ColaboradorMisProductos = () => {
               <th style={{ width: '5rem' }}>ID</th>
               <th>Nombre</th>
               <th style={{ width: '8rem' }}>Estado</th>
-              {/* Nueva columna para Comentario */}
               <th>Comentario </th>
               <th style={{ width: '10rem' }}>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {productos.length === 0 ? (
-
-
-<tr><td colSpan="5" className="text-center py-4">Aún no has subido ningún producto.</td></tr>            ) : (
+              <tr><td colSpan="5" className="text-center py-4">Aún no has subido ningún producto.</td></tr>
+            ) : (
               productos.map(p => (
                 <tr key={p.idProducto}>
                   <td>#{p.idProducto}</td>
@@ -85,23 +91,20 @@ const ColaboradorMisProductos = () => {
                       {p.estado}
                     </span>
                   </td>
-                  {/* Celda para el Comentario del admin */}
+                  {/* Celda para el Comentario con Modal */}
                   <td>
                     {p.comentario ? (
-                      <OverlayTrigger
-                        placement="top"
-                        delay={{ show: 250, hide: 400 }}
-                        overlay={<Tooltip id={`tooltip-${p.idProducto}`}>{p.comentario}</Tooltip>}
+                      <span
+                        className="text-muted text-decoration-underline"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => handleShowModal(p.comentario)}
                       >
-                        <span className="text-muted text-decoration-underline" style={{ cursor: 'pointer' }}>
-                          Ver comentario
-                        </span>
-                      </OverlayTrigger>
+                        Ver comentario
+                      </span>
                     ) : (
                       '—'
                     )}
                   </td>
-
                   <td>
                     <Link
                       to={`/editar-producto/${p.idProducto}`}
@@ -115,10 +118,25 @@ const ColaboradorMisProductos = () => {
                 </tr>
               ))
             )}
-            
           </tbody>
         </table>
       </div>
+
+      {/* Modal para visualizar el comentario */}
+      <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Comentario del Administrador</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>{currentComment}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
     </div>
   );
 };
