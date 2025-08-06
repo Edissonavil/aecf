@@ -305,7 +305,7 @@ const AdminStatsView = () => {
               <YAxis tickFormatter={(value) => `$${value}`} />
               <Tooltip formatter={(value) => [formatCurrency(value), 'Ventas']} />
               <Legend />
-              <Line type="monotone" dataKey="revenue" stroke="#FF00FF" strokeWidth={3} />
+              <Line type="monotone" dataKey="Venta Mensual" stroke="#FF00FF" strokeWidth={3} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -330,7 +330,7 @@ const AdminStatsView = () => {
               <YAxis />
               <Tooltip formatter={(value) => [value, 'Cantidad Vendida']} />
               <Legend />
-              <Bar dataKey="totalQuantity" fill="#00C49F" />
+              <Bar dataKey="Productos vendidos" fill="#00C49F" />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -343,16 +343,6 @@ const AdminStatsView = () => {
           </p>
         </div>
       )}
-
-      {/* Indicador de conversión (Placeholder) */}
-      <div className="stats-card-minimal p-4">
-        <h3 className="card-title fs-5 fw-bold mb-3 text-dark">Indicador de Conversión (Ventas / Visitas)</h3>
-        <p className="text-secondary">
-          Esta métrica requiere datos de visitas a productos. Actualmente no disponible.
-          <br/>
-          *Para implementar esta funcionalidad, tu backend necesitaría proporcionar datos de `visits` para cada producto.
-        </p>
-      </div>
 
     </div>
   );
