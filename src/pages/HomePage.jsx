@@ -109,16 +109,16 @@ const HomePage = () => {
           <h1 className="hero-title text-center"> 
             Más de <span className="highlight-text">300 herramientas</span> técnicas para transformar tu forma de construir 
           </h1> 
-          <p className="hero-subtitle text-center mx-auto mb-4" style={{ transform: 'skewX(-5deg)' }}> 
+          <p className="hero-subtitle text-center mx-auto mb-2" style={{ transform: 'skewX(-5deg)' }}> 
             El marketplace hecho por y para Arquitectos, Ingenieros y Constructores. 
           </p> 
-          <p className="hero-subtitle text-center mx-auto mb-4"> 
+          <p className="hero-subtitle text-center mx-auto mb-2"> 
             Sube tus recursos. 
           </p> 
-          <p className="hero-subtitle text-center mx-auto mb-4"> 
+          <p className="hero-subtitle text-center mx-auto mb-2"> 
             Mejora tu flujo de trabajo. 
           </p> 
-          <p className="hero-subtitle text-center mx-auto mb-4"> 
+          <p className="hero-subtitle text-center mx-auto mb-2"> 
             Comparte, soluciona, gana. 
           </p> 
           <div className="text-center"> 

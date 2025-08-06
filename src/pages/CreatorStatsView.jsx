@@ -22,7 +22,6 @@ const CreatorStatsView = () => {
 
   // Estados para los datos
   const [myStats, setMyStats] = useState(null);
-  const [myProducts, setMyProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('overview');
 
   // Configuración de colores para gráficos
@@ -112,40 +111,16 @@ const CreatorStatsView = () => {
     }
   }, [selectedYear, selectedMonth, apiCall, authToken]);
 
-  // Cargar mis productos
-  const loadMyProducts = useCallback(async () => {
-    if (!authToken) return;
-    try {
-      setLoading(true);
-      setError(null);
-      const params = new URLSearchParams({
-        year: selectedYear.toString(),
-        ...(selectedMonth && { month: selectedMonth }),
-      });
-
-      const data = await apiCall(`/collaborator/my-stats?${params}`);
-      setMyProducts(data?.productSales || []);
-    } catch (err) {
-      setError('Error al cargar mis productos: ' + err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedYear, selectedMonth, apiCall, authToken]);
-
 
   // Efecto para cargar datos cuando cambian los filtros o el token está disponible
   useEffect(() => {
     if (!isAuthLoading && authToken) {
       setError(null);
-      if (activeTab === 'overview') {
-        loadMyStats();
-      } else if (activeTab === 'products') {
-        loadMyStats();
-      }
+      loadMyStats();
     } else if (!isAuthLoading && !authToken) {
       setError("Token de autenticación no encontrado. Por favor, inicie sesión.");
     }
-  }, [authToken, isAuthLoading, selectedYear, selectedMonth, activeTab, loadMyStats, loadMyProducts]);
+  }, [authToken, isAuthLoading, selectedYear, selectedMonth, loadMyStats]);
 
 
   // Formatear moneda
@@ -293,7 +268,7 @@ const CreatorStatsView = () => {
           <div className="col">
             <StatCard
               title="Productos por Revisar"
-              value={productsUnderReview.toLocaleString()}
+              value={productsUnderReview?.toLocaleString() || '0'}
               icon={Package}
               color="orange"
               subtitle="Pendientes de aprobación"
@@ -393,7 +368,7 @@ const CreatorStatsView = () => {
         <div className="alert alert-light border border-gray-200 rounded-3 p-3 d-flex align-items-start">
           <img src="https://placehold.co/24x24/E0E0E0/555555?text=🔒" alt="Candado" className="me-2 mt-1" />
           <p className="mb-0 text-secondary small">
-            AECBlock retiene el 50% de cada venta. Los pagos se consolidan mensualmente y se procesan el 5to día hábil del mes. Más detalles en los <a href="/terminosYcondiciones" className="text-fuchsia-custom fw-semibold">Términos del Creador</a>.
+            AECBlock retiene el 50% de cada venta. Los pagos se consolidan mensualmente y se procesan el 5to día hábil del mes. Más detalles en los <a href="/solicitudCreador" className="text-fuchsia-custom fw-semibold">Términos del Creador</a>.
           </p>
         </div>
       </div>
