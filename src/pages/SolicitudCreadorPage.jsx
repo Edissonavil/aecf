@@ -105,7 +105,7 @@ const SolicitudCreadorPage = () => {
 
             {/* Nuevo campo "Hablanos un poco de ti" */}
             <Form.Group className="mb-3" controlId="formHablanosDeTi">
-              <Form.Label>Háblanos un poco de ti (Opcional)</Form.Label>
+              <Form.Label>Háblanos un poco de ti.</Form.Label>
               <Form.Control
                 as="textarea" // Usamos textarea para múltiples líneas
                 rows={3}      // Número de filas visible
@@ -116,7 +116,7 @@ const SolicitudCreadorPage = () => {
             </Form.Group>
 
             <div className="terms-and-conditions-section mb-4 p-3 border rounded bg-light">
-              <p className="mb-2"><strong>Antes de continuar:</strong> al registrarte como Especialista en AEC sdh, aceptas los Términos y Condiciones de uso de la plataforma, que incluyen lo siguiente:</p>
+              <p className="mb-2"><strong>Antes de continuar:</strong> al registrarte como Especialista AECBlock, aceptas los Términos y Condiciones de uso de la plataforma, que incluyen lo siguiente:</p>
               <ul>
                 <li>Declaras ser el autor o tener los derechos sobre los productos digitales que subas.</li>
                 <li>Tus productos serán evaluados antes de ser publicados.</li>

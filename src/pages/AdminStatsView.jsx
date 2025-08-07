@@ -324,17 +324,37 @@ const AdminStatsView = () => {
       {completeStats?.topProductsLast30Days && completeStats.topProductsLast30Days.length > 0 ? (
         <div className="stats-card-minimal">
           <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Top Productos Vendidos (Últimos 30 Días)</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={completeStats.topProductsLast30Days}>
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart
+              data={completeStats.topProductsLast30Days}
+              margin={{ top: 16, right: 16, bottom: 100, left: 8 }} // más espacio abajo
+            >
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="productName" angle={-45} textAnchor="end" height={100} />
+              <XAxis
+                dataKey="productName"
+                angle={-45}
+                textAnchor="end"
+                height={100}
+                dy={10}                       // baja un poco las etiquetas
+                interval={0}                  // muestra todas
+                tick={{ fontSize: 12 }}
+                tickFormatter={(v) => (v?.length > 18 ? v.slice(0, 18) + '…' : v)} // opcional: recorta
+              />
               <YAxis />
-              {/* Se usa 'totalQuantity' como dataKey para obtener el valor del JSON, pero 'name' para la etiqueta en la vista */}
-              <Tooltip formatter={(value) => [value, 'Cantidad Vendida']} />
-              <Legend />
+              <Tooltip
+                labelFormatter={(label) => `Producto: ${label}`} // muestra nombre completo en tooltip
+                formatter={(value) => [value, 'Cantidad Vendida']}
+              />
+              <Legend
+                verticalAlign="top"           // mueve la leyenda arriba
+                align="right"
+                height={36}
+                wrapperStyle={{ paddingBottom: 8 }}
+              />
               <Bar dataKey="totalQuantity" name="Cantidad Vendida" fill="#00C49F" />
             </BarChart>
           </ResponsiveContainer>
+
         </div>
       ) : (
         <div className="stats-card-minimal text-center p-5">

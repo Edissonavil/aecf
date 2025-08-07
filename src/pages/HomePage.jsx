@@ -113,13 +113,7 @@ const HomePage = () => {
             El marketplace hecho por y para Arquitectos, Ingenieros y Constructores. 
           </p> 
           <p className="hero-subtitle text-center mx-auto mb-2"> 
-            Sube tus recursos. 
-          </p> 
-          <p className="hero-subtitle text-center mx-auto mb-2"> 
-            Mejora tu flujo de trabajo. 
-          </p> 
-          <p className="hero-subtitle text-center mx-auto mb-2"> 
-            Comparte, soluciona, gana. 
+           Sube tus recursos | Mejora tu flujo de trabajo | Comparte, soluciona y gana. 
           </p> 
           <div className="text-center"> 
             <Link to="/catalog" className="btn btn-primary btn-explore">Explorar Catálogo</Link> 
@@ -261,8 +255,8 @@ const HomePage = () => {
       </section> 
       <section id="beneficios" className="benefits-section py-5"> 
         <div className="container"> 
-          <h2 className="benefits-title text-center mb-5">Pensado para quienes construyen el futuro:</h2> 
-          <h2 className="benefits-title text-center mb-5">arquitectos, ingenieros y constructores.</h2> 
+          <h2 className="benefits-title text-center mb-2 fw-normal">  Pensado para quienes construyen el futuro:</h2>
+          <h2 className="benefits-title text-center mb-2">arquitectos, ingenieros y constructores.</h2> 
           <div className="row row-cols-1 row-cols-md-3 g-4"> 
             <div className="col"> 
               <div className="benefit-item text-center p-4 shadow-sm rounded"> 

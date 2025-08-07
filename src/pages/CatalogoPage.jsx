@@ -137,11 +137,10 @@ export default function CatalogPage() {
 
   return (
     <Container className="my-5">
-      <h2 className="mb-4 text-center">Catálogo de Productos</h2>
-
+<h2 className="mb-4 text-center w-100 fw-normal">  Catálogo de Productos</h2>
       {/* NEW: Search Bar */}
       <Row className="mb-4 justify-content-center">
-        <Col md={6}>
+        <Col md={8} className="catalog-search">
           <InputGroup>
             <Form.Control
               type="text"
@@ -149,7 +148,6 @@ export default function CatalogPage() {
               value={searchTerm}
               onChange={handleSearchChange}
             />
-            {/* Se ha eliminado el botón "Borrar" según tu solicitud */}
             <Button variant="outline-primary" type="button">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -41,3 +41,13 @@
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
+
+h2.text-center {
+  display: block;
+  width: 100%;
+}
+
+.catalog-search .form-control {
+  height: 3rem;       /* más alta */
+  font-size: 1.1rem;  /* texto más grande */
+}
