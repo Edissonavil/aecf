@@ -53,8 +53,14 @@ h2.text-center {
 }
 
 .catalog-title {
-  line-height: 1.25;     /* más alto para que no corte las tildes */
-  padding-top: 2px;       /* un pelín de aire arriba */
-  overflow: visible;      /* evita recortes del propio h2 */
+  line-height: 1.4;       /* más aire vertical */
+  padding-top: 4px;       /* evita que la tilde toque el borde */
+  padding-bottom: 2px;
+  min-height: 1.5em;      /* asegura espacio suficiente */
+  overflow: visible;
 }
 
+
+.catalog-page-container {
+  overflow: visible !important; /* fuerza a mostrar contenido que sobresalga */
+}
