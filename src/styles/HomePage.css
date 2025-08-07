@@ -337,3 +337,18 @@
 .dropdown-item-checkbox:hover {
   background-color: #f8f9fa; /* Color de fondo al pasar el mouse */
 }
+
+.nav__badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.75rem;
+  position: absolute;
+  top: -5px;
+  right: -10px;
+}
+.nav__cart {
+  position: relative; /* para que el badge se posicione sobre el icono */
+  display: inline-block;
+}
