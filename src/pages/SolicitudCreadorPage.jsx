@@ -121,8 +121,8 @@ const SolicitudCreadorPage = () => {
                 <li>Declaras ser el autor o tener los derechos sobre los productos digitales que subas.</li>
                 <li>Tus productos serán evaluados antes de ser publicados.</li>
                 <li>Recibirás el 50% de las ganancias netas por cada venta realizada.</li>
-                <li>Autorizas a AEC sdh a exhibir, promocionar y comercializar tus productos.</li>
-                <li>AEC sdh podrá despublicar productos que sean obsoletos o no cumplan los estándares.</li>
+                <li>Autorizas a AECBlock  a exhibir, promocionar y comercializar tus productos.</li>
+                <li>AECBlock podrá despublicar productos que sean obsoletos o no cumplan los estándares.</li>
                 <li>Puedes dar de baja tu cuenta en cualquier momento.</li>
               </ul>
               <p>Consulta los <a href="/terminosYcondiciones" target="_blank" className="text-fuchsia-electric fw-bold">Términos y Condiciones completos aquí</a>.</p>
@@ -130,7 +130,7 @@ const SolicitudCreadorPage = () => {
               <Form.Group controlId="formAceptaTerminos">
                 <Form.Check
                   type="checkbox"
-                  label="Acepto los Términos y Condiciones como Especialista en AEC sdh"
+                  label="Acepto los Términos y Condiciones como Especialista en AECBlock"
                   checked={aceptaTerminos}
                   onChange={(e) => setAceptaTerminos(e.target.checked)}
                   required

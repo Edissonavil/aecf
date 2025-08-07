@@ -9,7 +9,7 @@ export default function CatalogPage() {
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  
+
   // Nuevo estado para la barra de búsqueda
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -29,7 +29,7 @@ export default function CatalogPage() {
       try {
         setLoading(true);
         // Ajustamos la paginación para obtener más productos
-        const response = await getProductsByStatus('APROBADO', 0, 200); 
+        const response = await getProductsByStatus('APROBADO', 0, 200);
         const fetchedProducts = response.data.content || [];
 
         setProducts(fetchedProducts);
@@ -80,7 +80,7 @@ export default function CatalogPage() {
         : [...prev, specialty]
     );
   };
-  
+
   // Handler para la barra de búsqueda
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -111,7 +111,7 @@ export default function CatalogPage() {
           product.especialidades && selectedSpecialties.some(spec => product.especialidades.includes(spec))
         );
       }
-      
+
       // NEW: Filter by Search Term with defensive checks
       if (searchTerm.trim() !== '') {
         const lowercasedSearchTerm = searchTerm.toLowerCase();
@@ -137,7 +137,9 @@ export default function CatalogPage() {
 
   return (
     <Container className="my-5">
-<h2 className="mb-4 text-center w-100 fw-normal">  Catálogo de Productos</h2>
+      <h2 className="catalog-title mb-4 text-center fw-normal">
+        Catálogo de Productos
+      </h2>
       {/* NEW: Search Bar */}
       <Row className="mb-4 justify-content-center">
         <Col md={8} className="catalog-search">
@@ -263,7 +265,7 @@ export default function CatalogPage() {
         </div>
       </div>
 
-      <hr className="my-4"/> {/* Visual separator */}
+      <hr className="my-4" /> {/* Visual separator */}
 
       {/* Product Grid */}
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">

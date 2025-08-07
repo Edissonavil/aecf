@@ -51,3 +51,10 @@ h2.text-center {
   height: 3rem;       /* más alta */
   font-size: 1.1rem;  /* texto más grande */
 }
+
+.catalog-title {
+  line-height: 1.25;     /* más alto para que no corte las tildes */
+  padding-top: 2px;       /* un pelín de aire arriba */
+  overflow: visible;      /* evita recortes del propio h2 */
+}
+

@@ -335,18 +335,18 @@ const AdminStatsView = () => {
                 angle={-45}
                 textAnchor="end"
                 height={100}
-                dy={10}                       // baja un poco las etiquetas
-                interval={0}                  // muestra todas
+                dy={10}                       
+                interval={0}                
                 tick={{ fontSize: 12 }}
-                tickFormatter={(v) => (v?.length > 18 ? v.slice(0, 18) + '…' : v)} // opcional: recorta
+                tickFormatter={(v) => (v?.length > 18 ? v.slice(0, 18) + '…' : v)} 
               />
               <YAxis />
               <Tooltip
-                labelFormatter={(label) => `Producto: ${label}`} // muestra nombre completo en tooltip
+                labelFormatter={(label) => `Producto: ${label}`} 
                 formatter={(value) => [value, 'Cantidad Vendida']}
               />
               <Legend
-                verticalAlign="top"           // mueve la leyenda arriba
+                verticalAlign="top"           
                 align="right"
                 height={36}
                 wrapperStyle={{ paddingBottom: 8 }}
