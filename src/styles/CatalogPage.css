@@ -1,6 +1,4 @@
-/* src/styles/CatalogPage.css (or similar) */
 
-/* Style for filter options container, allows scrolling if content overflows */
 .filter-options-scroll {
     max-height: 200px; /* Adjust as needed */
     overflow-y: auto;
@@ -42,24 +40,20 @@
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-h2.text-center {
-  display: block;
-  width: 100%;
-}
-
 .catalog-search .form-control {
   height: 3rem;       /* más alta */
   font-size: 1.1rem;  /* texto más grande */
 }
 
 .catalog-title {
-  line-height: 1.4;       /* más aire vertical */
-  padding-top: 4px;       /* evita que la tilde toque el borde */
-  padding-bottom: 2px;
-  min-height: 1.5em;      /* asegura espacio suficiente */
-  overflow: visible;
+  line-height: 1.5;       /* Más aire vertical para asegurar que no se corte */
+  height: auto;           /* Permite que la altura se ajuste naturalmente al contenido */
+  overflow: visible;      /* Asegura que cualquier contenido que sobresalga sea visible */
+  white-space: normal;    /* Permite que el texto se envuelva en varias líneas si es necesario */
+  word-break: break-word; /* Rompe palabras largas para evitar desbordamientos */
+  padding-top: 0;         /* Dejar que el margen de Bootstrap maneje el espaciado superior */
+  padding-bottom: 0;      /* Dejar que el margen de Bootstrap maneje el espaciado inferior */
 }
-
 
 .catalog-page-container {
   overflow: visible !important; /* fuerza a mostrar contenido que sobresalga */
