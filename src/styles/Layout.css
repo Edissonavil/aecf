@@ -119,6 +119,11 @@
   line-height: 1;
 }
 
+.nav__dropdown {
+  position: relative;     /* Contenedor de referencia para el menú */
+  display: inline-block;  /* Para que se ajuste al tamaño del botón */
+}
+
 /* User Dropdown styles */
 .user-dropdown-toggle {
   background: none;
