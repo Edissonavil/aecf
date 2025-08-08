@@ -1,3 +1,120 @@
+/* =================================================================
+   DIAGNÓSTICO Y SOLUCIÓN PARA TÍTULO CORTADO - CATALOG PAGE
+   ================================================================= */
+
+/* 1. RESET COMPLETO PARA EL CONTENEDOR PRINCIPAL */
+.catalog-page-container {
+    /* Elimina cualquier margen/padding conflictivo */
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+    
+    /* Añade espacio específico para el header fijo */
+    padding-top: 100px !important;
+    
+    /* Asegura que el contenedor tenga espacio suficiente */
+    min-height: calc(100vh - 100px);
+    
+    /* Para debugging - elimina después de confirmar que funciona */
+    border: 2px solid red;
+    background-color: rgba(255, 255, 0, 0.1);
+}
+
+/* 2. RESET Y FIX ESPECÍFICO PARA EL TÍTULO */
+.catalog-title {
+    /* Elimina cualquier estilo conflictivo */
+    margin: 0 !important;
+    padding: 0 !important;
+    
+    /* Añade espaciado controlado */
+    margin-top: 2rem !important;
+    margin-bottom: 2rem !important;
+    padding: 1rem 0 !important;
+    
+    /* Asegura que el texto sea completamente visible */
+    line-height: 1.4 !important;
+    overflow: visible !important;
+    white-space: normal !important;
+    
+    /* Para debugging - elimina después de confirmar que funciona */
+    border: 2px solid blue;
+    background-color: rgba(0, 255, 0, 0.1);
+    
+    /* Estilo visual */
+    font-size: 2.5rem !important;
+    font-weight: 300 !important;
+    color: #333 !important;
+    text-align: center !important;
+}
+
+/* 3. SOLUCIÓN ALTERNATIVA CON MARGIN EN LUGAR DE PADDING */
+.catalog-page-container.alternative-spacing {
+    padding-top: 0 !important;
+    margin-top: 100px !important;
+}
+
+/* 4. SOLUCIÓN ESPECÍFICA PARA BOOTSTRAP CONTAINER */
+.container.catalog-page-container,
+.container-fluid.catalog-page-container {
+    padding-top: 120px !important;
+}
+
+/* 5. OVERRIDE PARA CLASES DE BOOTSTRAP QUE PUEDEN ESTAR INTERFIRIENDO */
+.catalog-page-container.my-5 {
+    margin-top: 0 !important;
+    padding-top: 100px !important;
+}
+
+/* 6. SOLUCIÓN PARA DIFERENTES TAMAÑOS DE HEADER */
+.catalog-page-container.header-small {
+    padding-top: 80px !important;
+}
+
+.catalog-page-container.header-medium {
+    padding-top: 100px !important;
+}
+
+.catalog-page-container.header-large {
+    padding-top: 120px !important;
+}
+
+/* 7. MEDIA QUERIES ESPECÍFICAS */
+@media (max-width: 992px) {
+    .catalog-page-container {
+        padding-top: 90px !important;
+    }
+    
+    .catalog-title {
+        font-size: 2.2rem !important;
+        margin-top: 1.5rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .catalog-page-container {
+        padding-top: 80px !important;
+    }
+    
+    .catalog-title {
+        font-size: 1.8rem !important;
+        margin-top: 1rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .catalog-page-container {
+        padding-top: 70px !important;
+    }
+    
+    .catalog-title {
+        font-size: 1.6rem !important;
+        margin-top: 0.5rem !important;
+    }
+}
+
+/* =================================================================
+   RESTO DE TUS ESTILOS ORIGINALES (SIN MODIFICAR)
+   ================================================================= */
+
 .filter-options-scroll {
     max-height: 200px;
     overflow-y: auto;
@@ -17,13 +134,11 @@
     margin-left: 5px;
 }
 
-/* Optional: Highlight checked items */
 .filter-options-scroll .form-check-input:checked + .form-check-label {
     font-weight: bold;
     color: #007bff;
 }
 
-/* General improvements for filter section */
 .catalog-section .h5 {
     color: #333;
     border-bottom: 1px solid #eee;
@@ -31,7 +146,6 @@
     margin-bottom: 15px;
 }
 
-/* Add some padding to the filter columns for better spacing */
 .catalog-section .col-md-4 {
     padding: 15px;
     background-color: #fff;
@@ -42,71 +156,4 @@
 .catalog-search .form-control {
     height: 3rem;
     font-size: 1.1rem;
-}
-
-/* CORRECCIÓN PARA EL TÍTULO */
-.catalog-title {
-    line-height: 1.5;
-    height: auto;
-    overflow: visible;
-    white-space: normal;
-    word-break: break-word;
-    padding-top: 1rem;      /* Añade padding superior para dar más espacio */
-    padding-bottom: 1rem;   /* Añade padding inferior para equilibrar */
-    margin-top: 0;          /* Evita márgenes adicionales que puedan causar problemas */
-    margin-bottom: 1.5rem;  /* Espacio consistente debajo del título */
-}
-
-/* CORRECCIÓN PRINCIPAL PARA EL CONTENEDOR */
-.catalog-page-container {
-    padding-top: calc(2.25rem * 1.5 + 32px + 2rem) !important;  /* Altura del header + margen extra */
-    min-height: 100vh;                                           /* Asegura que el contenedor tenga altura mínima */
-    position: relative;                                          /* Para control de posicionamiento */
-}
-
-/* Alternativa con medida exacta basada en tu header */
-.catalog-page-container.exact-header-spacing {
-    margin-top: 80px;   /* Altura aproximada de tu header fijo */
-    padding-top: 2rem;  /* Espacio adicional para el título */
-}
-
-/* Para asegurar que no haya conflictos con Bootstrap y el header fijo */
-.container.catalog-page-container {
-    padding-top: calc(2.25rem * 1.5 + 32px + 2rem) !important;
-}
-
-/* Solución alternativa más simple y segura */
-.catalog-page-container.header-safe {
-    padding-top: 90px !important;  /* Valor más conservador basado en tu header */
-}
-
-/* Estilos adicionales para mejor presentación */
-.catalog-page-container h2.catalog-title {
-    font-weight: 300;
-    color: #333;
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-}
-
-/* Media query para dispositivos móviles */
-@media (max-width: 768px) {
-    .catalog-page-container {
-        padding-top: 90px !important;  /* Valor reducido para móviles */
-    }
-    
-    .catalog-title {
-        font-size: 2rem;
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-    }
-}
-
-.debug-header {
-    background-color: rgba(255, 0, 0, 0.3) !important;
-}
-
-.debug-title {
-    background-color: rgba(0, 255, 0, 0.3) !important;
-    border: 2px solid blue !important;
 }
