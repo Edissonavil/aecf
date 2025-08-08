@@ -54,7 +54,7 @@
   padding-top: 0;         /* Dejar que el margen de Bootstrap maneje el espaciado superior */
   padding-bottom: 0;      /* Dejar que el margen de Bootstrap maneje el espaciado inferior */
 }
-
 .catalog-page-container {
-  overflow: visible !important; /* fuerza a mostrar contenido que sobresalga */
+  padding-top: 80px; 
 }
+
