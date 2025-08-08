@@ -136,10 +136,21 @@ export default function CatalogPage() {
   if (error) return <Alert variant="danger" className="text-center my-5">{error}</Alert>;
 
   return (
-   <Container className="catalog-page-container">
-    <h2 className="catalog-title mb-4 text-center fw-normal">
-      Catálogo de Productos
-    </h2>
+    <Container
+      className="catalog-page-container"
+      style={{ paddingTop: '140px' }}
+    >
+      <h2
+        className="catalog-title mb-4 text-center fw-normal"
+        style={{
+          marginTop: '2rem',
+          paddingTop: '1rem',
+          overflow: 'visible',
+          lineHeight: '1.2'
+        }}
+      >
+        Catálogo de Productos
+      </h2>
       {/* NEW: Search Bar */}
       <Row className="mb-4 justify-content-center">
         <Col md={8}>
