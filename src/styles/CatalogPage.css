@@ -1,118 +1,105 @@
-/* =================================================================
-   DIAGNÓSTICO Y SOLUCIÓN PARA TÍTULO CORTADO - CATALOG PAGE
-   ================================================================= */
-
-/* 1. RESET COMPLETO PARA EL CONTENEDOR PRINCIPAL */
+/* 1. CONTENEDOR PRINCIPAL - Espacio para header fijo */
 .catalog-page-container {
-    /* Elimina cualquier margen/padding conflictivo */
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-    
-    /* Añade espacio específico para el header fijo */
-    padding-top: 100px !important;
-    
-    /* Asegura que el contenedor tenga espacio suficiente */
-    min-height: calc(100vh - 100px);
-    
-    /* Para debugging - elimina después de confirmar que funciona */
-    border: 2px solid red;
-    background-color: rgba(255, 255, 0, 0.1);
+    padding-top: 120px !important;  /* Suficiente espacio para el header fijo */
+    min-height: calc(100vh - 120px);
+    position: relative;
 }
 
-/* 2. RESET Y FIX ESPECÍFICO PARA EL TÍTULO */
+/* 2. OVERRIDE ESPECÍFICO PARA TU TÍTULO EXISTENTE */
 .catalog-title {
-    /* Elimina cualquier estilo conflictivo */
-    margin: 0 !important;
-    padding: 0 !important;
+    color: #222 !important;
+    font-family: Montserrat, sans-serif !important;
+    font-size: 2.5rem !important;
+    font-weight: 900 !important;
     
-    /* Añade espaciado controlado */
-    margin-top: 2rem !important;
-    margin-bottom: 2rem !important;
-    padding: 1rem 0 !important;
+    /* CORRECCIONES PARA EVITAR CORTE */
+    margin-top: 2rem !important;        /* Espacio superior adicional */
+    margin-bottom: 2rem !important;     /* Espacio inferior */
+    padding: 1rem 0 !important;         /* Padding interno para más espacio */
+    line-height: 1.2 !important;        /* Línea de altura controlada */
     
-    /* Asegura que el texto sea completamente visible */
-    line-height: 1.4 !important;
+    /* Asegurar visibilidad completa */
     overflow: visible !important;
     white-space: normal !important;
+    text-overflow: clip !important;
     
-    /* Para debugging - elimina después de confirmar que funciona */
-    border: 2px solid blue;
-    background-color: rgba(0, 255, 0, 0.1);
-    
-    /* Estilo visual */
-    font-size: 2.5rem !important;
-    font-weight: 300 !important;
-    color: #333 !important;
+    /* Centrado y estilo */
     text-align: center !important;
+    display: block !important;
+    width: 100% !important;
 }
 
-/* 3. SOLUCIÓN ALTERNATIVA CON MARGIN EN LUGAR DE PADDING */
-.catalog-page-container.alternative-spacing {
-    padding-top: 0 !important;
-    margin-top: 100px !important;
-}
-
-/* 4. SOLUCIÓN ESPECÍFICA PARA BOOTSTRAP CONTAINER */
-.container.catalog-page-container,
-.container-fluid.catalog-page-container {
-    padding-top: 120px !important;
-}
-
-/* 5. OVERRIDE PARA CLASES DE BOOTSTRAP QUE PUEDEN ESTAR INTERFIRIENDO */
-.catalog-page-container.my-5 {
-    margin-top: 0 !important;
-    padding-top: 100px !important;
-}
-
-/* 6. SOLUCIÓN PARA DIFERENTES TAMAÑOS DE HEADER */
-.catalog-page-container.header-small {
-    padding-top: 80px !important;
-}
-
-.catalog-page-container.header-medium {
-    padding-top: 100px !important;
-}
-
-.catalog-page-container.header-large {
-    padding-top: 120px !important;
-}
-
-/* 7. MEDIA QUERIES ESPECÍFICAS */
-@media (max-width: 992px) {
-    .catalog-page-container {
-        padding-top: 90px !important;
-    }
-    
-    .catalog-title {
-        font-size: 2.2rem !important;
-        margin-top: 1.5rem !important;
-    }
-}
-
+/* 3. MEDIA QUERIES ACTUALIZADAS PARA TU ESTILO */
 @media (max-width: 768px) {
-    .catalog-page-container {
-        padding-top: 80px !important;
+    .catalog-title {
+        font-size: 2rem !important;
+        margin-top: 1.5rem !important;
+        padding: 0.8rem 0 !important;
     }
     
-    .catalog-title {
-        font-size: 1.8rem !important;
-        margin-top: 1rem !important;
+    .catalog-page-container {
+        padding-top: 100px !important;
     }
 }
 
 @media (max-width: 576px) {
-    .catalog-page-container {
-        padding-top: 70px !important;
+    .catalog-title {
+        font-size: 1.8rem !important;
+        margin-top: 1rem !important;
+        padding: 0.6rem 0 !important;
     }
     
-    .catalog-title {
-        font-size: 1.6rem !important;
-        margin-top: 0.5rem !important;
+    .catalog-page-container {
+        padding-top: 90px !important;
     }
 }
 
+/* 4. SOLUCIONES ALTERNATIVAS SI EL PROBLEMA PERSISTE */
+
+/* Opción A: Forzar el contenedor con altura mínima específica */
+.catalog-page-container.force-space {
+    padding-top: 140px !important;
+    margin-top: 0 !important;
+}
+
+/* Opción B: Wrapper adicional para el título */
+.catalog-title-wrapper {
+    padding-top: 2rem;
+    padding-bottom: 1rem;
+    margin: 0;
+    background-color: transparent;
+}
+
+.catalog-title-wrapper .catalog-title {
+    margin: 0 !important;
+    padding: 1rem 0 !important;
+}
+
+/* Opción C: Reset completo para Bootstrap conflicts */
+.container.catalog-page-container {
+    padding-top: 120px !important;
+    margin-top: 0 !important;
+}
+
+.container.catalog-page-container.my-5 {
+    margin-top: 0 !important;
+    margin-bottom: 3rem !important;
+}
+
+/* 5. DEBUG TEMPORAL - Usar solo para identificar el problema */
+.debug-catalog-title {
+    border: 3px solid red !important;
+    background-color: rgba(255, 255, 0, 0.3) !important;
+    box-sizing: border-box !important;
+}
+
+.debug-catalog-container {
+    border: 3px solid blue !important;
+    background-color: rgba(0, 255, 0, 0.1) !important;
+}
+
 /* =================================================================
-   RESTO DE TUS ESTILOS ORIGINALES (SIN MODIFICAR)
+   TUS ESTILOS ORIGINALES DE FILTROS (sin cambios)
    ================================================================= */
 
 .filter-options-scroll {
