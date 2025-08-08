@@ -54,7 +54,9 @@
   padding-top: 0;         /* Dejar que el margen de Bootstrap maneje el espaciado superior */
   padding-bottom: 0;      /* Dejar que el margen de Bootstrap maneje el espaciado inferior */
 }
+
 .catalog-page-container {
-  padding-top: 80px; 
+  padding-top: calc(80px + 2rem); /* alto del header + margen extra */
 }
+
 
