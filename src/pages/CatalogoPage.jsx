@@ -141,9 +141,9 @@ export default function CatalogPage() {
       style={{ paddingTop: '140px' }}
     >
       <h2
-        className="catalog-title mb-4 text-center fw-normal"
+        className="catalog-title mb-2 text-center fw-normal"
         style={{
-          marginTop: '2rem',
+          marginTop: '1rem',
           paddingTop: '1rem',
           overflow: 'visible',
           lineHeight: '1.2'
