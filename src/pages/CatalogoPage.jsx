@@ -136,7 +136,7 @@ export default function CatalogPage() {
   if (error) return <Alert variant="danger" className="text-center my-5">{error}</Alert>;
 
   return (
-    <Container className="catalog-page-container my-5">
+    <Container className="catalog-page-container header-safe my-5">
       <h2 className="catalog-title mb-4 text-center fw-normal">
         Catálogo de Productos
       </h2>

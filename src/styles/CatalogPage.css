@@ -1,6 +1,5 @@
-
 .filter-options-scroll {
-    max-height: 200px; /* Adjust as needed */
+    max-height: 200px;
     overflow-y: auto;
     border: 1px solid #e0e0e0;
     border-radius: 0.25rem;
@@ -14,19 +13,19 @@
 
 .filter-options-scroll .form-check-label {
     cursor: pointer;
-    user-select: none; /* Prevent text selection on label click */
-    margin-left: 5px; /* Spacing between checkbox and label */
+    user-select: none;
+    margin-left: 5px;
 }
 
 /* Optional: Highlight checked items */
 .filter-options-scroll .form-check-input:checked + .form-check-label {
     font-weight: bold;
-    color: #007bff; /* Primary blue, or adjust to your theme */
+    color: #007bff;
 }
 
 /* General improvements for filter section */
 .catalog-section .h5 {
-    color: #333; /* Darker heading color */
+    color: #333;
     border-bottom: 1px solid #eee;
     padding-bottom: 8px;
     margin-bottom: 15px;
@@ -41,22 +40,64 @@
 }
 
 .catalog-search .form-control {
-  height: 3rem;       /* más alta */
-  font-size: 1.1rem;  /* texto más grande */
+    height: 3rem;
+    font-size: 1.1rem;
 }
 
+/* CORRECCIÓN PARA EL TÍTULO */
 .catalog-title {
-  line-height: 1.5;       /* Más aire vertical para asegurar que no se corte */
-  height: auto;           /* Permite que la altura se ajuste naturalmente al contenido */
-  overflow: visible;      /* Asegura que cualquier contenido que sobresalga sea visible */
-  white-space: normal;    /* Permite que el texto se envuelva en varias líneas si es necesario */
-  word-break: break-word; /* Rompe palabras largas para evitar desbordamientos */
-  padding-top: 0;         /* Dejar que el margen de Bootstrap maneje el espaciado superior */
-  padding-bottom: 0;      /* Dejar que el margen de Bootstrap maneje el espaciado inferior */
+    line-height: 1.5;
+    height: auto;
+    overflow: visible;
+    white-space: normal;
+    word-break: break-word;
+    padding-top: 1rem;      /* Añade padding superior para dar más espacio */
+    padding-bottom: 1rem;   /* Añade padding inferior para equilibrar */
+    margin-top: 0;          /* Evita márgenes adicionales que puedan causar problemas */
+    margin-bottom: 1.5rem;  /* Espacio consistente debajo del título */
 }
 
+/* CORRECCIÓN PRINCIPAL PARA EL CONTENEDOR */
 .catalog-page-container {
-  padding-top: calc(80px + 2rem); /* alto del header + margen extra */
+    padding-top: calc(2.25rem * 1.5 + 32px + 2rem) !important;  /* Altura del header + margen extra */
+    min-height: 100vh;                                           /* Asegura que el contenedor tenga altura mínima */
+    position: relative;                                          /* Para control de posicionamiento */
 }
 
+/* Alternativa con medida exacta basada en tu header */
+.catalog-page-container.exact-header-spacing {
+    margin-top: 80px;   /* Altura aproximada de tu header fijo */
+    padding-top: 2rem;  /* Espacio adicional para el título */
+}
 
+/* Para asegurar que no haya conflictos con Bootstrap y el header fijo */
+.container.catalog-page-container {
+    padding-top: calc(2.25rem * 1.5 + 32px + 2rem) !important;
+}
+
+/* Solución alternativa más simple y segura */
+.catalog-page-container.header-safe {
+    padding-top: 90px !important;  /* Valor más conservador basado en tu header */
+}
+
+/* Estilos adicionales para mejor presentación */
+.catalog-page-container h2.catalog-title {
+    font-weight: 300;
+    color: #333;
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Media query para dispositivos móviles */
+@media (max-width: 768px) {
+    .catalog-page-container {
+        padding-top: 90px !important;  /* Valor reducido para móviles */
+    }
+    
+    .catalog-title {
+        font-size: 2rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+}
