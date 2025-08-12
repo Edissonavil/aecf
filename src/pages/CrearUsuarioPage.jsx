@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'; // Importa useEffect
 import { Container, Form, Button, Card, Alert, Spinner, InputGroup } from 'react-bootstrap'; // Importa Spinner
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; 
+import { useAuth } from '../context/AuthContext';
 
 const CrearUsuarioPage = () => {
   const [nombreUsuario, setNombreUsuario] = useState('');
@@ -27,7 +27,6 @@ const CrearUsuarioPage = () => {
     console.log("  role:", role);
   }, [authToken, isAuthLoading, role]); // Se ejecuta cuando estas variables cambian
 
-  // Protección de ruta a nivel de UI: Asegúrate de que solo ROL_ADMIN pueda ver esto
   if (isAuthLoading) {
     return (
       <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
@@ -66,11 +65,11 @@ const CrearUsuarioPage = () => {
     try {
       const config = {
         headers: {
-          'Authorization': `Bearer ${authToken}` 
+          'Authorization': `Bearer ${authToken}`
         }
       };
 
-      const response = await axios.post('https://gateway-production-129e.up.railway.app/api/users', 
+      const response = await axios.post('https://gateway-production-129e.up.railway.app/api/users',
         {
           nombreUsuario,
           clave,
@@ -78,7 +77,7 @@ const CrearUsuarioPage = () => {
           email,
           rol
         },
-        config 
+        config
       );
 
       if (response.status === 200 || response.status === 201) { // 201 Created es una respuesta común para POST
@@ -87,9 +86,9 @@ const CrearUsuarioPage = () => {
         setClave('');
         setNombre('');
         setEmail('');
-        setRol('ROL_COLABORADOR'); 
+        setRol('ROL_COLABORADOR');
         // Opcional: redirigir después de un tiempo
-         setTimeout(() => navigate('/admin/dashboard'), 2000); 
+        setTimeout(() => navigate('/admin/dashboard'), 2000);
       }
     } catch (err) {
       console.error('Error al crear usuario:', err.response?.data || err.message);
@@ -105,7 +104,11 @@ const CrearUsuarioPage = () => {
         <Card.Body>
           <h1 className="text-center mb-4">Crear Nuevo Usuario</h1>
 
-          {success && <Alert variant="success" className="text-center">¡Usuario creado con éxito!</Alert>}
+          {success && (
+            <Alert variant="success" className="text-center">
+              Usuario creado. Si es colaborador, recibirá un correo con sus credenciales y una clave temporal.
+            </Alert>
+          )}
           {error && <Alert variant="danger" className="text-center">{error}</Alert>}
 
           <Form onSubmit={handleSubmit}>
@@ -120,26 +123,28 @@ const CrearUsuarioPage = () => {
               />
             </Form.Group>
 
-  <Form.Group className="mb-3 position-relative" controlId="formClave">
-        <Form.Label>Clave</Form.Label>
-        <InputGroup>
-          <Form.Control
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Ingresa la clave"
-            value={clave}
-            onChange={(e) => setClave(e.target.value)}
-            required
-            autoComplete="new-password"
-          />
-          <Button
-            variant="outline-secondary"
-            onClick={() => setShowPassword(prev => !prev)}
-            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-          >
-            {showPassword ? '🔒' : '🔑'}
-          </Button>
-        </InputGroup>
-      </Form.Group>
+            <Form.Group className="mb-3 position-relative" controlId="formClave">
+              <Form.Label>Clave</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Ingresa la clave"
+                  value={clave}
+                  onChange={(e) => setClave(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                />
+                <Button
+                  variant="outline-secondary"
+                  className="btn-outline-white"
+                  onClick={() => setShowPassword(prev => !prev)}
+                  aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                >
+                  {showPassword ? '🔒' : '🔑'}
+                </Button>
+
+              </InputGroup>
+            </Form.Group>
 
             <Form.Group className="mb-3" controlId="formNombre">
               <Form.Label>Nombre Completo</Form.Label>

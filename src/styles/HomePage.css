@@ -1,8 +1,5 @@
 /* src/styles/HomePage.css */
 
-/* --- Importación de Fuentes (Asegúrate de que estén importadas globalmente en tu proyecto o en index.html) --- */
-/* @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&family=Inter:wght@400;600;700&display=swap'); */
-
 /* Colores personalizados */
 .text-fuchsia-electric { color: #FF00FF !important; }
 .bg-fuchsia-electric { background-color: #FF00FF !important; }
@@ -351,4 +348,26 @@
 .nav__cart {
   position: relative; /* para que el badge se posicione sobre el icono */
   display: inline-block;
+}
+
+.form-check-input {
+    background-color: #555 !important; /* Gris oscuro para el fondo */
+    border-color: #555 !important;    /* Borde del mismo color */
+    
+    /* Estos estilos aseguran que no se vea el color azul por defecto de Bootstrap */
+    box-shadow: none !important;
+}
+
+.form-check-input:checked {
+    background-color: #333 !important; /* Gris aún más oscuro cuando está seleccionado */
+    border-color: #333 !important;
+    
+    /* Este filtro invierte el color del "tick" para que sea blanco y visible */
+    filter: brightness(0) invert(1);
+}
+
+.form-check-input:focus {
+    /* Opcional: Define el color del borde al enfocar */
+    border-color: #777 !important;
+    box-shadow: 0 0 0 0.25rem rgba(85, 85, 85, 0.25) !important;
 }

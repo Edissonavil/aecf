@@ -18,9 +18,26 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // imagen seleccionada (índice en fotografiaUrl)
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   // Zoom state and ref
   const imgWrapperRef = useRef(null);
-  const [zoomStyle, setZoomStyle] = useState({});
+  const [zoomStyle, setZoomStyle] = useState({ transform: 'scale(1)', transformOrigin: 'center center' });
+
+  // cambiar imagen
+  const selectImage = (i) => {
+    setSelectedIndex(i);
+    setZoomStyle({ transform: 'scale(1)', transformOrigin: 'center center' });
+  };
+  const nextImage = () => {
+    const n = (product?.fotografiaUrl?.length || 0);
+    if (n > 1) selectImage((selectedIndex + 1) % n);
+  };
+  const prevImage = () => {
+    const n = (product?.fotografiaUrl?.length || 0);
+    if (n > 1) selectImage((selectedIndex - 1 + n) % n);
+  };
 
   // Get refreshCartCount from AuthContext
   const { refreshCartCount } = useContext(AuthContext);
@@ -29,10 +46,11 @@ export default function ProductDetail() {
   useEffect(() => {
     getProductById(id)
       .then(res => {
-        if (res.data && res.data.fotografiaUrl) {
+        if (res?.data) {
           setProduct(res.data);
+          setSelectedIndex(0);
         } else {
-          setError('La URL de la imagen del producto no está disponible o los datos del producto están incompletos.');
+          setError('Los datos del producto no están disponibles.');
         }
       })
       .catch((err) => {
@@ -41,6 +59,7 @@ export default function ProductDetail() {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
 
 
   const handleAddToCart = async () => {
@@ -83,22 +102,67 @@ export default function ProductDetail() {
         <Card.Body className="p-4 p-md-5">
           <Row className="g-4">
             {/* Imagen con zoom */}
-            <Col xs={12} md={6} lg={5} className="d-flex justify-content-center">
+            <Col xs={12} md={6} lg={5} className="d-flex flex-column align-items-center">
               <div
                 ref={imgWrapperRef}
                 onMouseMove={onMouseMove}
                 onMouseLeave={onMouseLeave}
-                className="product-image-wrapper rounded"
+                className="product-image-wrapper rounded position-relative"
               >
+                {/* Botón anterior */}
+                <button
+                  type="button"
+                  className="img-nav-btn left"
+                  onClick={prevImage}
+                  disabled={!product?.fotografiaUrl || product.fotografiaUrl.length <= 1}
+                  aria-label="Imagen anterior"
+                >
+                  ‹
+                </button>
+
                 <img
-                  src={product.fotografiaUrl || '/placeholder.png'}
-                  alt={product.nombre || 'Product Image'}
+                  src={(product?.fotografiaUrl && product.fotografiaUrl[selectedIndex]) || 'https://via.placeholder.com/450x350?text=Sin+Imagen'}
+                  alt={product?.nombre || 'Product Image'}
                   className="product-detail-img"
                   style={zoomStyle}
-                  onError={e => { e.currentTarget.src = '/placeholder.png'; }}
+                  onError={e => { e.currentTarget.src = '/https://via.placeholder.com/72x72?text=No+Img'; }}
                 />
+
+                {/* Botón siguiente */}
+                <button
+                  type="button"
+                  className="img-nav-btn right"
+                  onClick={nextImage}
+                  disabled={!product?.fotografiaUrl || product.fotografiaUrl.length <= 1}
+                  aria-label="Imagen siguiente"
+                >
+                  ›
+                </button>
               </div>
+
+              {/* Miniaturas */}
+              {Array.isArray(product?.fotografiaUrl) && product.fotografiaUrl.length > 0 && (
+                <div className="thumbs-strip mt-3">
+                  {product.fotografiaUrl.map((url, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      className={`thumb-btn ${i === selectedIndex ? 'active' : ''}`}
+                      onClick={() => selectImage(i)}
+                      aria-label={`Ver imagen ${i + 1}`}
+                      title={`Imagen ${i + 1}`}
+                    >
+                      <img
+                        src={url}
+                        alt={`Miniatura ${i + 1}`}
+                        onError={e => { e.currentTarget.src = '/https://via.placeholder.com/72x72?text=No+Img'; }}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </Col>
+
 
             {/* Detalle del producto */}
             <Col xs={12} md={6} lg={7}>
@@ -106,11 +170,20 @@ export default function ProductDetail() {
               <p className="fs-3 fw-bold text-primary">${(product.precioIndividual || 0).toFixed(2)}</p> {/* Ensure price is a number */}
               <p className="text-secondary">Creador: {product.uploaderUsername || 'Desconocido'}</p>
 
+              {/* Categorías */}
               <div className="mt-3 d-flex flex-wrap gap-2">
-                {(product.especialidades || []).map((s, i) => (
-                  <Badge key={i} bg="secondary" className="px-3 py-1">{s}</Badge>
+                {(product.categorias || []).map((c, i) => (
+                  <Badge key={`cat-${i}`} bg="dark" className="px-3 py-1">{c}</Badge>
                 ))}
               </div>
+
+              {/* Especialidades */}
+              <div className="mt-2 d-flex flex-wrap gap-2">
+                {(product.especialidades || []).map((s, i) => (
+                  <Badge key={`sp-${i}`} bg="secondary" className="px-3 py-1">{s}</Badge>
+                ))}
+              </div>
+
 
               <p className="text-secondary mt-2">
                 País: <strong className="text-dark">{product.pais || 'Desconocido'}</strong>

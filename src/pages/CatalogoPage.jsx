@@ -144,9 +144,9 @@ export default function CatalogPage() {
         className="catalog-title mb-2 text-center fw-normal"
         style={{
           marginTop: '1rem',
-          paddingTop: '1rem',
+          paddingTop: '0.5rem',
           overflow: 'visible',
-          lineHeight: '1.2'
+          lineHeight: '0.6'
         }}
       >
         Catálogo de Productos

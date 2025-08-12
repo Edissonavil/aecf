@@ -10,6 +10,7 @@ const CATEGORY_OPTIONS = [
   'Recursos Visuales',
   'Guías / Documentos',
   'Plugins / Scripts',
+  'Otros'
 ];
 const SPECIALTY_OPTIONS = [
   'Arquitectura',
@@ -22,10 +23,11 @@ const SPECIALTY_OPTIONS = [
   'Construcción y Obra',
   'BIM & Coordinación',
   'Instalaciones MEP',
-  'Ingeniería Eléctrica ⚡',
-  'Telecomunicaciones / ICT 📡',
+  'Ingeniería Eléctrica',
+  'Telecomunicaciones / ICT',
   'Ambiental / Sostenibilidad',
   'Topografía & GIS',
+  'Otros'
 ];
 
 const MAX_DESCRIPTION_LENGTH = 1500;
@@ -37,7 +39,7 @@ const blank = {
   descripcionProd: '',
   precioIndividual: '',
   pais: '',
-  fotografiaProd: null,
+  fotografiaProd: [],
   archivosAut: [],
 };
 
@@ -45,7 +47,7 @@ export default function UploadProductPage() {
   const [form, setForm] = useState(blank);
   const [selectedCategories, setCats] = useState([]);
   const [selectedSpecialties, setSpecs] = useState([]);
-  const [previewSrc, setPreview] = useState('');
+  const [previewSrc, setPreview] = useState([]);
   const [errors, setErrors] = useState({});
   const [msg, setMsg] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -78,22 +80,37 @@ export default function UploadProductPage() {
       setErrors(p => ({ ...p, archivosAut: undefined }));
       return;
     }
-    // Único (foto)
-    const single = e.target.files[0];
-    if (single && single.size > MAX_PHOTO_SIZE_MB * 1024 * 1024) {
-      alert(`La fotografía supera el tamaño máximo de ${MAX_PHOTO_SIZE_MB} MB.`);
-      setErrors(p => ({ ...p, [field]: `La fotografía debe ser menor a ${MAX_PHOTO_SIZE_MB} MB.` }));
-      setPreview('');
-      return;
+    // Múltiples (fotos)
+    const incoming = Array.from(e.target.files || []);
+    const validas = [];
+    for (const img of incoming) {
+      if (img.size > MAX_PHOTO_SIZE_MB * 1024 * 1024) {
+        alert(`La imagen ${img.name} supera el tamaño máximo de ${MAX_PHOTO_SIZE_MB} MB.`);
+      } else {
+        validas.push(img);
+      }
     }
-    setForm(p => ({ ...p, [field]: single }));
-    setErrors(p => ({ ...p, [field]: undefined }));
-    if (field === 'fotografiaProd' && single) {
+
+    // acumular en fotografiaProd (permite seleccionar en varias tandas)
+    setForm(p => ({
+      ...p,
+      fotografiaProd: [...(p.fotografiaProd || []), ...validas],
+    }));
+
+    // limpiar errores del campo
+    setErrors(p => ({ ...p, fotografiaProd: undefined }));
+
+    // generar previews para cada nueva imagen
+    validas.forEach(v => {
       const reader = new FileReader();
-      reader.onload = ev => setPreview(ev.target.result);
-      reader.readAsDataURL(single);
-    }
+      reader.onload = ev => {
+        setPreview(prev => [...prev, ev.target.result]);
+      };
+      reader.readAsDataURL(v);
+    });
   };
+
+
 
   const validate = () => {
     const e = {};
@@ -105,7 +122,7 @@ export default function UploadProductPage() {
     if (selectedCategories.length === 0) e.categorias = 'Selecciona al menos 1 categoría';
     if (selectedSpecialties.length === 0) e.especialidades = 'Selecciona al menos 1 especialidad';
     if (!form.pais) e.pais = 'Selecciona un país';
-    if (!form.fotografiaProd) e.fotografiaProd = 'Sube una foto';
+    if (form.fotografiaProd.length === 0) e.fotografiaProd = 'Sube al menos 1 imagen';
     if (form.archivosAut.length === 0) e.archivosAut = 'Sube al menos 1 archivo';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -126,17 +143,23 @@ export default function UploadProductPage() {
 
     const fd = new FormData();
     fd.append('dto', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
-    fd.append('foto', form.fotografiaProd);
+
+    if (form.fotografiaProd[0]) {
+      fd.append('foto', form.fotografiaProd[0]);
+    }
+
+    form.fotografiaProd.forEach(f => fd.append('fotos', f));
+
     form.archivosAut.forEach(f => fd.append('archivosAut', f));
 
     try {
       setLoading(true);
       await createProduct(fd);
-      setMsg({ ok: true, txt: '¡Tu recurso fue enviado! Nuestro equipo lo revisará y te notificará pronto por correo.' });
+      setMsg({ ok: true, txt: '¡Tu recurso fue enviado! Nuestro equipo lo revisará y te notificará pronto por correo electrónico.' });
       setForm(blank);
       setCats([]);
       setSpecs([]);
-      setPreview('');
+      setPreview([]);
     } catch (error) {
       console.error("Error al subir recurso:", error);
       setMsg({ ok: false, txt: 'Error al subir el recurso. Por favor, inténtalo de nuevo.' });
@@ -185,11 +208,8 @@ export default function UploadProductPage() {
                   className="form-control"
                   value={form.precioIndividual}
                   onChange={text}
-                  placeholder="Ej: 9.99"
+                  placeholder="Establece un precio. Puedes actualizarlo luego."
                 />
-                <small className="form-text text-muted">
-                  Establece un precio entre $1 y $99. Puedes actualizarlo luego.
-                </small>
                 {Error('precioIndividual')}
               </div>
             </div>
@@ -197,7 +217,7 @@ export default function UploadProductPage() {
             <hr className="my-4" /> {/* Divisor visual */}
 
             {/* Categorías */}
-            <div className="col-12">
+            <div className="col-12 category-checkbox">
               <label className="form-label">Categorías</label>
               <div className="d-flex flex-wrap gap-3">
                 {CATEGORY_OPTIONS.map(cat => (
@@ -212,19 +232,12 @@ export default function UploadProductPage() {
                     <label htmlFor={`cat-${cat}`} className="form-check-label">{cat}</label>
                   </div>
                 ))}
-                {/* Sugerir categoría */}
-                <div className="form-check">
-                  <input type="checkbox" className="form-check-input" id="suggest-cat" disabled />
-                  <label htmlFor="suggest-cat" className="form-check-label text-muted">Sugerir categoría</label>
-                </div>
               </div>
               {Error('categorias')}
             </div>
 
-            <hr className="my-4" /> {/* Divisor visual */}
-
             {/* Especialidades */}
-            <div className="col-12">
+            <div className="col-12 specialty-checkbox">
               <label className="form-label">Especialidades</label>
               <div className="d-flex flex-wrap gap-3">
                 {SPECIALTY_OPTIONS.map(sp => (
@@ -239,11 +252,6 @@ export default function UploadProductPage() {
                     <label htmlFor={`sp-${sp}`} className="form-check-label">{sp}</label>
                   </div>
                 ))}
-                {/* Sugerir especialidad */}
-                <div className="form-check">
-                  <input type="checkbox" className="form-check-input" id="suggest-sp" disabled />
-                  <label htmlFor="suggest-sp" className="form-check-label text-muted">Sugerir especialidad</label>
-                </div>
               </div>
               {Error('especialidades')}
             </div>
@@ -260,7 +268,7 @@ export default function UploadProductPage() {
                 value={form.descripcionProd}
                 onChange={text}
                 maxLength={MAX_DESCRIPTION_LENGTH}
-                placeholder="Explica qué resuelve tu recurso, para quién está pensado y cómo se usa. Máximo 1500 caracteres."
+                placeholder="Explica qué resuelve tu recurso, para quién está pensado y cómo se usa. Máximo 2000 caracteres."
               />
               <div className="text-end text-muted small mt-1">
                 {form.descripcionProd.length}/{MAX_DESCRIPTION_LENGTH}
@@ -283,27 +291,70 @@ export default function UploadProductPage() {
                 {Error('pais')}
               </div>
 
-              {/* Foto */}
+              {/* Imágenes */}
               <div className="col-md-6">
-                <label className="form-label">Fotografía del Recurso *</label>
+                <label className="form-label">Imágenes de Portada. </label>
                 <input
                   type="file"
                   accept="image/*"
+                  multiple
                   className="form-control"
                   onChange={file('fotografiaProd')}
                 />
                 <small className="form-text text-muted">
-                  Tamaño máximo: {MAX_PHOTO_SIZE_MB} MB.
+                  Tamaño máximo por imagen: {MAX_PHOTO_SIZE_MB} MB.
                 </small>
                 {Error('fotografiaProd')}
-                {previewSrc &&
-                  <img
-                    src={previewSrc}
-                    alt="Vista previa del recurso"
-                    className="img-fluid mt-2 rounded"
-                    style={{ maxHeight: 200 }}
-                  />}
+
+                {previewSrc.length > 0 && (
+                  <div className="d-flex flex-wrap gap-2 mt-2">
+                    {previewSrc.map((src, i) => (
+                      <img
+                        key={i}
+                        src={src}
+                        alt={`Vista previa ${i + 1}`}
+                        className="rounded"
+                        style={{ maxHeight: 120 }}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {/* Lista de imágenes seleccionadas con botón para quitar */}
+                {form.fotografiaProd.length > 0 && (
+                  <ul className="list-group mt-2">
+                    {form.fotografiaProd.map((f, idx) => (
+                      <li
+                        key={idx}
+                        className="list-group-item d-flex justify-content-between align-items-center"
+                      >
+                        <div>
+                          <i className="bi bi-image me-2" />
+                          {f.name}
+                        </div>
+                        <span className="badge bg-secondary">
+                          {(f.size / 1024 / 1024).toFixed(2)} MB
+                        </span>
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => {
+                            // quitar imagen y su preview en el mismo índice
+                            setForm(prev => ({
+                              ...prev,
+                              fotografiaProd: prev.fotografiaProd.filter((_, j) => j !== idx)
+                            }));
+                            setPreview(prev => prev.filter((_, j) => j !== idx));
+                          }}
+                        >
+                          ×
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
+
 
               {/* Archivos */}
               <div className="col-12">
@@ -316,6 +367,9 @@ export default function UploadProductPage() {
                 />
                 <small className="form-text text-muted">
                   Tamaño máximo por archivo: {MAX_FILE_SIZE_MB} MB.
+                </small>
+                <small className="form-text text-muted">
+                  Si subes fotos de tu recurso, súbelas en el campo de imágenes o si es para venta, en el campo de archivos en formato pdf.
                 </small>
                 {Error('archivosAut')}
                 <ul className="list-group mt-2">

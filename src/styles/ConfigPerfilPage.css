@@ -110,4 +110,18 @@
   .profile-settings-card .alert {
       margin-bottom: 1.5rem;
   }
-  
+  /* Botón outline blanco */
+.btn-outline-white {
+  border: 1px solid white !important;
+  color: white !important;
+  background-color: transparent !important;
+}
+
+.btn-outline-white:hover,
+.btn-outline-white:focus,
+.btn-outline-white:active {
+  background-color: transparent !important;
+  color: white !important;
+  border-color: white !important;
+  box-shadow: none !important;
+}

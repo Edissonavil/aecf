@@ -8,7 +8,6 @@ const SolicitudCreadorPage = () => {
   const [nombreCompleto, setNombreCompleto] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  // Nuevo estado para el campo "hablanosDeTi"
   const [hablanosDeTi, setHablanosDeTi] = useState('');
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,25 +29,26 @@ const SolicitudCreadorPage = () => {
 
     try {
       // Define la URL del Gateway para el endpoint de solicitud de creador
-      const GATEWAY_CREATOR_REQUEST_URL = 'https://gateway-production-129e.up.railway.app/api/users/solicitud-creador'; 
+      const GATEWAY_CREATOR_REQUEST_URL = 'https://gateway-production-129e.up.railway.app/api/users/solicitud-creador';
 
       // Envía la solicitud al nuevo endpoint del backend a través del Gateway
-      const response = await axios.post(GATEWAY_CREATOR_REQUEST_URL, 
-        {  
-        nombreCompleto,
-        username,
-        email,
-        // Incluye el nuevo campo en la solicitud
-        hablanosDeTi
-      });
+      const response = await axios.post(GATEWAY_CREATOR_REQUEST_URL,
+        {
+          nombreCompleto,
+          username,
+          email,
+          hablanosDeTi
+        });
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         setSuccess(true);
-        // Opcional: Redirigir después de un tiempo
-        setTimeout(() => {
-          navigate('/login-colaborador'); // Redirige de vuelta a la página de login
-        }, 3000);
+        setNombreCompleto('');
+        setUsername('');
+        setEmail('');
+        setHablanosDeTi('');
+        setAceptaTerminos(false);
       }
+
     } catch (err) {
       console.error('Error al enviar solicitud:', err.response?.data || err.message);
       setError(err.response?.data?.message || 'Hubo un error al procesar tu solicitud. Intenta de nuevo.');
@@ -66,7 +66,13 @@ const SolicitudCreadorPage = () => {
             <p className="text-muted">Completa el formulario para enviar tu solicitud.</p>
           </div>
 
-          {success && <Alert variant="success" className="text-center">¡Solicitud enviada con éxito! Te contactaremos pronto.</Alert>}
+          {success && (
+            <Alert variant="success" className="text-center">
+              Hemos recibido tu información y nuestro equipo la revisará cuidadosamente para validar que cumpla con nuestros estándares de calidad y ética profesional.
+              <br />
+              En un plazo máximo de 24 horas hábiles te confirmaremos si formarás parte del grupo de especialistas que acelera el crecimiento de la próxima generación de profesionales AEC.
+            </Alert>
+          )}
           {error && <Alert variant="danger" className="text-center">{error}</Alert>}
 
           <Form onSubmit={handleSubmit}>

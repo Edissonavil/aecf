@@ -249,7 +249,7 @@ const ConfigPerfilPage = () => {
                     autoComplete="current-password"
                   />
                   <Button
-                    variant="outline-secondary"
+                    className="btn-outline-white"
                     onClick={() => setShowCurrent(prev => !prev)}
                     aria-label={showCurrent ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
@@ -282,7 +282,7 @@ const ConfigPerfilPage = () => {
                     autoComplete="current-password"
                   />
                   <Button
-                    variant="outline-secondary"
+                    className="btn-outline-white"
                     onClick={() => setShowCurrent(prev => !prev)}
                     aria-label={showCurrent ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
@@ -304,7 +304,7 @@ const ConfigPerfilPage = () => {
                     autoComplete="new-password"
                   />
                   <Button
-                    variant="outline-secondary"
+                    className="btn-outline-white"
                     onClick={() => setShowNew(prev => !prev)}
                     aria-label={showNew ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
@@ -326,7 +326,7 @@ const ConfigPerfilPage = () => {
                     autoComplete="new-password"
                   />
                   <Button
-                    variant="outline-secondary"
+                    className="btn-outline-white"
                     onClick={() => setShowConfirm(prev => !prev)}
                     aria-label={showConfirm ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >

@@ -1,0 +1,12 @@
+.btn-outline-white {
+  border-color: white !important;
+  color: white !important;
+}
+
+.btn-outline-white:hover,
+.btn-outline-white:focus {
+  background-color: white !important;
+  color: black !important; /* para que el icono se vea sobre fondo blanco */
+  border-color: white !important;
+}
+

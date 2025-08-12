@@ -29,22 +29,23 @@ PRODUCTS_API.interceptors.response.use(
   res => res,
   err => {
     if (err.response && [401, 403].includes(err.response.status)) {
-      localStorage.clear();
-      window.location.href = '/login';
+      err.isAuthError = true;
     }
     return Promise.reject(err);
   }
 );
 
+
 /** * Crea un nuevo producto (multipart/form-data)
  * @param {FormData} formData
  */
-export function createProduct(formData) { // Removido 'token' de aquí, ya que el interceptor lo maneja
+export function createProduct(formData) {
   return PRODUCTS_API.post('', formData, {
-    headers: {
-    }
+    headers: {},
+    __skipAuthRedirect: true
   });
 }
+
 
 /** * Obtiene la página de productos subidos por el colaborador
  */
