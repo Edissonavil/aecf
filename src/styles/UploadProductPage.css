@@ -91,10 +91,28 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
   
+  /* === Checkboxes con bordes más oscuros === */
+  .category-checkbox .form-check-input,
+  .specialty-checkbox .form-check-input {
+    border-color: #495057;
+    border-width: 2px;
+  }
+  
+  .category-checkbox .form-check-input:checked,
+  .specialty-checkbox .form-check-input:checked {
+    background-color: #FF00FF;
+    border-color: #FF00FF;
+  }
+  
+  .category-checkbox .form-check-input:focus,
+  .specialty-checkbox .form-check-input:focus {
+    border-color: #FF00FF;
+    box-shadow: 0 0 0 0.2rem rgba(255, 0, 255, 0.2);
+  }
+  
   /* === Responsive ajustes === */
   @media (max-width: 768px) {
     .upload-card {
       padding: 1.5rem;
     }
   }
-  

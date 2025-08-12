@@ -335,6 +335,22 @@
   background-color: #f8f9fa; /* Color de fondo al pasar el mouse */
 }
 
+/* === Checkboxes de los filtros con bordes más oscuros === */
+.dropdown-item-checkbox .form-check-input {
+  border-color: #495057;
+  border-width: 2px;
+}
+
+.dropdown-item-checkbox .form-check-input:checked {
+  background-color: #FF00FF;
+  border-color: #FF00FF;
+}
+
+.dropdown-item-checkbox .form-check-input:focus {
+  border-color: #FF00FF;
+  box-shadow: 0 0 0 0.2rem rgba(255, 0, 255, 0.2);
+}
+
 .nav__badge {
   background-color: red;
   color: white;
@@ -349,4 +365,3 @@
   position: relative; /* para que el badge se posicione sobre el icono */
   display: inline-block;
 }
-
