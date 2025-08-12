@@ -1,8 +1,10 @@
 // src/pages/ColaboradorEditarProducto.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import * as productApi from '../services/productApi';
 import { toast } from 'react-toastify';
+
+const FILES_BASE = 'https://gateway-production-129e.up.railway.app/api/files';
 
 const ColaboradorEditarProducto = () => {
   const { id } = useParams();
@@ -16,55 +18,54 @@ const ColaboradorEditarProducto = () => {
     nombre: '',
     descripcionProd: '',
     precioIndividual: '',
-    // archivos a subir
-    foto: null,
-    archivosAut: null,
-    // actuales (solo visualización)
-    fotografiaProdActual: '',            // SIEMPRE string (url) o ''
-    archivosAutActuales: [],             // [{ url, name }]
-    // flags de mantener actuales
-    keepFotografiaProd: true,
-    keepArchivosAut: true,
+    // Fotos existentes (de Drive) y nuevas (del input)
+    existingPhotos: [],        // [{id, url, keep: boolean}]
+    newPhotos: [],             // File[]
+    // Archivos AUT existentes (urls completas) y nuevos
+    existingAutFiles: [],      // [{url, name, keep: boolean}]
+    newAutFiles: null,         // FileList (múltiples)
   });
+
+  // Previews para las nuevas fotos
+  const newPhotoPreviews = useMemo(
+    () => formData.newPhotos.map(f => URL.createObjectURL(f)),
+    [formData.newPhotos]
+  );
 
   useEffect(() => {
     setLoading(true);
     productApi.getProductById(id)
       .then(res => {
         const d = res.data;
-        // Tomar PRIMERA foto disponible como URL (si hay varias)
-        const firstFotoUrl = Array.isArray(d.fotografiaUrl)
-          ? (d.fotografiaUrl[0] || '')
-          : (typeof d.fotografiaUrl === 'string' ? d.fotografiaUrl : '');
 
-        // Si no vino fotografiaUrl, construir desde fotografiaProd (id de drive)
-        const firstFotoId = Array.isArray(d.fotografiaProd)
-          ? (d.fotografiaProd[0] || '')
-          : (typeof d.fotografiaProd === 'string' ? d.fotografiaProd : '');
+        // Fotos existentes:
+        // - ids de Drive en d.fotografiaProd
+        // - urls completas en d.fotografiaUrl
+        const ids = Array.isArray(d.fotografiaProd) ? d.fotografiaProd : [];
+        const urls = Array.isArray(d.fotografiaUrl) ? d.fotografiaUrl : [];
 
-        const fotoUrlFallback = firstFotoId
-          ? `https://gateway-production-129e.up.railway.app/api/files/${d.idProducto}/${firstFotoId}`
-          : '';
+        const existingPhotos = ids.map((driveId, idx) => {
+          const url = urls[idx] || `${FILES_BASE}/${d.idProducto}/${driveId}`;
+          return { id: driveId, url, keep: true };
+        });
 
-        // Para archivos, usar SIEMPRE las URLs completas que ya da el backend
+        // Archivos AUT existentes (usar urls completas que ya entrega backend)
         const autUrls = Array.isArray(d.archivosAutUrls) ? d.archivosAutUrls : [];
+        const existingAutFiles = autUrls.map(u => ({
+          url: u,
+          name: (typeof u === 'string' && u.split('/').pop()) || 'archivo',
+          keep: true
+        }));
 
         setProduct(d);
         setFormData({
           nombre: d.nombre || '',
           descripcionProd: d.descripcionProd || '',
           precioIndividual: d.precioIndividual ?? '',
-          foto: null,
-          archivosAut: null,
-
-          fotografiaProdActual: firstFotoUrl || fotoUrlFallback || '',
-          archivosAutActuales: autUrls.map(u => ({
-            url: u,
-            name: (typeof u === 'string' && u.split('/').pop()) || 'archivo'
-          })),
-
-          keepFotografiaProd: !!(firstFotoUrl || fotoUrlFallback),
-          keepArchivosAut: autUrls.length > 0,
+          existingPhotos,
+          newPhotos: [],
+          existingAutFiles,
+          newAutFiles: null,
         });
       })
       .catch(err => {
@@ -75,90 +76,93 @@ const ColaboradorEditarProducto = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleBasicChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Manejar selección de nuevas fotos (múltiples)
+  const handleNewPhotosChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      newPhotos: [...prev.newPhotos, ...files],
     }));
   };
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-
-    if (name === 'archivosAut') {
-      setFormData(prev => ({
-        ...prev,
-        archivosAut: files, // FileList
-        // si el usuario sube nuevos, marcamos mantener actuales (se enviarán nuevos; si no quieres conservar, el usuario puede desmarcar luego)
-        keepArchivosAut: files && files.length > 0 ? true : prev.keepArchivosAut
-      }));
-      return;
-    }
-
-    if (name === 'foto') {
-      const file = files && files[0] ? files[0] : null;
-      setFormData(prev => ({
-        ...prev,
-        foto: file,
-        keepFotografiaProd: file ? true : prev.keepFotografiaProd,
-        // solo para mostrar nombre si se sube nueva (la previa seguirá siendo la actual)
-        // no tocamos fotografiaProdActual aquí
-      }));
-      return;
-    }
+  // Quitar una nueva foto (antes de enviar)
+  const removeNewPhoto = (idx) => {
+    setFormData(prev => {
+      const next = [...prev.newPhotos];
+      next.splice(idx, 1);
+      return { ...prev, newPhotos: next };
+    });
   };
 
-  // Quitar un archivo actual (marcar para eliminar: aquí solo quitamos de la UI; el backend decide)
-  const handleRemoveAutFile = (urlToRemove) => {
+  // Alternar mantener/eliminar una foto existente
+  const toggleKeepExistingPhoto = (idx) => {
+    setFormData(prev => {
+      const next = [...prev.existingPhotos];
+      next[idx] = { ...next[idx], keep: !next[idx].keep };
+      return { ...prev, existingPhotos: next };
+    });
+  };
+
+  // Archivos AUT nuevos
+  const handleNewAutFilesChange = (e) => {
+    const files = e.target.files; // FileList
     setFormData(prev => ({
       ...prev,
-      archivosAutActuales: prev.archivosAutActuales.filter(f => f.url !== urlToRemove),
-      // si quitó todos y no sube nuevos, keepArchivosAut puede quedar en false si el usuario lo desea
+      newAutFiles: files && files.length > 0 ? files : null
     }));
-    toast.info("Archivo marcado para eliminación.");
   };
 
-  // Utilidad segura para nombres
-  const getFileNameFromUrl = (url) => {
-    if (!url || typeof url !== 'string') return '';
-    const parts = url.split('/');
-    return parts[parts.length - 1] || '';
+  // Alternar mantener/eliminar un archivo AUT existente
+  const toggleKeepExistingAut = (idx) => {
+    setFormData(prev => {
+      const next = [...prev.existingAutFiles];
+      next[idx] = { ...next[idx], keep: !next[idx].keep };
+      return { ...prev, existingAutFiles: next };
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Armamos el FormData como venías usando (nombre, descripcion, precio…)
-    // Si tu backend espera 'dto' como JSON, puedes cambiar a un Blob JSON.
     const dataToSend = new FormData();
     dataToSend.append('nombre', formData.nombre);
     dataToSend.append('descripcionProd', formData.descripcionProd);
     dataToSend.append('precioIndividual', formData.precioIndividual);
 
-    // Foto: si suben nueva, la mandamos; si quieren eliminar la actual sin subir, enviamos marcador
-    if (formData.foto) {
-      dataToSend.append('foto', formData.foto);
-    } else if (!formData.keepFotografiaProd && formData.fotografiaProdActual) {
-      dataToSend.append('foto', 'DELETE'); // tu backend ya contemplaba este patrón
-    }
+    // 1) Fotos: enviamos:
+    //    - keepFotoIds: JSON con los IDs de Drive que el usuario decidió mantener
+    //    - fotos: nuevas fotos (múltiples)
+    const keepFotoIds = formData.existingPhotos
+      .filter(p => p.keep)
+      .map(p => p.id);
+    dataToSend.append('keepFotoIds', JSON.stringify(keepFotoIds));
 
-    // Archivos nuevos
-    if (formData.archivosAut && formData.archivosAut.length > 0) {
-      for (let i = 0; i < formData.archivosAut.length; i++) {
-        dataToSend.append('archivosAut', formData.archivosAut[i]);
-      }
-    } else {
-      // Si el usuario desmarca mantener y además removió todos los actuales en UI, mandamos marker
-      const quedanActuales = formData.archivosAutActuales.length > 0;
-      if (!formData.keepArchivosAut && !quedanActuales) {
-        dataToSend.append('archivosAut', 'DELETE_ALL');
+    if (formData.newPhotos.length > 0) {
+      formData.newPhotos.forEach(f => dataToSend.append('fotos', f));
+    }
+    // Si el usuario desmarca todas las existentes y no sube nuevas, keepFotoIds será [].
+    // El backend debe interpretarlo como "quedan 0 fotos".
+
+    // 2) Archivos AUT:
+    //    - autKeepUrls: JSON con URLs que se conservan (o podrías enviar Drive IDs si los tuvieses)
+    //    - archivosAut: nuevos archivos (múltiples)
+    const autKeepUrls = formData.existingAutFiles
+      .filter(f => f.keep)
+      .map(f => f.url);
+    dataToSend.append('autKeepUrls', JSON.stringify(autKeepUrls));
+
+    if (formData.newAutFiles && formData.newAutFiles.length > 0) {
+      for (let i = 0; i < formData.newAutFiles.length; i++) {
+        dataToSend.append('archivosAut', formData.newAutFiles[i]);
       }
     }
-
-    // Si quieres pasar al backend qué archivos actuales se conservarán,
-    // puedes adjuntar la lista de URLs actuales que permanecen:
-    // dataToSend.append('archivosAutKeep', JSON.stringify(formData.archivosAutActuales.map(f => f.url)));
+    // Si autKeepUrls = [] y no se adjuntan nuevos, el backend debería dejar 0 archivos.
 
     try {
       await productApi.updateProduct(id, dataToSend);
@@ -167,6 +171,9 @@ const ColaboradorEditarProducto = () => {
     } catch (err) {
       console.error("Error al actualizar producto:", err);
       toast.error("Error al actualizar el producto. " + (err.response?.data?.message || err.message));
+    } finally {
+      // liberar blobs de previews
+      newPhotoPreviews.forEach(url => URL.revokeObjectURL(url));
     }
   };
 
@@ -201,7 +208,7 @@ const ColaboradorEditarProducto = () => {
             id="nombre"
             name="nombre"
             value={formData.nombre}
-            onChange={handleChange}
+            onChange={handleBasicChange}
             required
           />
         </div>
@@ -215,7 +222,7 @@ const ColaboradorEditarProducto = () => {
             name="descripcionProd"
             rows="4"
             value={formData.descripcionProd}
-            onChange={handleChange}
+            onChange={handleBasicChange}
             required
           />
         </div>
@@ -230,110 +237,122 @@ const ColaboradorEditarProducto = () => {
             id="precioIndividual"
             name="precioIndividual"
             value={formData.precioIndividual}
-            onChange={handleChange}
+            onChange={handleBasicChange}
             required
           />
         </div>
 
-        {/* Foto única */}
+        {/* Fotos existentes */}
         <div className="mb-3">
-          <label htmlFor="foto" className="form-label">Fotografía del Producto (opcional)</label>
-          <input
-            type="file"
-            className="form-control"
-            id="foto"
-            name="foto"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
-
-          {formData.fotografiaProdActual && (
-            <div className="mt-2 d-flex align-items-center">
-              <small className="form-text text-muted me-2">
-                Actual:{' '}
-                <a href={formData.fotografiaProdActual} target="_blank" rel="noopener noreferrer">
-                  {getFileNameFromUrl(formData.fotografiaProdActual)}
-                </a>
-              </small>
-              <img
-                src={formData.fotografiaProdActual}
-                alt="Vista previa actual"
-                style={{ maxWidth: '80px', maxHeight: '80px', marginRight: '10px' }}
-                onError={e => { e.currentTarget.style.display = 'none'; }}
-              />
-              <div className="form-check ms-auto">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="keepFotografiaProd"
-                  name="keepFotografiaProd"
-                  checked={formData.keepFotografiaProd}
-                  onChange={handleChange}
-                  disabled={!!formData.foto}
-                />
-                <label className="form-check-label" htmlFor="keepFotografiaProd">
-                  Mantener archivo actual
-                </label>
-              </div>
+          <label className="form-label d-block">Fotos existentes</label>
+          {formData.existingPhotos.length === 0 ? (
+            <small className="text-muted">No hay fotos actuales.</small>
+          ) : (
+            <div className="d-flex flex-wrap gap-3">
+              {formData.existingPhotos.map((p, idx) => (
+                <div key={p.id} className="border rounded p-2" style={{width: 140}}>
+                  <a href={p.url} target="_blank" rel="noopener noreferrer">
+                    <img
+                      src={p.url}
+                      alt={`Foto ${idx+1}`}
+                      style={{width: '100%', height: 90, objectFit: 'cover'}}
+                      onError={e => { e.currentTarget.style.display = 'none'; }}
+                    />
+                  </a>
+                  <div className="form-check mt-2">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id={`keepFoto-${idx}`}
+                      checked={p.keep}
+                      onChange={() => toggleKeepExistingPhoto(idx)}
+                    />
+                    <label className="form-check-label" htmlFor={`keepFoto-${idx}`}>
+                      Mantener
+                    </label>
+                  </div>
+                </div>
+              ))}
             </div>
-          )}
-
-          {!formData.fotografiaProdActual && !formData.foto && (
-            <small className="form-text text-muted">No hay fotografía de producto actual.</small>
           )}
         </div>
 
-        {/* Archivos múltiples */}
+        {/* Agregar nuevas fotos */}
         <div className="mb-3">
-          <label htmlFor="archivosAut" className="form-label">Archivo(s) del Producto (varios, opcional)</label>
+          <label htmlFor="fotos" className="form-label">Agregar fotos nuevas (múltiples)</label>
+          <input
+            type="file"
+            className="form-control"
+            id="fotos"
+            name="fotos"
+            accept="image/*"
+            multiple
+            onChange={handleNewPhotosChange}
+          />
+          {formData.newPhotos.length > 0 && (
+            <div className="d-flex flex-wrap gap-3 mt-2">
+              {newPhotoPreviews.map((src, i) => (
+                <div key={i} className="border rounded p-2" style={{width: 140}}>
+                  <img
+                    src={src}
+                    alt={`Nueva ${i+1}`}
+                    style={{width: '100%', height: 90, objectFit: 'cover'}}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-danger w-100 mt-2"
+                    onClick={() => removeNewPhoto(i)}
+                  >
+                    Quitar
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Archivos AUT existentes */}
+        <div className="mb-3">
+          <label className="form-label d-block">Archivos del producto actuales</label>
+          {formData.existingAutFiles.length === 0 ? (
+            <small className="text-muted">No hay archivos actuales.</small>
+          ) : (
+            <ul className="list-group">
+              {formData.existingAutFiles.map((f, idx) => (
+                <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
+                  <a href={f.url} target="_blank" rel="noopener noreferrer">{f.name}</a>
+                  <div className="form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id={`keepAut-${idx}`}
+                      checked={f.keep}
+                      onChange={() => toggleKeepExistingAut(idx)}
+                    />
+                    <label className="form-check-label" htmlFor={`keepAut-${idx}`}>Mantener</label>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* Agregar nuevos archivos AUT */}
+        <div className="mb-3">
+          <label htmlFor="archivosAut" className="form-label">Agregar archivos del producto (múltiples, opcional)</label>
           <input
             type="file"
             className="form-control"
             id="archivosAut"
             name="archivosAut"
             multiple
-            onChange={handleFileChange}
+            onChange={handleNewAutFilesChange}
           />
-
-          {formData.archivosAutActuales && formData.archivosAutActuales.length > 0 && (
-            <div className="mt-2">
-              <small className="form-text text-muted d-block mb-1">Archivos actuales:</small>
-              <ul className="list-group list-group-flush">
-                {formData.archivosAutActuales.map((file, index) => (
-                  <li key={index} className="list-group-item d-flex justify-content-between align-items-center py-1 ps-0">
-                    <a href={file.url} target="_blank" rel="noopener noreferrer">{file.name}</a>
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={() => handleRemoveAutFile(file.url)}
-                    >
-                      Eliminar
-                    </button>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="form-check mt-2">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="keepArchivosAut"
-                  name="keepArchivosAut"
-                  checked={formData.keepArchivosAut}
-                  onChange={handleChange}
-                  disabled={!!(formData.archivosAut && formData.archivosAut.length > 0)}
-                />
-                <label className="form-check-label" htmlFor="keepArchivosAut">
-                  Mantener archivos actuales (si no se suben nuevos)
-                </label>
-              </div>
-            </div>
+          {formData.newAutFiles && formData.newAutFiles.length > 0 && (
+            <small className="d-block text-muted mt-1">
+              {formData.newAutFiles.length} archivo(s) listos para subir.
+            </small>
           )}
-
-          {(!formData.archivosAutActuales || formData.archivosAutActuales.length === 0) &&
-            (!formData.archivosAut || formData.archivosAut.length === 0) && (
-              <small className="form-text text-muted">No hay archivos del producto actuales.</small>
-            )}
         </div>
 
         <div className="d-flex justify-content-end mt-4">
@@ -346,3 +365,4 @@ const ColaboradorEditarProducto = () => {
 };
 
 export default ColaboradorEditarProducto;
+
