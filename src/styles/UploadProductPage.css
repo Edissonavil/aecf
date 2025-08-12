@@ -97,38 +97,4 @@ body {
       padding: 1.5rem;
     }
   }
-  /* === Estilos oscuros para los checkboxes de categorías y especialidades === */
-.category-checkbox .form-check,
-.specialty-checkbox .form-check {
-  background-color: #2c2c2c; /* Fondo oscuro */
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  color: #fff;
-  border: 1px solid #444;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.category-checkbox .form-check-input,
-.specialty-checkbox .form-check-input {
-  background-color: #444;
-  border-color: #666;
-}
-
-.category-checkbox .form-check-input:checked,
-.specialty-checkbox .form-check-input:checked {
-  background-color: #FF00FF;
-  border-color: #FF00FF;
-}
-
-.category-checkbox .form-check-label,
-.specialty-checkbox .form-check-label {
-  color: #fff;
-  margin-left: 0.5rem;
-  font-weight: 500;
-}
-
-.category-checkbox .form-check:hover,
-.specialty-checkbox .form-check:hover {
-  background-color: #3a3a3a;
-  border-color: #555;
-}
+  

@@ -1,8 +1,12 @@
 /* 1. CONTENEDOR PRINCIPAL - Espacio para header fijo */
 .catalog-page-container {
-    padding-top: 120px !important;  /* Suficiente espacio para el header fijo */
-    min-height: calc(100vh - 120px);
+    /* Ajuste el padding-top para dejar espacio al header fijo. */
+    /* Este valor debe ser mayor o igual a la altura de tu header. */
+    padding-top: 100px !important; 
+    min-height: calc(100vh - 100px); /* Ajusta también la altura mínima */
     position: relative;
+    /* Asegurarse de que no haya un margen superior que empuje hacia abajo */
+    margin-top: 0 !important; 
 }
 
 /* 2. OVERRIDE ESPECÍFICO PARA TU TÍTULO EXISTENTE */
@@ -12,10 +16,11 @@
     font-size: 2.5rem !important;
     font-weight: 900 !important;
     
-    /* CORRECCIONES PARA EVITAR CORTE */
-    margin-top: 2rem !important;        /* Espacio superior adicional */
-    margin-bottom: 2rem !important;     /* Espacio inferior */
-    padding: 1rem 0 !important;         /* Padding interno para más espacio */
+    /* CORRECCIONES PARA EVITAR CORTE Y SOBREPONERSE CON LA BARRA de BÚSQUEDA */
+    /* Reducido el margin-top para que esté más cerca del padding del contenedor */
+    margin-top: 1rem !important;        
+    margin-bottom: 1.5rem !important;     /* Espacio inferior para la barra de búsqueda */
+    padding: 0.5rem 0 !important;         /* Padding interno para más espacio */
     line-height: 1.2 !important;        /* Línea de altura controlada */
     
     /* Asegurar visibilidad completa */
@@ -33,28 +38,28 @@
 @media (max-width: 768px) {
     .catalog-title {
         font-size: 2rem !important;
-        margin-top: 1.5rem !important;
-        padding: 0.8rem 0 !important;
+        margin-top: 1rem !important;
+        padding: 0.5rem 0 !important;
     }
     
     .catalog-page-container {
-        padding-top: 100px !important;
+        padding-top: 90px !important; /* Ajuste para pantallas más pequeñas */
     }
 }
 
 @media (max-width: 576px) {
     .catalog-title {
         font-size: 1.8rem !important;
-        margin-top: 1rem !important;
-        padding: 0.6rem 0 !important;
+        margin-top: 0.8rem !important;
+        padding: 0.4rem 0 !important;
     }
     
     .catalog-page-container {
-        padding-top: 90px !important;
+        padding-top: 80px !important; /* Ajuste para pantallas aún más pequeñas */
     }
 }
 
-/* 4. SOLUCIONES ALTERNATIVAS SI EL PROBLEMA PERSISTE */
+/* 4. SOLUCIONES ALTERNATIVAS SI EL PROBLEMA PERSISTE (Mantenidas, pero las principales son las de arriba) */
 
 /* Opción A: Forzar el contenedor con altura mínima específica */
 .catalog-page-container.force-space {

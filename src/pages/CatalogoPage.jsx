@@ -138,15 +138,17 @@ export default function CatalogPage() {
   return (
     <Container
       className="catalog-page-container"
-      style={{ paddingTop: '140px' }}
+      // Eliminamos el estilo inline para que el CSS externo tome el control
+      // style={{ paddingTop: '140px' }} 
     >
       <h2
         className="catalog-title mb-2 text-center fw-normal"
+        // Ajustamos los estilos inline para que no sobrescriban el CSS externo de forma negativa
         style={{
-          marginTop: '1rem',
+          marginTop: '1rem', // Pequeño margen superior para separación inicial
           paddingTop: '0.5rem',
           overflow: 'visible',
-          lineHeight: '0.6'
+          lineHeight: '1.2' // Restauramos una línea de altura más normal para evitar recortes
         }}
       >
         Catálogo de Productos
