@@ -260,7 +260,7 @@ const ColaboradorEditarProducto = () => {
 
         {/* Agregar nuevas fotos */}
         <div className="mb-3">
-          <label htmlFor="fotos" className="form-label">Agregar fotos nuevas (múltiples)</label>
+          <label htmlFor="fotos" className="form-label">Agregar fotos nuevas</label>
           <input
             type="file"
             className="form-control"
@@ -317,7 +317,7 @@ const ColaboradorEditarProducto = () => {
 
         {/* Agregar nuevos archivos AUT */}
         <div className="mb-3">
-          <label htmlFor="archivosAut" className="form-label">Agregar archivos del producto (múltiples, opcional)</label>
+          <label htmlFor="archivosAut" className="form-label">Agregar archivos del producto</label>
           <input
             type="file"
             className="form-control"
