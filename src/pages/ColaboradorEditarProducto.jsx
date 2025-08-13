@@ -21,9 +21,9 @@ const ColaboradorEditarProducto = () => {
     // Fotos existentes (solo datos) y nuevas (File[])
     existingPhotos: [],        // [{ id, url }]
     newPhotos: [],             // File[]
-    // Archivos AUT existentes (solo datos) y nuevos
+    // Archivos AUT existentes (solo datos) y nuevos (Files[])
     existingAutFiles: [],      // [{ url, name }]
-    newAutFiles: null,         // FileList (múltiples)
+    newAutFiles: [],           // File[]
   });
 
   // Previews para nuevas fotos
@@ -38,10 +38,9 @@ const ColaboradorEditarProducto = () => {
       .then(res => {
         const d = res.data;
 
-        // Fotos existentes: ids (fotografiaProd) + urls (fotografiaUrl)
+        // Fotos existentes
         const ids  = Array.isArray(d.fotografiaProd) ? d.fotografiaProd : [];
         const urls = Array.isArray(d.fotografiaUrl)  ? d.fotografiaUrl  : [];
-
         const existingPhotos = ids.map((driveId, idx) => {
           const url = urls[idx] || `${FILES_BASE}/${d.idProducto}/${driveId}`;
           return { id: driveId, url };
@@ -55,15 +54,16 @@ const ColaboradorEditarProducto = () => {
         }));
 
         setProduct(d);
-        setFormData({
+        setFormData(prev => ({
+          ...prev,
           nombre: d.nombre || '',
           descripcionProd: d.descripcionProd || '',
           precioIndividual: d.precioIndividual ?? '',
           existingPhotos,
           newPhotos: [],
           existingAutFiles,
-          newAutFiles: null,
-        });
+          newAutFiles: [],
+        }));
       })
       .catch(err => {
         console.error("Error cargando producto para editar:", err);
@@ -78,7 +78,8 @@ const ColaboradorEditarProducto = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Nuevas fotos (múltiples)
+
+  // Nuevas fotos (múltiples, acumulativas)
   const handleNewPhotosChange = (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
@@ -86,6 +87,8 @@ const ColaboradorEditarProducto = () => {
       ...prev,
       newPhotos: [...prev.newPhotos, ...files],
     }));
+    // limpias el input para permitir volver a seleccionar los mismos nombres si se desea
+    e.target.value = '';
   };
 
   // Quitar una nueva foto antes de enviar
@@ -97,7 +100,7 @@ const ColaboradorEditarProducto = () => {
     });
   };
 
-  // Eliminar definitivamente una foto existente (solo de la UI; el backend lo sabrá por lo que quede)
+  // Eliminar una foto existente (solo de la UI; el backend lo infiere por lo que queda)
   const removeExistingPhoto = (idToRemove) => {
     setFormData(prev => ({
       ...prev,
@@ -106,16 +109,19 @@ const ColaboradorEditarProducto = () => {
     toast.info("Foto eliminada de la selección.");
   };
 
-  // Nuevos archivos AUT
+  // Nuevos archivos AUT (múltiples, acumulativos)
   const handleNewAutFilesChange = (e) => {
-    const files = e.target.files; // FileList
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
     setFormData(prev => ({
       ...prev,
-      newAutFiles: files && files.length > 0 ? files : null
+      newAutFiles: [...prev.newAutFiles, ...files],
     }));
+    // reset para permitir re-selección
+    e.target.value = '';
   };
 
-  // Eliminar definitivamente un archivo AUT existente (solo de la UI)
+  // Eliminar un archivo AUT existente (de la UI)
   const removeExistingAut = (urlToRemove) => {
     setFormData(prev => ({
       ...prev,
@@ -124,36 +130,53 @@ const ColaboradorEditarProducto = () => {
     toast.info("Archivo eliminado de la selección.");
   };
 
+  // Eliminar un archivo AUT nuevo antes de enviar
+  const removeNewAutFile = (idx) => {
+    setFormData(prev => {
+      const next = [...prev.newAutFiles];
+      next.splice(idx, 1);
+      return { ...prev, newAutFiles: next };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const dataToSend = new FormData();
-    dataToSend.append('nombre', formData.nombre);
-    dataToSend.append('descripcionProd', formData.descripcionProd);
-    dataToSend.append('precioIndividual', formData.precioIndividual);
+    // 1) Construir el DTO que el backend espera en @RequestPart("dto")
+    const dto = {
+      idProducto: product?.idProducto,
+      nombre: formData.nombre,
+      descripcionProd: formData.descripcionProd,
+      precioIndividual: Number(formData.precioIndividual),
+      // Mantén datos que no editas para no perderlos
+      pais: product?.pais ?? null,
+      categorias: product?.categorias ?? [],
+      especialidades: product?.especialidades ?? [],
+      // No necesarios para update, pero no estorban:
+      estado: product?.estado ?? null,
+      uploaderUsername: product?.uploaderUsername ?? null,
+      usuarioDecision: product?.usuarioDecision ?? null,
+      comentario: product?.comentario ?? null
+    };
 
-    // Fotos: lo que queda son las que se conservan
+    const dataToSend = new FormData();
+    dataToSend.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+ 
+
+    // Fotos: conservar las que quedaron y subir nuevas
     const keepFotoIds = formData.existingPhotos.map(p => p.id);
     dataToSend.append('keepFotoIds', JSON.stringify(keepFotoIds));
+    formData.newPhotos.forEach(f => dataToSend.append('fotos', f));
 
-    if (formData.newPhotos.length > 0) {
-      formData.newPhotos.forEach(f => dataToSend.append('fotos', f));
-    }
-
-    // Archivos AUT: lo que queda son los que se conservan
+    // Archivos AUT: conservar los que quedaron y subir nuevos
     const autKeepUrls = formData.existingAutFiles.map(f => f.url);
     dataToSend.append('autKeepUrls', JSON.stringify(autKeepUrls));
-
-    if (formData.newAutFiles && formData.newAutFiles.length > 0) {
-      for (let i = 0; i < formData.newAutFiles.length; i++) {
-        dataToSend.append('archivosAut', formData.newAutFiles[i]);
-      }
-    }
+    formData.newAutFiles.forEach(f => dataToSend.append('archivosAut', f));
 
     try {
       await productApi.updateProduct(id, dataToSend);
       toast.success("Producto actualizado exitosamente!");
-      navigate('/colaborador/mis-productos');
+      navigate('/mis-productos');
     } catch (err) {
       console.error("Error al actualizar producto:", err);
       toast.error("Error al actualizar el producto. " + (err.response?.data?.message || err.message));
@@ -174,11 +197,19 @@ const ColaboradorEditarProducto = () => {
           Este producto está en estado "{product.estado}" y no puede ser modificado.
         </div>
         <div className="text-center">
-          <Link to="/colaborador/mis-productos" className="btn btn-primary">Volver a Mis Productos</Link>
+          <Link to="/mis-productos" className="btn btn-primary">Volver a Mis Productos</Link>
         </div>
       </div>
     );
   }
+
+  const fmtSize = (bytes) => {
+    if (bytes == null) return '';
+    const mb = bytes / (1024 * 1024);
+    if (mb >= 1) return `${mb.toFixed(2)} MB`;
+    const kb = bytes / 1024;
+    return `${kb.toFixed(0)} KB`;
+  };
 
   return (
     <div className="container my-4">
@@ -260,7 +291,7 @@ const ColaboradorEditarProducto = () => {
 
         {/* Agregar nuevas fotos */}
         <div className="mb-3">
-          <label htmlFor="fotos" className="form-label">Agregar fotos nuevas</label>
+          <label htmlFor="fotos" className="form-label">Agregar fotos nuevas (múltiples)</label>
           <input
             type="file"
             className="form-control"
@@ -315,9 +346,9 @@ const ColaboradorEditarProducto = () => {
           )}
         </div>
 
-        {/* Agregar nuevos archivos AUT */}
+        {/* Agregar nuevos archivos AUT (múltiples, lista previa con quitar) */}
         <div className="mb-3">
-          <label htmlFor="archivosAut" className="form-label">Agregar archivos del producto</label>
+          <label htmlFor="archivosAut" className="form-label">Agregar archivos del producto (múltiples)</label>
           <input
             type="file"
             className="form-control"
@@ -326,15 +357,26 @@ const ColaboradorEditarProducto = () => {
             multiple
             onChange={handleNewAutFilesChange}
           />
-          {formData.newAutFiles && formData.newAutFiles.length > 0 && (
-            <small className="d-block text-muted mt-1">
-              {formData.newAutFiles.length} archivo(s) listos para subir.
-            </small>
+          {formData.newAutFiles.length > 0 && (
+            <ul className="list-group mt-2">
+              {formData.newAutFiles.map((file, idx) => (
+                <li key={`${file.name}-${idx}`} className="list-group-item d-flex justify-content-between align-items-center">
+                  <span>{file.name} <small className="text-muted">({fmtSize(file.size)})</small></span>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => removeNewAutFile(idx)}
+                  >
+                    Quitar
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
 
         <div className="d-flex justify-content-end mt-4">
-          <Link to="/mis-productos" className="btn btn-secondary me-2">Cancelar</Link>
+          <Link to="/colaborador/mis-productos" className="btn btn-secondary me-2">Cancelar</Link>
           <button type="submit" className="btn btn-primary">Guardar Cambios</button>
         </div>
       </form>

@@ -293,12 +293,6 @@ const CreatorStatsView = () => {
             </div>
           </div>
         )}
-        <div className="alert alert-warning d-flex align-items-center rounded-3 shadow-sm p-3" role="alert">
-          <MessageSquare className="me-2 text-warning" style={{ width: '1.5rem', height: '1.5rem' }} />
-          <div>
-            Recuerda responder los comentarios o preguntas de tus compradores.
-          </div>
-        </div>
 
         {/* Nuevo título para la sección de ventas */}
         <h2 className="fs-4 fw-bold mb-0 text-dark">Resumen de Ventas</h2>
@@ -368,7 +362,7 @@ const CreatorStatsView = () => {
         <div className="alert alert-light border border-gray-200 rounded-3 p-3 d-flex align-items-start">
           <img src="https://placehold.co/24x24/E0E0E0/555555?text=🔒" alt="Candado" className="me-2 mt-1" />
           <p className="mb-0 text-secondary small">
-            AECBlock retiene el 50% de cada venta. Los pagos se consolidan mensualmente y se procesan el 5to día hábil del mes. Más detalles en los <a href="/solicitudCreador" className="text-fuchsia-custom fw-semibold">Términos del Creador</a>.
+            AECBlock retiene el 50% de cada venta. Los pagos se consolidan mensualmente y se procesan el 5to día hábil del mes. Más detalles en los <a href="/terminosYcondiciones" className="text-fuchsia-custom fw-semibold">Términos del Creador</a>.
           </p>
         </div>
       </div>
