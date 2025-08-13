@@ -10,7 +10,7 @@ const ColaboradorEditarProducto = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [product, setProduct] = useState(null);
+  const [product, setProduct]   = useState(null);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState(null);
 
@@ -18,15 +18,15 @@ const ColaboradorEditarProducto = () => {
     nombre: '',
     descripcionProd: '',
     precioIndividual: '',
-    // Fotos existentes (de Drive) y nuevas (del input)
-    existingPhotos: [],        // [{id, url, keep: boolean}]
+    // Fotos existentes (solo datos) y nuevas (File[])
+    existingPhotos: [],        // [{ id, url }]
     newPhotos: [],             // File[]
-    // Archivos AUT existentes (urls completas) y nuevos
-    existingAutFiles: [],      // [{url, name, keep: boolean}]
+    // Archivos AUT existentes (solo datos) y nuevos
+    existingAutFiles: [],      // [{ url, name }]
     newAutFiles: null,         // FileList (múltiples)
   });
 
-  // Previews para las nuevas fotos
+  // Previews para nuevas fotos
   const newPhotoPreviews = useMemo(
     () => formData.newPhotos.map(f => URL.createObjectURL(f)),
     [formData.newPhotos]
@@ -38,23 +38,20 @@ const ColaboradorEditarProducto = () => {
       .then(res => {
         const d = res.data;
 
-        // Fotos existentes:
-        // - ids de Drive en d.fotografiaProd
-        // - urls completas en d.fotografiaUrl
-        const ids = Array.isArray(d.fotografiaProd) ? d.fotografiaProd : [];
-        const urls = Array.isArray(d.fotografiaUrl) ? d.fotografiaUrl : [];
+        // Fotos existentes: ids (fotografiaProd) + urls (fotografiaUrl)
+        const ids  = Array.isArray(d.fotografiaProd) ? d.fotografiaProd : [];
+        const urls = Array.isArray(d.fotografiaUrl)  ? d.fotografiaUrl  : [];
 
         const existingPhotos = ids.map((driveId, idx) => {
           const url = urls[idx] || `${FILES_BASE}/${d.idProducto}/${driveId}`;
-          return { id: driveId, url, keep: true };
+          return { id: driveId, url };
         });
 
-        // Archivos AUT existentes (usar urls completas que ya entrega backend)
+        // Archivos AUT existentes (usar URLs completas del backend)
         const autUrls = Array.isArray(d.archivosAutUrls) ? d.archivosAutUrls : [];
         const existingAutFiles = autUrls.map(u => ({
           url: u,
-          name: (typeof u === 'string' && u.split('/').pop()) || 'archivo',
-          keep: true
+          name: (typeof u === 'string' && u.split('/').pop()) || 'archivo'
         }));
 
         setProduct(d);
@@ -81,7 +78,7 @@ const ColaboradorEditarProducto = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Manejar selección de nuevas fotos (múltiples)
+  // Nuevas fotos (múltiples)
   const handleNewPhotosChange = (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
@@ -91,7 +88,7 @@ const ColaboradorEditarProducto = () => {
     }));
   };
 
-  // Quitar una nueva foto (antes de enviar)
+  // Quitar una nueva foto antes de enviar
   const removeNewPhoto = (idx) => {
     setFormData(prev => {
       const next = [...prev.newPhotos];
@@ -100,16 +97,16 @@ const ColaboradorEditarProducto = () => {
     });
   };
 
-  // Alternar mantener/eliminar una foto existente
-  const toggleKeepExistingPhoto = (idx) => {
-    setFormData(prev => {
-      const next = [...prev.existingPhotos];
-      next[idx] = { ...next[idx], keep: !next[idx].keep };
-      return { ...prev, existingPhotos: next };
-    });
+  // Eliminar definitivamente una foto existente (solo de la UI; el backend lo sabrá por lo que quede)
+  const removeExistingPhoto = (idToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      existingPhotos: prev.existingPhotos.filter(p => p.id !== idToRemove),
+    }));
+    toast.info("Foto eliminada de la selección.");
   };
 
-  // Archivos AUT nuevos
+  // Nuevos archivos AUT
   const handleNewAutFilesChange = (e) => {
     const files = e.target.files; // FileList
     setFormData(prev => ({
@@ -118,13 +115,13 @@ const ColaboradorEditarProducto = () => {
     }));
   };
 
-  // Alternar mantener/eliminar un archivo AUT existente
-  const toggleKeepExistingAut = (idx) => {
-    setFormData(prev => {
-      const next = [...prev.existingAutFiles];
-      next[idx] = { ...next[idx], keep: !next[idx].keep };
-      return { ...prev, existingAutFiles: next };
-    });
+  // Eliminar definitivamente un archivo AUT existente (solo de la UI)
+  const removeExistingAut = (urlToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      existingAutFiles: prev.existingAutFiles.filter(f => f.url !== urlToRemove),
+    }));
+    toast.info("Archivo eliminado de la selección.");
   };
 
   const handleSubmit = async (e) => {
@@ -135,26 +132,16 @@ const ColaboradorEditarProducto = () => {
     dataToSend.append('descripcionProd', formData.descripcionProd);
     dataToSend.append('precioIndividual', formData.precioIndividual);
 
-    // 1) Fotos: enviamos:
-    //    - keepFotoIds: JSON con los IDs de Drive que el usuario decidió mantener
-    //    - fotos: nuevas fotos (múltiples)
-    const keepFotoIds = formData.existingPhotos
-      .filter(p => p.keep)
-      .map(p => p.id);
+    // Fotos: lo que queda son las que se conservan
+    const keepFotoIds = formData.existingPhotos.map(p => p.id);
     dataToSend.append('keepFotoIds', JSON.stringify(keepFotoIds));
 
     if (formData.newPhotos.length > 0) {
       formData.newPhotos.forEach(f => dataToSend.append('fotos', f));
     }
-    // Si el usuario desmarca todas las existentes y no sube nuevas, keepFotoIds será [].
-    // El backend debe interpretarlo como "quedan 0 fotos".
 
-    // 2) Archivos AUT:
-    //    - autKeepUrls: JSON con URLs que se conservan (o podrías enviar Drive IDs si los tuvieses)
-    //    - archivosAut: nuevos archivos (múltiples)
-    const autKeepUrls = formData.existingAutFiles
-      .filter(f => f.keep)
-      .map(f => f.url);
+    // Archivos AUT: lo que queda son los que se conservan
+    const autKeepUrls = formData.existingAutFiles.map(f => f.url);
     dataToSend.append('autKeepUrls', JSON.stringify(autKeepUrls));
 
     if (formData.newAutFiles && formData.newAutFiles.length > 0) {
@@ -162,7 +149,6 @@ const ColaboradorEditarProducto = () => {
         dataToSend.append('archivosAut', formData.newAutFiles[i]);
       }
     }
-    // Si autKeepUrls = [] y no se adjuntan nuevos, el backend debería dejar 0 archivos.
 
     try {
       await productApi.updateProduct(id, dataToSend);
@@ -249,28 +235,23 @@ const ColaboradorEditarProducto = () => {
             <small className="text-muted">No hay fotos actuales.</small>
           ) : (
             <div className="d-flex flex-wrap gap-3">
-              {formData.existingPhotos.map((p, idx) => (
-                <div key={p.id} className="border rounded p-2" style={{width: 140}}>
+              {formData.existingPhotos.map((p) => (
+                <div key={p.id} className="border rounded p-2" style={{ width: 160 }}>
                   <a href={p.url} target="_blank" rel="noopener noreferrer">
                     <img
                       src={p.url}
-                      alt={`Foto ${idx+1}`}
-                      style={{width: '100%', height: 90, objectFit: 'cover'}}
+                      alt="Foto"
+                      style={{ width: '100%', height: 100, objectFit: 'cover' }}
                       onError={e => { e.currentTarget.style.display = 'none'; }}
                     />
                   </a>
-                  <div className="form-check mt-2">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id={`keepFoto-${idx}`}
-                      checked={p.keep}
-                      onChange={() => toggleKeepExistingPhoto(idx)}
-                    />
-                    <label className="form-check-label" htmlFor={`keepFoto-${idx}`}>
-                      Mantener
-                    </label>
-                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-danger w-100 mt-2"
+                    onClick={() => removeExistingPhoto(p.id)}
+                  >
+                    Eliminar
+                  </button>
                 </div>
               ))}
             </div>
@@ -292,11 +273,11 @@ const ColaboradorEditarProducto = () => {
           {formData.newPhotos.length > 0 && (
             <div className="d-flex flex-wrap gap-3 mt-2">
               {newPhotoPreviews.map((src, i) => (
-                <div key={i} className="border rounded p-2" style={{width: 140}}>
+                <div key={i} className="border rounded p-2" style={{ width: 160 }}>
                   <img
                     src={src}
                     alt={`Nueva ${i+1}`}
-                    style={{width: '100%', height: 90, objectFit: 'cover'}}
+                    style={{ width: '100%', height: 100, objectFit: 'cover' }}
                   />
                   <button
                     type="button"
@@ -318,19 +299,16 @@ const ColaboradorEditarProducto = () => {
             <small className="text-muted">No hay archivos actuales.</small>
           ) : (
             <ul className="list-group">
-              {formData.existingAutFiles.map((f, idx) => (
-                <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
+              {formData.existingAutFiles.map((f) => (
+                <li key={f.url} className="list-group-item d-flex justify-content-between align-items-center">
                   <a href={f.url} target="_blank" rel="noopener noreferrer">{f.name}</a>
-                  <div className="form-check">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id={`keepAut-${idx}`}
-                      checked={f.keep}
-                      onChange={() => toggleKeepExistingAut(idx)}
-                    />
-                    <label className="form-check-label" htmlFor={`keepAut-${idx}`}>Mantener</label>
-                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-danger"
+                    onClick={() => removeExistingAut(f.url)}
+                  >
+                    Eliminar
+                  </button>
                 </li>
               ))}
             </ul>
@@ -356,7 +334,7 @@ const ColaboradorEditarProducto = () => {
         </div>
 
         <div className="d-flex justify-content-end mt-4">
-          <Link to="/colaborador/mis-productos" className="btn btn-secondary me-2">Cancelar</Link>
+          <Link to="/mis-productos" className="btn btn-secondary me-2">Cancelar</Link>
           <button type="submit" className="btn btn-primary">Guardar Cambios</button>
         </div>
       </form>
@@ -365,4 +343,3 @@ const ColaboradorEditarProducto = () => {
 };
 
 export default ColaboradorEditarProducto;
-
