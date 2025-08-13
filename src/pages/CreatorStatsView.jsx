@@ -181,6 +181,7 @@ const CreatorStatsView = () => {
   // Componente de información del colaborador
   const CollaboratorInfo = () => {
     const currentUsername = authUsername;
+    // Verifica si myStats y productSales existen y tienen elementos antes de intentar acceder a country
     const countryFromProduct = myStats?.productSales && myStats.productSales.length > 0 ? myStats.productSales[0].country : 'N/A';
 
     return (
@@ -234,7 +235,8 @@ const CreatorStatsView = () => {
 
     return (
       <div className="d-grid gap-4">
-        <CollaboratorInfo />
+        {/* Aquí mostramos la información del colaborador solo si myStats no es nulo */}
+        {myStats && <CollaboratorInfo />}
 
         {/* Tarjetas de estadísticas principales */}
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
@@ -276,7 +278,7 @@ const CreatorStatsView = () => {
           </div>
         </div>
 
-        {/* Mensajes motivadores/callouts */}
+        {/* Mensajes motivadores/callouts, solo si hay órdenes o productos */}
         {myStats?.totalOrders > 0 && (
           <div className="alert alert-success d-flex align-items-center rounded-3 shadow-sm p-3" role="alert">
             <CheckCircle className="me-2 text-success" style={{ width: '1.5rem', height: '1.5rem' }} />
@@ -369,6 +371,14 @@ const CreatorStatsView = () => {
     );
   }
 
+  // Determinar si hay datos de ventas relevantes para mostrar
+  const hasRelevantData = myStats && (
+    myStats.totalOrders > 0 ||
+    (myStats.productSales && myStats.productSales.length > 0) ||
+    (myStats.monthlySales && myStats.monthlySales.length > 0) ||
+    myStats.totalRevenue > 0
+  );
+
   // Renderizado principal
   return (
     <div className="creator-stats-view container-fluid py-4">
@@ -445,72 +455,88 @@ const CreatorStatsView = () => {
         </div>
       )}
 
-      {!loading && !error && myStats && (
+      {/* Lógica condicional para mostrar datos o mensajes de ausencia de datos */}
+      {!loading && !error && (
         <>
-          {activeTab === 'overview' && <OverviewTab />}
-          {activeTab === 'products' && (
-            <div className="products-table-container">
-              {myStats.productSales && myStats.productSales.length > 0 ? (
-                <div className="stats-card-minimal p-4">
-                  <h3 className="card-title fs-5 fw-bold mb-4 d-flex align-items-center text-dark">
-                    <Package className="w-6 h-6 me-2 text-fuchsia-custom" />
-                    Detalles de Mis Productos
-                  </h3>
-                  <div className="table-responsive">
-                    <table className="table table-hover align-middle mb-0">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Nombre del Producto</th>
-                          <th>Vendedor</th>
-                          <th>Ingresos Totales</th>
-                          <th>Cantidad Vendida</th>
-                          <th># de Órdenes</th>
-                          <th>País</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {myStats.productSales.map((product) => (
-                          <tr key={product.productId}>
-                            <td>{product.productId}</td>
-                            <td>{product.productName}</td>
-                            <td>{product.uploaderUsername}</td>
-                            <td>{formatCurrency(product.totalSales)}</td>
-                            <td>{product.totalQuantity}</td>
-                            <td>{product.ordersCount}</td>
-                            <td>{product.country}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+          {hasRelevantData ? (
+            <>
+              {activeTab === 'overview' && <OverviewTab />}
+              {activeTab === 'products' && (
+                <div className="products-table-container">
+                  {/* Si hay productSales, muestra la tabla, si no, el mensaje específico de "No hay productos vendidos" */}
+                  {myStats.productSales && myStats.productSales.length > 0 ? (
+                    <div className="stats-card-minimal p-4">
+                      <h3 className="card-title fs-5 fw-bold mb-4 d-flex align-items-center text-dark">
+                        <Package className="w-6 h-6 me-2 text-fuchsia-custom" />
+                        Detalles de Mis Productos
+                      </h3>
+                      <div className="table-responsive">
+                        <table className="table table-hover align-middle mb-0">
+                          <thead>
+                            <tr>
+                              <th>ID</th>
+                              <th>Nombre del Producto</th>
+                              <th>Vendedor</th>
+                              <th>Ingresos Totales</th>
+                              <th>Cantidad Vendida</th>
+                              <th># de Órdenes</th>
+                              <th>País</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {myStats.productSales.map((product) => (
+                              <tr key={product.productId}>
+                                <td>{product.productId}</td>
+                                <td>{product.productName}</td>
+                                <td>{product.uploaderUsername}</td>
+                                <td>{formatCurrency(product.totalSales)}</td>
+                                <td>{product.totalQuantity}</td>
+                                <td>{product.ordersCount}</td>
+                                <td>{product.country}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="stats-card-minimal text-center p-5">
+                      <Package className="mx-auto mb-4 text-secondary" style={{ width: '4rem', height: '4rem' }} />
+                      <h3 className="mt-2 fs-5 fw-bold text-dark">No hay productos vendidos</h3>
+                      <p className="mt-1 fs-6 text-secondary">
+                        Parece que aún no tienes productos vendidos en este período.
+                      </p>
+                    </div>
+                  )}
                 </div>
-              ) : (
-                <div className="stats-card-minimal text-center p-5">
-                  <Package className="mx-auto mb-4 text-secondary" style={{ width: '4rem', height: '4rem' }} />
-                  <h3 className="mt-2 fs-5 fw-bold text-dark">No hay productos vendidos</h3>
+              )}
+            </>
+          ) : (
+            // Si no hay datos relevantes de ventas
+            <div className="stats-card-minimal text-center p-5">
+              <MessageSquare className="mx-auto mb-4 text-secondary" style={{ width: '4rem', height: '4rem' }} />
+              {/* Determina el mensaje específico según si myStats es null o simplemente no tiene ventas */}
+              {myStats === null ? (
+                <>
+                  <h3 className="mt-2 fs-5 fw-bold text-dark">Sin datos disponibles</h3>
                   <p className="mt-1 fs-6 text-secondary">
-                    Parece que aún no tienes productos vendidos en este período.
+                    No se encontraron datos para el período de tiempo seleccionado.
                   </p>
-                </div>
+                </>
+              ) : (
+                <>
+                  <h3 className="mt-2 fs-5 fw-bold text-dark">Aún no has realizado una venta</h3>
+                  <p className="mt-1 fs-6 text-secondary">
+                    Cuando tengas tu primera venta, los datos de tus estadísticas se mostrarán aquí.
+                  </p>
+                </>
               )}
             </div>
           )}
         </>
       )}
-
-      {!loading && !error && !myStats && (
-        <div className="stats-card-minimal text-center p-5">
-          <MessageSquare className="mx-auto mb-4 text-secondary" style={{ width: '4rem', height: '4rem' }} />
-          <h3 className="mt-2 fs-5 fw-bold text-dark">Sin datos disponibles</h3>
-          <p className="mt-1 fs-6 text-secondary">
-            No se encontraron datos para el período de tiempo seleccionado.
-          </p>
-        </div>
-      )}
     </div>
   );
 };
-
 
 export default CreatorStatsView;
