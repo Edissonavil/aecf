@@ -56,10 +56,9 @@ export default function UploadProductPage() {
 
   const text = e => {
     const { name, value } = e.target;
-    // Limitar la descripción al máximo de caracteres
     const newValue = name === 'descripcionProd' ? value.slice(0, MAX_DESCRIPTION_LENGTH) : value;
     setForm(f => ({ ...f, [name]: newValue }));
-    setErrors(e => ({ ...e, [name]: undefined }));
+    setErrors(prev => ({ ...prev, [name]: undefined }));
   };
 
   const file = field => e => {
@@ -128,13 +127,15 @@ export default function UploadProductPage() {
     return Object.keys(e).length === 0;
   };
 
+  const descripcionPreservada = form.descripcionProd.replace(/\r\n/g, '\n');
+
   const handleSubmit = async e => {
     e.preventDefault();
     if (!validate()) return;
 
     const payload = {
       nombre: form.nombre,
-      descripcionProd: form.descripcionProd,
+      descripcionProd: descripcionPreservada,
       precioIndividual: parseFloat(form.precioIndividual),
       pais: form.pais,
       categorias: selectedCategories,
@@ -263,12 +264,15 @@ export default function UploadProductPage() {
               <label className="form-label">Descripción</label>
               <textarea
                 name="descripcionProd"
-                rows="4"
+                rows="6"
                 className="form-control"
                 value={form.descripcionProd}
                 onChange={text}
                 maxLength={MAX_DESCRIPTION_LENGTH}
                 placeholder="Explica qué resuelve tu recurso, para quién está pensado y cómo se usa. Máximo 2000 caracteres."
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
               />
               <div className="text-end text-muted small mt-1">
                 {form.descripcionProd.length}/{MAX_DESCRIPTION_LENGTH}

@@ -81,13 +81,6 @@ export default function AdminProductoDetalle() {
     <main className="container apd__container">
       <h1 className="apd__title d-flex justify-content-between align-items-center">
         Revisión de producto
-        <button
-          className="btn btn-outline-secondary"
-          onClick={() => navigate('/admin/revisar-productos')}
-          type="button"
-        >
-          Cancelar
-        </button>
       </h1>
 
       <div className="card shadow-sm apd__card">

@@ -29,6 +29,7 @@
 .product-description {
     line-height: 1.6;
     color: #555;
+    white-space: pre-wrap;
 }
 
 /* Badges for file types */
@@ -97,3 +98,4 @@
   object-fit: cover;
   display: block;
 }
+
