@@ -9,6 +9,9 @@ const badgeByStatus = {
   RECHAZADO: 'danger',
 };
 
+// Ajusta si tienes otra base pública; se usa solo como fallback si no llega fotografiaUrl
+const FILES_BASE_FALLBACK = 'https://gateway-production-129e.up.railway.app/api/files';
+
 export default function AdminProductoDetalle() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -17,6 +20,7 @@ export default function AdminProductoDetalle() {
   const [prod, setProd] = useState(null);
   const [loading, setLoading] = useState(true);
   const [comentario, setComentario] = useState('');
+  const [activeImgIdx, setActiveImgIdx] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -27,9 +31,31 @@ export default function AdminProductoDetalle() {
     return () => { isMounted = false; };
   }, [id]);
 
+  // Derivar URLs de imágenes robustamente
+  const imageUrls = (() => {
+    if (!prod) return [];
+    if (Array.isArray(prod.fotografiaUrl) && prod.fotografiaUrl.length > 0) return prod.fotografiaUrl;
+    if (typeof prod.fotografiaUrl === 'string') return [prod.fotografiaUrl];
+    if (Array.isArray(prod.fotografiaProd) && prod.fotografiaProd.length > 0) {
+      // fallback: construir URLs desde los driveId
+      return prod.fotografiaProd.map(driveId => `${FILES_BASE_FALLBACK}/${prod.idProducto}/${driveId}`);
+    }
+    return [];
+  })();
+
+  const primaryImageUrl = imageUrls[activeImgIdx] || '/placeholder.png';
+
+  // Mantener el zoom lens sincronizado con la imagen activa
+  useEffect(() => {
+    if (lensRef.current) {
+      lensRef.current.style.backgroundImage = `url(${primaryImageUrl})`;
+    }
+  }, [primaryImageUrl]);
+
   const moveLens = e => {
     const wrapper = e.currentTarget;
     const lens = lensRef.current;
+    if (!lens) return;
     const rect = wrapper.getBoundingClientRect();
     let x = (e.clientX - rect.left) / rect.width;
     let y = (e.clientY - rect.top) / rect.height;
@@ -51,12 +77,22 @@ export default function AdminProductoDetalle() {
   if (loading) return <p className="apd__loading">Cargando…</p>;
   if (!prod) return <p className="apd__loading">Producto no encontrado.</p>;
 
-  const primaryImageUrl = prod.fotografiaUrl || '/placeholder.png';
   return (
     <main className="container apd__container">
-      <h1 className="apd__title">Revisión de producto</h1>
+      <h1 className="apd__title d-flex justify-content-between align-items-center">
+        Revisión de producto
+        <button
+          className="btn btn-outline-secondary"
+          onClick={() => navigate('/admin/revisar-productos')}
+          type="button"
+        >
+          Cancelar
+        </button>
+      </h1>
+
       <div className="card shadow-sm apd__card">
         <div className="row g-0">
+          {/* Columna de imagen + miniaturas */}
           <div className="col-lg-4 border-end">
             <div className="apd__cover-wrapper" onMouseMove={moveLens}>
               <img
@@ -71,8 +107,32 @@ export default function AdminProductoDetalle() {
                 style={{ backgroundImage: `url(${primaryImageUrl})` }}
               />
             </div>
+
+            {/* Thumbnails */}
+            {imageUrls.length > 1 && (
+              <div className="d-flex flex-wrap gap-2 p-3">
+                {imageUrls.map((url, i) => (
+                  <button
+                    key={`${url}-${i}`}
+                    type="button"
+                    onClick={() => setActiveImgIdx(i)}
+                    className={`border-0 p-0 ${i === activeImgIdx ? 'apd__thumb--active' : ''}`}
+                    style={{ background: 'transparent' }}
+                    aria-label={`Ver imagen ${i + 1}`}
+                  >
+                    <img
+                      src={url}
+                      alt={`miniatura ${i + 1}`}
+                      className="apd__thumb"
+                      onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
+          {/* Columna de detalles */}
           <div className="col-lg-8">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-start">
@@ -89,13 +149,13 @@ export default function AdminProductoDetalle() {
               <div className="row apd__info">
                 <div className="col-6 col-md-4">
                   <p className="mb-1"><strong>Precio:</strong></p>
-                  <p className="mb-0">${prod.precioIndividual.toFixed(2)}</p>
+                  <p className="mb-0">${Number(prod.precioIndividual || 0).toFixed(2)}</p>
                 </div>
                 <div className="mb-3"><strong>Categoría:</strong> {prod.categorias?.join(', ') || '—'}</div>
                 <div className="mb-3"><strong>Especialidad:</strong> {prod.especialidades?.join(', ') || '—'}</div>
                 <div className="col-6 col-md-4 mt-3">
                   <p className="mb-1"><strong>País:</strong></p>
-                  <p className="mb-0">{prod.pais}</p>
+                  <p className="mb-0">{prod.pais || '—'}</p>
                 </div>
               </div>
 
@@ -104,13 +164,13 @@ export default function AdminProductoDetalle() {
               <ul className="list-unstyled apd__docs">
                 {prod.archivosAutUrls && prod.archivosAutUrls.length > 0 ? (
                   prod.archivosAutUrls.map((fileUrl, i) => (
-                    <li key={i} className="mb-1"> 
+                    <li key={i} className="mb-1">
                       <a
-                        href={fileUrl} 
+                        href={fileUrl}
                         className="text-decoration-none apd__doc-link"
                         target="_blank" rel="noopener noreferrer"
                       >
-                        <i className="bi bi-file-earmark-zip me-1" /> Archivo: {prod.archivosAut[i] || 'Desconocido'}
+                        <i className="bi bi-file-earmark-zip me-1" /> Archivo: {prod.archivosAut?.[i] || 'Descargar'}
                       </a>
                     </li>
                   ))
@@ -119,6 +179,7 @@ export default function AdminProductoDetalle() {
                 )}
               </ul>
 
+              {/* Acciones */}
               {prod.estado === 'PENDIENTE' && (
                 <>
                   <div className="mb-3">
@@ -131,15 +192,34 @@ export default function AdminProductoDetalle() {
                       onChange={e => setComentario(e.target.value)}
                     />
                   </div>
-                  <div className="d-flex gap-2 apd__actions">
+                  <div className="d-flex flex-wrap gap-2 apd__actions">
                     <button className="btn btn-success" onClick={() => handleDecision(true)}>
                       <i className="bi bi-check-lg me-1" /> Aprobar
                     </button>
                     <button className="btn btn-danger" onClick={() => handleDecision(false)}>
                       <i className="bi bi-x-lg me-1" /> Rechazar
                     </button>
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary ms-auto"
+                      onClick={() => navigate('/admin/revisar-productos')}
+                    >
+                      Cancelar
+                    </button>
                   </div>
                 </>
+              )}
+
+              {prod.estado !== 'PENDIENTE' && (
+                <div className="d-flex justify-content-end">
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={() => navigate('/admin/revisar-productos')}
+                  >
+                    Volver
+                  </button>
+                </div>
               )}
             </div>
           </div>

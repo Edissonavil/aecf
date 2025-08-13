@@ -97,3 +97,22 @@
 .apd__cover-wrapper:hover .apd__zoom-lens {
   opacity: 1;
 }
+
+.apd__thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid transparent;
+}
+.apd__thumb--active .apd__thumb,
+button.apd__thumb--active .apd__thumb {
+  border-color: #FF00FF; /* tu magenta */
+}
+
+/* Si tu lente necesita dimensiones por defecto */
+.apd__zoom-lens {
+  /* ejemplo base; adapta a tu diseño existente */
+  background-repeat: no-repeat;
+  background-size: 200% 200%;
+}
