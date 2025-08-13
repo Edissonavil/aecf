@@ -96,7 +96,7 @@ const CreatorStatsView = () => {
     if (!authToken) return;
     try {
       setLoading(true);
-      setError(null);
+      setError(null); // Limpiar errores anteriores antes de una nueva carga
       const params = new URLSearchParams({
         year: selectedYear.toString(),
         ...(selectedMonth && { month: selectedMonth }),
@@ -105,7 +105,25 @@ const CreatorStatsView = () => {
       const data = await apiCall(`/collaborator/my-stats?${params}`);
       setMyStats(data);
     } catch (err) {
-      setError('Error al cargar mis estadísticas: ' + err.message);
+      // Si el error es un "Error interno del servidor" o similar
+      // y no se cargaron datos (myStats es null), asumimos que es un "no hay ventas"
+      // NOTA: Lo ideal es que la API retorne un código de estado 200 con datos vacíos
+      // en lugar de un 500 cuando no hay ventas. Esta es una solución del lado del cliente.
+      if (err.message.includes("Error interno del servidor") || err.message.includes("Error 500")) {
+        // En lugar de mostrar un error, seteamos myStats a un objeto vacío
+        // para que se active la lógica de "sin datos" o "aún no has realizado una venta"
+        setMyStats({
+          totalOrders: 0,
+          productSales: [],
+          monthlySales: [],
+          totalRevenue: 0,
+          productsPendingReview: 0, // Asegurar que todos los campos relevantes estén en cero/vacíos
+        });
+        setError(null); // No mostrar error en este caso
+      } else {
+        // Para otros errores (ej. 401, 403, network issues), mostrar el mensaje de error real
+        setError('Error al cargar mis estadísticas: ' + err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -515,7 +533,7 @@ const CreatorStatsView = () => {
             // Si no hay datos relevantes de ventas
             <div className="stats-card-minimal text-center p-5">
               <MessageSquare className="mx-auto mb-4 text-secondary" style={{ width: '4rem', height: '4rem' }} />
-              {/* Determina el mensaje específico según si myStats es null o simplemente no tiene ventas */}
+              {/* Determina el mensaje específico según si myStats es null (no se cargaron datos) o simplemente no tiene ventas */}
               {myStats === null ? (
                 <>
                   <h3 className="mt-2 fs-5 fw-bold text-dark">Sin datos disponibles</h3>

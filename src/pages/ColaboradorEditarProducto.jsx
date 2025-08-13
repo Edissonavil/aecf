@@ -10,9 +10,11 @@ const ColaboradorEditarProducto = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [product, setProduct]   = useState(null);
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(null);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  // Nuevo estado para controlar el proceso de guardado
+  const [isSaving, setIsSaving] = useState(false); 
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -39,8 +41,8 @@ const ColaboradorEditarProducto = () => {
         const d = res.data;
 
         // Fotos existentes
-        const ids  = Array.isArray(d.fotografiaProd) ? d.fotografiaProd : [];
-        const urls = Array.isArray(d.fotografiaUrl)  ? d.fotografiaUrl  : [];
+        const ids = Array.isArray(d.fotografiaProd) ? d.fotografiaProd : [];
+        const urls = Array.isArray(d.fotografiaUrl) ? d.fotografiaUrl : [];
         const existingPhotos = ids.map((driveId, idx) => {
           const url = urls[idx] || `${FILES_BASE}/${d.idProducto}/${driveId}`;
           return { id: driveId, url };
@@ -141,6 +143,7 @@ const ColaboradorEditarProducto = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSaving(true); // Iniciar el estado de guardado
 
     // 1) Construir el DTO que el backend espera en @RequestPart("dto")
     const dto = {
@@ -183,12 +186,13 @@ const ColaboradorEditarProducto = () => {
     } finally {
       // liberar blobs de previews
       newPhotoPreviews.forEach(url => URL.revokeObjectURL(url));
+      setIsSaving(false); // Finalizar el estado de guardado
     }
   };
 
-  if (loading)     return <p className="text-center py-4">Cargando producto para editar…</p>;
-  if (error)       return <p className="text-danger text-center">Error al cargar el producto. {error.message}</p>;
-  if (!product)    return <p className="text-center py-4">Producto no encontrado.</p>;
+  if (loading) return <p className="text-center py-4">Cargando producto para editar…</p>;
+  if (error) return <p className="text-danger text-center">Error al cargar el producto. {error.message}</p>;
+  if (!product) return <p className="text-center py-4">Producto no encontrado.</p>;
 
   if (product.estado && product.estado !== 'PENDIENTE') {
     return (
@@ -377,7 +381,13 @@ const ColaboradorEditarProducto = () => {
 
         <div className="d-flex justify-content-end mt-4">
           <Link to="/colaborador/mis-productos" className="btn btn-secondary me-2">Cancelar</Link>
-          <button type="submit" className="btn btn-primary">Guardar Cambios</button>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={isSaving || loading} // Deshabilitar si está guardando o cargando inicialmente
+          >
+            {isSaving ? 'Guardando...' : 'Guardar Cambios'}
+          </button>
         </div>
       </form>
     </div>
@@ -385,3 +395,4 @@ const ColaboradorEditarProducto = () => {
 };
 
 export default ColaboradorEditarProducto;
+
