@@ -39,6 +39,7 @@ import ReviewPaymentsPage from './pages/ReviewPaymentsPage';
 import CreatorStatsView from './pages/CreatorStatsView';
 import AdminStatsView from './pages/AdminStatsView';
 import ContactPage from './pages/Contacto';
+import editproduct from './pages/ProductDetailEdit';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -85,6 +86,7 @@ export default function App() {
             <Route path="cargarProducto" element={<UploadProductPage />} />
             <Route path="mis-productos" element={<ColaboradorMisProductos />} />
             <Route path="editar-producto/:id" element={<ColaboradorEditarProducto />} />
+            <Route path="editar-ficha/:id" element={<editproduct/>} />
             <Route path="perfil" element={<ConfigPerfilPage />} />
             <Route path="*" element={<Navigate to="/stats/creador" replace />} />
             <Route path="terminosYcondiciones" element={<TermsAndConditionsPage />} />

@@ -104,7 +104,7 @@ const CrearUsuarioPage = () => {
 
           {success && (
             <Alert variant="success" className="text-center">
-              Usuario creado. Si es colaborador, recibirá un correo con sus credenciales y una clave temporal.
+              Usuario creado. Si es Creador, recibirá un correo con sus credenciales y una clave temporal.
             </Alert>
           )}
           {error && <Alert variant="danger" className="text-center">{error}</Alert>}

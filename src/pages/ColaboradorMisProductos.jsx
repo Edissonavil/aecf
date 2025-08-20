@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button'; // Necesario para el botón de cerr
 
 const statusToBadge = {
   PENDIENTE: 'warning text-dark',
-  APROBADO:  'success',
+  APROBADO: 'success',
   RECHAZADO: 'danger',
 };
 
@@ -61,7 +61,7 @@ const ColaboradorMisProductos = () => {
   const handleCloseModal = () => setShowModal(false);
 
   if (loading) return <p className="text-center py-4">Cargando tus productos…</p>;
-  if (error)   return <p className="text-danger text-center">Error al cargar tus productos. {error.message}</p>;
+  if (error) return <p className="text-danger text-center">Error al cargar tus productos. {error.message}</p>;
 
   return (
     <div className="container my-4">
@@ -106,15 +106,28 @@ const ColaboradorMisProductos = () => {
                     )}
                   </td>
                   <td>
-                    <Link
-                      to={`/editar-producto/${p.idProducto}`}
-                      className="btn btn-sm btn-info me-2"
-                    >Editar</Link>
+                    {p.estado === 'APROBADO' ? (
+                      <Link
+                        to={`/editar-ficha/${p.idProducto}`}  
+                      >
+                        Editar ficha
+                      </Link>
+                    ) : (
+                      <Link
+                        to={`/editar-producto/${p.idProducto}`}  
+                        className="btn btn-sm btn-info me-2"
+                      >
+                        Editar
+                      </Link>
+                    )}
                     <button
-                     onClick={() => handleDelete(p.idProducto, p.nombre)}
-                     className="btn btn-sm btn-danger"
-                   >Eliminar</button>
+                      onClick={() => handleDelete(p.idProducto, p.nombre)}
+                      className="btn btn-sm btn-danger"
+                    >
+                      Eliminar
+                    </button>
                   </td>
+
                 </tr>
               ))
             )}

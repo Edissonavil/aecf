@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { registerUser } from '../services/userService';
-import '../styles/RegisterPage.css'; // Asegúrate de que este archivo exista
+import '../styles/RegisterPage.css';
 import '../styles/LoginPage.css';
 
 const RegisterPage = () => {
@@ -11,14 +11,10 @@ const RegisterPage = () => {
     nombre: '',
     email: '',
     clave: '',
-    aceptarTerminos: false, // Asegúrate de que este estado existe y se maneja
+    aceptarTerminos: false,
   });
 
-  // Mantendremos errors para la validación de la contraseña
-  const [errors, setErrors] = useState({
-    clave: '',
-  });
-
+  const [errors, setErrors] = useState({ clave: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -32,15 +28,13 @@ const RegisterPage = () => {
   };
 
   const validate = () => {
-    const newErrors = { clave: '' }; // Solo validamos la clave por ahora
+    const newErrors = { clave: '' };
     let valid = true;
-
     if (form.clave.length < 8) {
       newErrors.clave = 'La contraseña debe tener al menos 8 caracteres.';
       valid = false;
     }
-
-    setErrors(newErrors); // Actualiza el estado de errores
+    setErrors(newErrors);
     return valid;
   };
 
@@ -50,19 +44,19 @@ const RegisterPage = () => {
       alert('Debes aceptar los Términos y Condiciones para registrarte.');
       return;
     }
-    if (!validate()) return; // Llama a validate antes de enviar
+    if (!validate()) return;
 
     setLoading(true);
     try {
       const resp = await registerUser({
         nombreUsuario: form.nombreUsuario,
-        nombre:        form.nombre,
-        email:         form.email,
-        clave:         form.clave,
+        nombre: form.nombre,
+        email: form.email,
+        clave: form.clave,
       });
       console.log('Backend respondió:', resp);
       alert('¡Registro exitoso! Ya puedes iniciar sesión.');
-      navigate('/login'); // O a la página de login si es diferente
+      navigate('/login');
     } catch (err) {
       console.error('Error al registrar usuario:', err.response || err.message);
       alert(err.response?.data?.message || 'Error al registrar usuario.');
@@ -82,7 +76,7 @@ const RegisterPage = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="register-form">
-          {/* Campos de texto */}
+          {/* Usuario */}
           <div className="form-group">
             <label htmlFor="nombreUsuario">Nombre de Usuario</label>
             <input
@@ -98,6 +92,7 @@ const RegisterPage = () => {
             />
           </div>
 
+          {/* Nombre */}
           <div className="form-group">
             <label htmlFor="nombre">Nombres Completos</label>
             <input
@@ -113,6 +108,7 @@ const RegisterPage = () => {
             />
           </div>
 
+          {/* Email */}
           <div className="form-group">
             <label htmlFor="email">Correo Electrónico</label>
             <input
@@ -131,43 +127,43 @@ const RegisterPage = () => {
           {/* Contraseña */}
           <div className="form-group position-relative">
             <label htmlFor="clave">Contraseña</label>
-                         <div className="input-with-toggle position-relative">
-            <input
-              id="clave"
-              name="clave"
-              type={showPassword ? 'text' : 'password'}
-              className="form-control" // Mantener esta clase si la usas para estilos base
-              value={form.clave}
-              onChange={handleChange}
-              required
-              autoComplete="new-password"
-              placeholder="**********"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(prev => !prev)}
-              className="password-toggle-btn" // Reutilizamos esta clase
-              aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-            >
-               {showPassword ? '🔒' : '🔑'} {/* Emojis actualizados */}
-            </button>
+            <div className="input-with-toggle position-relative">
+              <input
+                id="clave"
+                name="clave"
+                type={showPassword ? 'text' : 'password'}
+                className="form-control"
+                value={form.clave}
+                onChange={handleChange}
+                required
+                autoComplete="new-password"
+                placeholder="**********"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(prev => !prev)}
+                className="password-toggle-btn"
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              >
+                {showPassword ? '🔒' : '🔑'}
+              </button>
             </div>
             {errors.clave && <p className="error-text">{errors.clave}</p>}
           </div>
 
-          {/* Términos y Condiciones - Nueva estructura para el checkbox circular */}
-          <div className="form-group-checkbox"> {/* Usamos la misma clase que en LoginColab */}
+          {/* Términos */}
+          <div className="form-group-checkbox">
             <input
               type="checkbox"
               id="aceptarTerminos"
               name="aceptarTerminos"
-              className="custom-checkbox-input" // Misma clase para ocultar el input nativo
+              className="custom-checkbox-input"
               checked={form.aceptarTerminos}
               onChange={handleChange}
               required
             />
-            <label htmlFor="aceptarTerminos" className="custom-checkbox-label"> {/* Misma clase para el label */}
-              <span className="custom-checkbox-circle"></span> {/* El span para el círculo visual */}
+            <label htmlFor="aceptarTerminos" className="custom-checkbox-label">
+              <span className="custom-checkbox-circle"></span>
               Acepto los{' '}
               <Link to="/terms" className="link-text">
                 Términos y Condiciones
@@ -190,18 +186,15 @@ const RegisterPage = () => {
                 Inicia Sesión aquí
               </Link>
             </p>
+            <p className="mt-2">
+              <Link to="/solicitudCreador" className="btn-colaborador mt-2 w-100 text-center">
+                ¿Quieres ser un CREADOR AEC? Regístrate aquí.
+              </Link>
+            </p>
+
           </div>
         </form>
       </div>
-              <div className="login-card2">
-              <div className="login-card__inner">
-              <Link to="/solicitudCreador">
-                <button className="btn-colaborador">
-                  ¿Quieres se un CREADOR AEC? Registrate aqui.
-                </button>
-              </Link>
-            </div>
-            </div>
     </div>
   );
 };

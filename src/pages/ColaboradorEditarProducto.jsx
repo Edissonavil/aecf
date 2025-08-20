@@ -13,7 +13,6 @@ const ColaboradorEditarProducto = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // Nuevo estado para controlar el proceso de guardado
   const [isSaving, setIsSaving] = useState(false); 
 
   const [formData, setFormData] = useState({

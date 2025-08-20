@@ -113,11 +113,12 @@ const SolicitudCreadorPage = () => {
             <Form.Group className="mb-3" controlId="formHablanosDeTi">
               <Form.Label>Háblanos un poco de ti.</Form.Label>
               <Form.Control
-                as="textarea" // Usamos textarea para múltiples líneas
-                rows={3}      // Número de filas visible
+                as="textarea" 
+                rows={3}     
                 placeholder="Cuéntanos sobre tu experiencia, habilidades o por qué quieres ser un creador AEC."
                 value={hablanosDeTi}
                 onChange={(e) => setHablanosDeTi(e.target.value)}
+                required
               />
             </Form.Group>
 
