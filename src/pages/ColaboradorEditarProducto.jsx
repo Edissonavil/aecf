@@ -360,7 +360,7 @@ export default function ProductDetailEdit() {
               <div className="d-flex align-items-center justify-content-between mb-3">
                 <h1 className="fw-bold m-0">Editar ficha</h1>
                 <div className="d-flex gap-2">
-                  <Button variant="outline-secondary" onClick={() => navigate(`/producto/${id}`)}>
+                  <Button variant="outline-secondary" onClick={() => navigate(`/mis-productos`)}>
                     Cancelar
                   </Button>
                   <Button variant="success" onClick={handleSubmit} disabled={isSaving || loading}>
@@ -476,11 +476,9 @@ export default function ProductDetailEdit() {
                   )}
                 </div>
                 
-                {/* Información contextual (solo lectura) */}
                 <div className="mt-4">
                   <div className="text-secondary">Creador: <strong className="text-dark">{product?.uploaderUsername || 'Desconocido'}</strong></div>
                   <div className="text-secondary">Estado: <strong className="text-dark">{product?.estado}</strong></div>
-                  <div className="text-secondary">País: <strong className="text-dark">{product?.pais || '—'}</strong></div>
                 </div>
               </Form>
             </Col>
