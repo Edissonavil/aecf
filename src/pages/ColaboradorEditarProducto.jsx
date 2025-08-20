@@ -379,7 +379,7 @@ const ColaboradorEditarProducto = () => {
         </div>
 
         <div className="d-flex justify-content-end mt-4">
-          <Link to="/colaborador/mis-productos" className="btn btn-secondary me-2">Cancelar</Link>
+          <Link to="/mis-productos" className="btn btn-secondary me-2">Cancelar</Link>
           <button
             type="submit"
             className="btn btn-primary"
