@@ -87,8 +87,6 @@ const CrearUsuarioPage = () => {
         setNombre('');
         setEmail('');
         setRol('ROL_COLABORADOR');
-        // Opcional: redirigir después de un tiempo
-        setTimeout(() => navigate('/admin/dashboard'), 2000);
       }
     } catch (err) {
       console.error('Error al crear usuario:', err.response?.data || err.message);

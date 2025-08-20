@@ -28,7 +28,7 @@ const ContactPage = () => {
     try {
       // Define la URL del Gateway para el nuevo endpoint de contacto
       // Asegúrate de que esta URL coincida con el endpoint de tu backend
-      const GATEWAY_CONTACT_URL = 'https://gateway-production-129e.up.railway.app/api/contact'; 
+      const GATEWAY_CONTACT_URL = 'https://gateway-production-129e.up.railway.app/api/users/contact'; 
 
       // Envía la solicitud al backend a través del Gateway
       const response = await axios.post(GATEWAY_CONTACT_URL, {
