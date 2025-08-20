@@ -86,7 +86,6 @@ export default function App() {
             <Route path="cargarProducto" element={<UploadProductPage />} />
             <Route path="mis-productos" element={<ColaboradorMisProductos />} />
             <Route path="editar-producto/:id" element={<ColaboradorEditarProducto />} />
-            <Route path="editar-ficha/:id" element={<editproduct/>} />
             <Route path="perfil" element={<ConfigPerfilPage />} />
             <Route path="*" element={<Navigate to="/stats/creador" replace />} />
             <Route path="terminosYcondiciones" element={<TermsAndConditionsPage />} />

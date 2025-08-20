@@ -106,20 +106,12 @@ const ColaboradorMisProductos = () => {
                     )}
                   </td>
                   <td>
-                    {p.estado === 'APROBADO' ? (
-                      <Link
-                        to={`/editar-ficha/${p.idProducto}`}  
-                      >
-                        Editar ficha
-                      </Link>
-                    ) : (
-                      <Link
-                        to={`/editar-producto/${p.idProducto}`}  
-                        className="btn btn-sm btn-info me-2"
-                      >
-                        Editar
-                      </Link>
-                    )}
+                    <Link
+                      to={`/editar-producto/${p.idProducto}`}
+                      className="btn btn-sm btn-info me-2"
+                    >
+                      {p.estado === 'APROBADO' ? 'Editar ficha' : 'Editar'}
+                    </Link>
                     <button
                       onClick={() => handleDelete(p.idProducto, p.nombre)}
                       className="btn btn-sm btn-danger"
@@ -127,7 +119,6 @@ const ColaboradorMisProductos = () => {
                       Eliminar
                     </button>
                   </td>
-
                 </tr>
               ))
             )}

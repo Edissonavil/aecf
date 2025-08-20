@@ -1,45 +1,83 @@
-// src/pages/ColaboradorEditarProducto.jsx
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useContext, useRef, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import * as productApi from '../services/productApi';
+import { Container, Row, Col, Card, Button, Form, Alert, Spinner } from 'react-bootstrap';
+import { getProductById, updateProduct } from '../services/productApi';
 import { toast } from 'react-toastify';
+import { AuthContext } from '../context/AuthContext';
 
 const FILES_BASE = 'https://gateway-production-129e.up.railway.app/api/files';
 
-const ColaboradorEditarProducto = () => {
+export default function ProductDetailEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated, role, username } = useContext(AuthContext);
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const [isSaving, setIsSaving] = useState(false); 
+  const [isSaving, setIsSaving] = useState(false);
 
+  // Form data state
   const [formData, setFormData] = useState({
     nombre: '',
     descripcionProd: '',
     precioIndividual: '',
-    // Fotos existentes (solo datos) y nuevas (File[])
-    existingPhotos: [],        // [{ id, url }]
-    newPhotos: [],             // File[]
-    // Archivos AUT existentes (solo datos) y nuevos (Files[])
-    existingAutFiles: [],      // [{ url, name }]
-    newAutFiles: [],           // File[]
+    pais: '',
+    categorias: [],
+    especialidades: [],
+    existingPhotos: [],
+    newPhotos: [],
+    existingAutFiles: [],
+    newAutFiles: [],
   });
 
-  // Previews para nuevas fotos
+  const isApproved = product?.estado === 'APROBADO';
+  const canEditAllFields = !isApproved;
+
+  // Image Gallery & Zoom
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const imgWrapperRef = useRef(null);
+  const [zoomStyle, setZoomStyle] = useState({ transform: 'scale(1)', transformOrigin: 'center center' });
+
+  const selectImage = (i) => {
+    setSelectedIndex(i);
+    setZoomStyle({ transform: 'scale(1)', transformOrigin: 'center center' });
+  };
+
+  const onMouseMove = e => {
+    if (!imgWrapperRef.current) return;
+    const { left, top, width, height } = imgWrapperRef.current.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomStyle({ transform: 'scale(1.5)', transformOrigin: `${x}% ${y}%` });
+  };
+  const onMouseLeave = () => setZoomStyle({ transform: 'scale(1)', transformOrigin: 'center center' });
+
+  // Previews for new photos
   const newPhotoPreviews = useMemo(
     () => formData.newPhotos.map(f => URL.createObjectURL(f)),
     [formData.newPhotos]
   );
+  
+  const allImageUrls = useMemo(() => {
+    const existingUrls = formData.existingPhotos.map(p => p.url);
+    const newUrls = newPhotoPreviews;
+    return [...existingUrls, ...newUrls];
+  }, [formData.existingPhotos, newPhotoPreviews]);
 
   useEffect(() => {
     setLoading(true);
-    productApi.getProductById(id)
+    setError(null);
+    getProductById(id)
       .then(res => {
         const d = res.data;
+        if (!d) {
+          setError('No se encontraron datos del producto.');
+          return;
+        }
 
-        // Fotos existentes
+        // Existing Photos
         const ids = Array.isArray(d.fotografiaProd) ? d.fotografiaProd : [];
         const urls = Array.isArray(d.fotografiaUrl) ? d.fotografiaUrl : [];
         const existingPhotos = ids.map((driveId, idx) => {
@@ -47,7 +85,7 @@ const ColaboradorEditarProducto = () => {
           return { id: driveId, url };
         });
 
-        // Archivos AUT existentes (usar URLs completas del backend)
+        // Existing AUT Files
         const autUrls = Array.isArray(d.archivosAutUrls) ? d.archivosAutUrls : [];
         const existingAutFiles = autUrls.map(u => ({
           url: u,
@@ -60,6 +98,9 @@ const ColaboradorEditarProducto = () => {
           nombre: d.nombre || '',
           descripcionProd: d.descripcionProd || '',
           precioIndividual: d.precioIndividual ?? '',
+          pais: d.pais || '',
+          categorias: d.categorias || [],
+          especialidades: d.especialidades || [],
           existingPhotos,
           newPhotos: [],
           existingAutFiles,
@@ -68,8 +109,7 @@ const ColaboradorEditarProducto = () => {
       })
       .catch(err => {
         console.error("Error cargando producto para editar:", err);
-        setError(err);
-        toast.error("Error al cargar los datos del producto.");
+        setError("Error al cargar los datos del producto.");
       })
       .finally(() => setLoading(false));
   }, [id]);
@@ -78,9 +118,7 @@ const ColaboradorEditarProducto = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-
-
-  // Nuevas fotos (múltiples, acumulativas)
+  
   const handleNewPhotosChange = (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
@@ -88,20 +126,9 @@ const ColaboradorEditarProducto = () => {
       ...prev,
       newPhotos: [...prev.newPhotos, ...files],
     }));
-    // limpias el input para permitir volver a seleccionar los mismos nombres si se desea
     e.target.value = '';
   };
-
-  // Quitar una nueva foto antes de enviar
-  const removeNewPhoto = (idx) => {
-    setFormData(prev => {
-      const next = [...prev.newPhotos];
-      next.splice(idx, 1);
-      return { ...prev, newPhotos: next };
-    });
-  };
-
-  // Eliminar una foto existente (solo de la UI; el backend lo infiere por lo que queda)
+  
   const removeExistingPhoto = (idToRemove) => {
     setFormData(prev => ({
       ...prev,
@@ -110,7 +137,14 @@ const ColaboradorEditarProducto = () => {
     toast.info("Foto eliminada de la selección.");
   };
 
-  // Nuevos archivos AUT (múltiples, acumulativos)
+  const removeNewPhoto = (idx) => {
+    setFormData(prev => {
+      const next = [...prev.newPhotos];
+      next.splice(idx, 1);
+      return { ...prev, newPhotos: next };
+    });
+  };
+
   const handleNewAutFilesChange = (e) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
@@ -118,11 +152,9 @@ const ColaboradorEditarProducto = () => {
       ...prev,
       newAutFiles: [...prev.newAutFiles, ...files],
     }));
-    // reset para permitir re-selección
     e.target.value = '';
   };
 
-  // Eliminar un archivo AUT existente (de la UI)
   const removeExistingAut = (urlToRemove) => {
     setFormData(prev => ({
       ...prev,
@@ -131,7 +163,6 @@ const ColaboradorEditarProducto = () => {
     toast.info("Archivo eliminado de la selección.");
   };
 
-  // Eliminar un archivo AUT nuevo antes de enviar
   const removeNewAutFile = (idx) => {
     setFormData(prev => {
       const next = [...prev.newAutFiles];
@@ -139,72 +170,48 @@ const ColaboradorEditarProducto = () => {
       return { ...prev, newAutFiles: next };
     });
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSaving(true); // Iniciar el estado de guardado
-
-    // 1) Construir el DTO que el backend espera en @RequestPart("dto")
+    setIsSaving(true);
+  
     const dto = {
       idProducto: product?.idProducto,
       nombre: formData.nombre,
       descripcionProd: formData.descripcionProd,
       precioIndividual: Number(formData.precioIndividual),
-      // Mantén datos que no editas para no perderlos
-      pais: product?.pais ?? null,
-      categorias: product?.categorias ?? [],
-      especialidades: product?.especialidades ?? [],
-      // No necesarios para update, pero no estorban:
-      estado: product?.estado ?? null,
-      uploaderUsername: product?.uploaderUsername ?? null,
-      usuarioDecision: product?.usuarioDecision ?? null,
-      comentario: product?.comentario ?? null
+      pais: canEditAllFields ? formData.pais : product.pais,
+      categorias: canEditAllFields ? formData.categorias : product.categorias,
+      especialidades: canEditAllFields ? formData.especialidades : product.especialidades,
     };
-
+  
     const dataToSend = new FormData();
     dataToSend.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
- 
-
-    // Fotos: conservar las que quedaron y subir nuevas
+  
     const keepFotoIds = formData.existingPhotos.map(p => p.id);
     dataToSend.append('keepFotoIds', JSON.stringify(keepFotoIds));
     formData.newPhotos.forEach(f => dataToSend.append('fotos', f));
-
-    // Archivos AUT: conservar los que quedaron y subir nuevos
-    const autKeepUrls = formData.existingAutFiles.map(f => f.url);
-    dataToSend.append('autKeepUrls', JSON.stringify(autKeepUrls));
-    formData.newAutFiles.forEach(f => dataToSend.append('archivosAut', f));
-
+  
+    if (!isApproved) {
+      const autKeepUrls = formData.existingAutFiles.map(f => f.url);
+      dataToSend.append('autKeepUrls', JSON.stringify(autKeepUrls));
+      formData.newAutFiles.forEach(f => dataToSend.append('archivosAut', f));
+    }
+  
     try {
-      await productApi.updateProduct(id, dataToSend);
+      await updateProduct(id, dataToSend);
       toast.success("Producto actualizado exitosamente!");
       navigate('/mis-productos');
     } catch (err) {
       console.error("Error al actualizar producto:", err);
       toast.error("Error al actualizar el producto. " + (err.response?.data?.message || err.message));
     } finally {
-      // liberar blobs de previews
       newPhotoPreviews.forEach(url => URL.revokeObjectURL(url));
-      setIsSaving(false); // Finalizar el estado de guardado
+      setIsSaving(false);
     }
   };
-
-  if (loading) return <p className="text-center py-4">Cargando producto para editar…</p>;
-  if (error) return <p className="text-danger text-center">Error al cargar el producto. {error.message}</p>;
-  if (!product) return <p className="text-center py-4">Producto no encontrado.</p>;
-
-  if (product.estado && product.estado !== 'PENDIENTE') {
-    return (
-      <div className="container my-4">
-        <div className="alert alert-warning text-center" role="alert">
-          Este producto está en estado "{product.estado}" y no puede ser modificado.
-        </div>
-        <div className="text-center">
-          <Link to="/mis-productos" className="btn btn-primary">Volver a Mis Productos</Link>
-        </div>
-      </div>
-    );
-  }
+  
+  const canEdit = isAuthenticated && role === 'ROL_COLABORADOR' && (!!username ? product?.uploaderUsername === username : true);
 
   const fmtSize = (bytes) => {
     if (bytes == null) return '';
@@ -214,184 +221,272 @@ const ColaboradorEditarProducto = () => {
     return `${kb.toFixed(0)} KB`;
   };
 
+  if (loading) {
+    return (
+      <Container className="text-center my-5">
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Cargando...</span>
+        </Spinner>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="my-5">
+        <Alert variant="danger">{error}</Alert>
+        <Button variant="secondary" onClick={() => navigate(-1)}>Volver</Button>
+      </Container>
+    );
+  }
+
+  if (!product) {
+    return (
+      <Container className="my-5">
+        <Alert variant="info">Producto no encontrado.</Alert>
+        <Button variant="secondary" onClick={() => navigate(-1)}>Volver</Button>
+      </Container>
+    );
+  }
+  
+  if (!canEdit) {
+    return (
+      <Container className="my-5">
+        <Alert variant="danger">No tienes permiso para editar este producto.</Alert>
+        <Button variant="secondary" onClick={() => navigate(-1)}>Volver</Button>
+      </Container>
+    );
+  }
+  
+
   return (
-    <div className="container my-4">
-      <h1 className="h4 mb-3">Editar Producto: {product.nombre}</h1>
+    <Container className="my-5">
+      <Card className="shadow-sm overflow-hidden">
+        <Card.Body className="p-4 p-md-5">
+          <Row className="g-4">
+            {/* Columna de imágenes con zoom y gestión de fotos */}
+            <Col xs={12} md={6} lg={5} className="d-flex flex-column align-items-center">
+              <div
+                ref={imgWrapperRef}
+                onMouseMove={onMouseMove}
+                onMouseLeave={onMouseLeave}
+                className="product-image-wrapper rounded position-relative"
+                style={{ width: '100%', maxWidth: 520 }}
+              >
+                <img
+                  src={allImageUrls[selectedIndex] || 'https://via.placeholder.com/450x350?text=Sin+Imagen'}
+                  alt={product?.nombre || 'Product Image'}
+                  className="product-detail-img"
+                  style={{ width: '100%', height: 'auto', borderRadius: 8, ...zoomStyle }}
+                  onError={e => { e.currentTarget.src = 'https://via.placeholder.com/450x350?text=Sin+Imagen'; }}
+                />
+              </div>
 
-      <form onSubmit={handleSubmit} className="p-4 border rounded shadow-sm bg-white" encType="multipart/form-data">
-        {/* Nombre */}
-        <div className="mb-3">
-          <label htmlFor="nombre" className="form-label">Nombre del Producto</label>
-          <input
-            type="text"
-            className="form-control"
-            id="nombre"
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleBasicChange}
-            required
-          />
-        </div>
-
-        {/* Descripción */}
-        <div className="mb-3">
-          <label htmlFor="descripcionProd" className="form-label">Descripción</label>
-          <textarea
-            className="form-control"
-            id="descripcionProd"
-            name="descripcionProd"
-            rows="4"
-            value={formData.descripcionProd}
-            onChange={handleBasicChange}
-            required
-          />
-        </div>
-
-        {/* Precio */}
-        <div className="mb-3">
-          <label htmlFor="precioIndividual" className="form-label">Precio Individual</label>
-          <input
-            type="number"
-            step="0.01"
-            className="form-control"
-            id="precioIndividual"
-            name="precioIndividual"
-            value={formData.precioIndividual}
-            onChange={handleBasicChange}
-            required
-          />
-        </div>
-
-        {/* Fotos existentes */}
-        <div className="mb-3">
-          <label className="form-label d-block">Fotos existentes</label>
-          {formData.existingPhotos.length === 0 ? (
-            <small className="text-muted">No hay fotos actuales.</small>
-          ) : (
-            <div className="d-flex flex-wrap gap-3">
-              {formData.existingPhotos.map((p) => (
-                <div key={p.id} className="border rounded p-2" style={{ width: 160 }}>
-                  <a href={p.url} target="_blank" rel="noopener noreferrer">
-                    <img
-                      src={p.url}
-                      alt="Foto"
-                      style={{ width: '100%', height: 100, objectFit: 'cover' }}
-                      onError={e => { e.currentTarget.style.display = 'none'; }}
-                    />
-                  </a>
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-danger w-100 mt-2"
-                    onClick={() => removeExistingPhoto(p.id)}
-                  >
-                    Eliminar
-                  </button>
+              {/* Miniaturas existentes */}
+              {allImageUrls.length > 0 && (
+                <div className="thumbs-strip mt-3 d-flex flex-wrap gap-2 justify-content-center">
+                  {formData.existingPhotos.map((p, i) => (
+                    <div key={p.id} className="text-center">
+                      <button
+                        type="button"
+                        className={`thumb-btn ${i === selectedIndex ? 'active' : ''}`}
+                        onClick={() => selectImage(i)}
+                        title={`Imagen ${i + 1}`}
+                        style={{ border: 'none', background: 'transparent' }}
+                      >
+                        <img
+                          src={p.url}
+                          alt={`Miniatura ${i + 1}`}
+                          style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 6 }}
+                          onError={e => { e.currentTarget.src = 'https://via.placeholder.com/72x72?text=No+Img'; }}
+                        />
+                      </button>
+                      {/* Botón para eliminar foto existente */}
+                      <div className="form-check mt-1">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => removeExistingPhoto(p.id)}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {newPhotoPreviews.map((src, i) => (
+                    <div key={i} className="text-center">
+                      <button
+                        type="button"
+                        className={`thumb-btn ${i + formData.existingPhotos.length === selectedIndex ? 'active' : ''}`}
+                        onClick={() => selectImage(i + formData.existingPhotos.length)}
+                        title={`Nueva Imagen ${i + 1}`}
+                        style={{ border: 'none', background: 'transparent' }}
+                      >
+                        <img
+                          src={src}
+                          alt={`Nueva ${i + 1}`}
+                          style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 6 }}
+                        />
+                      </button>
+                      {/* Botón para quitar nueva foto */}
+                      <div className="form-check mt-1">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => removeNewPhoto(i)}
+                        >
+                          Quitar
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              )}
 
-        {/* Agregar nuevas fotos */}
-        <div className="mb-3">
-          <label htmlFor="fotos" className="form-label">Agregar fotos nuevas (múltiples)</label>
-          <input
-            type="file"
-            className="form-control"
-            id="fotos"
-            name="fotos"
-            accept="image/*"
-            multiple
-            onChange={handleNewPhotosChange}
-          />
-          {formData.newPhotos.length > 0 && (
-            <div className="d-flex flex-wrap gap-3 mt-2">
-              {newPhotoPreviews.map((src, i) => (
-                <div key={i} className="border rounded p-2" style={{ width: 160 }}>
-                  <img
-                    src={src}
-                    alt={`Nueva ${i+1}`}
-                    style={{ width: '100%', height: 100, objectFit: 'cover' }}
+              {/* Nuevas fotos */}
+              <Form.Group className="mt-3 w-100">
+                <Form.Label>Agregar nuevas fotos</Form.Label>
+                <Form.Control type="file" multiple accept="image/*" onChange={handleNewPhotosChange} />
+                {formData.newPhotos.length > 0 && (
+                  <small className="text-muted d-block mt-1">
+                    {formData.newPhotos.length} archivo(s) seleccionado(s)
+                  </small>
+                )}
+              </Form.Group>
+            </Col>
+
+            {/* Columna de formulario de edición */}
+            <Col xs={12} md={6} lg={7}>
+              <div className="d-flex align-items-center justify-content-between mb-3">
+                <h1 className="fw-bold m-0">Editar ficha</h1>
+                <div className="d-flex gap-2">
+                  <Button variant="outline-secondary" onClick={() => navigate(`/producto/${id}`)}>
+                    Cancelar
+                  </Button>
+                  <Button variant="success" onClick={handleSubmit} disabled={isSaving || loading}>
+                    {isSaving ? 'Guardando…' : 'Guardar cambios'}
+                  </Button>
+                </div>
+              </div>
+
+              {isApproved && (
+                <Alert variant="info" className="mb-4">
+                  Este producto está APROBADO. Solo puedes editar el título, descripción, precio y fotografías.
+                </Alert>
+              )}
+              {!canEditAllFields && !isApproved && (
+                <Alert variant="warning" className="mb-4">
+                  Solo puedes editar título, descripción, precio y fotografías de productos <strong>APROBADOS</strong> que te pertenecen.
+                </Alert>
+              )}
+
+              <Form>
+                <Form.Group className="mb-3">
+                  <Form.Label>Título</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="nombre"
+                    value={formData.nombre}
+                    onChange={handleBasicChange}
+                    required
                   />
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-danger w-100 mt-2"
-                    onClick={() => removeNewPhoto(i)}
-                  >
-                    Quitar
-                  </button>
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Precio</Form.Label>
+                  <Form.Control
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    name="precioIndividual"
+                    value={formData.precioIndividual}
+                    onChange={handleBasicChange}
+                    required
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Descripción</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={8}
+                    name="descripcionProd"
+                    value={formData.descripcionProd}
+                    onChange={handleBasicChange}
+                    required
+                    style={{ whiteSpace: 'pre-wrap' }}
+                  />
+                  <Form.Text className="text-muted">
+                    Se respetarán saltos de línea y espacios (pre-wrap).
+                  </Form.Text>
+                </Form.Group>
+
+                {/* Archivos AUT (Deshabilitados si está APROBADO) */}
+                <div className="mb-3">
+                  <label className="form-label d-block">Archivos del producto actuales</label>
+                  {isApproved && <small className="text-muted d-block mb-2">No se pueden modificar archivos en un producto aprobado.</small>}
+                  {formData.existingAutFiles.length === 0 ? (
+                    <small className="text-muted">No hay archivos actuales.</small>
+                  ) : (
+                    <ul className="list-group">
+                      {formData.existingAutFiles.map((f) => (
+                        <li key={f.url} className="list-group-item d-flex justify-content-between align-items-center">
+                          <a href={f.url} target="_blank" rel="noopener noreferrer">{f.name}</a>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => removeExistingAut(f.url)}
+                            disabled={isApproved}
+                          >
+                            Eliminar
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
 
-        {/* Archivos AUT existentes */}
-        <div className="mb-3">
-          <label className="form-label d-block">Archivos del producto actuales</label>
-          {formData.existingAutFiles.length === 0 ? (
-            <small className="text-muted">No hay archivos actuales.</small>
-          ) : (
-            <ul className="list-group">
-              {formData.existingAutFiles.map((f) => (
-                <li key={f.url} className="list-group-item d-flex justify-content-between align-items-center">
-                  <a href={f.url} target="_blank" rel="noopener noreferrer">{f.name}</a>
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-danger"
-                    onClick={() => removeExistingAut(f.url)}
-                  >
-                    Eliminar
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        {/* Agregar nuevos archivos AUT (múltiples, lista previa con quitar) */}
-        <div className="mb-3">
-          <label htmlFor="archivosAut" className="form-label">Agregar archivos del producto (múltiples)</label>
-          <input
-            type="file"
-            className="form-control"
-            id="archivosAut"
-            name="archivosAut"
-            multiple
-            onChange={handleNewAutFilesChange}
-          />
-          {formData.newAutFiles.length > 0 && (
-            <ul className="list-group mt-2">
-              {formData.newAutFiles.map((file, idx) => (
-                <li key={`${file.name}-${idx}`} className="list-group-item d-flex justify-content-between align-items-center">
-                  <span>{file.name} <small className="text-muted">({fmtSize(file.size)})</small></span>
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-outline-danger"
-                    onClick={() => removeNewAutFile(idx)}
-                  >
-                    Quitar
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="d-flex justify-content-end mt-4">
-          <Link to="/mis-productos" className="btn btn-secondary me-2">Cancelar</Link>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={isSaving || loading} // Deshabilitar si está guardando o cargando inicialmente
-          >
-            {isSaving ? 'Guardando...' : 'Guardar Cambios'}
-          </button>
-        </div>
-      </form>
-    </div>
+                <div className="mb-3">
+                  <label htmlFor="archivosAut" className="form-label">Agregar archivos del producto (múltiples)</label>
+                  <input
+                    type="file"
+                    className="form-control"
+                    id="archivosAut"
+                    name="archivosAut"
+                    multiple
+                    onChange={handleNewAutFilesChange}
+                    disabled={isApproved}
+                  />
+                  {formData.newAutFiles.length > 0 && (
+                    <ul className="list-group mt-2">
+                      {formData.newAutFiles.map((file, idx) => (
+                        <li key={`${file.name}-${idx}`} className="list-group-item d-flex justify-content-between align-items-center">
+                          <span>{file.name} <small className="text-muted">({fmtSize(file.size)})</small></span>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => removeNewAutFile(idx)}
+                            disabled={isSaving}
+                          >
+                            Quitar
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                
+                {/* Información contextual (solo lectura) */}
+                <div className="mt-4">
+                  <div className="text-secondary">Creador: <strong className="text-dark">{product?.uploaderUsername || 'Desconocido'}</strong></div>
+                  <div className="text-secondary">Estado: <strong className="text-dark">{product?.estado}</strong></div>
+                  <div className="text-secondary">País: <strong className="text-dark">{product?.pais || '—'}</strong></div>
+                </div>
+              </Form>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
+    </Container>
   );
-};
-
-export default ColaboradorEditarProducto;
-
+}
