@@ -39,7 +39,6 @@ import ReviewPaymentsPage from './pages/ReviewPaymentsPage';
 import CreatorStatsView from './pages/CreatorStatsView';
 import AdminStatsView from './pages/AdminStatsView';
 import ContactPage from './pages/Contacto';
-import editproduct from './pages/ProductDetailEdit';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
