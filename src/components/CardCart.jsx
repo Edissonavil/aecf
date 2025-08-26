@@ -1,7 +1,10 @@
 // src/components/CardCart.jsx
 import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import '../styles/CardCart.css'; // Asegúrate de tener las clases necesarias para el zoom
+import '../styles/CardCart.css'; 
+
+const FILE_SERVICE_BASE_URL = 'https://gateway-production-129e.up.railway.app/api/files';
+
 
 export default function CardCart({ item, onRemove }) {
   // Precio unificado
@@ -28,8 +31,18 @@ const onMouseMove = e => {
     setZoomStyle({ transform: 'scale(1)', transformOrigin: 'center center' });
   };
 
-  const imageUrl = item.fotografiaUrl || '/placeholder.png';
-
+  let imageUrl = '/placeholder.png';
+  if (Array.isArray(item.fotografiaUrl) && item.fotografiaUrl.length > 0) {
+    imageUrl = item.fotografiaUrl[0];
+  } else if (typeof item.fotografiaUrl === 'string' && item.fotografiaUrl.trim() !== '') {
+    imageUrl = item.fotografiaUrl;
+  } else if (Array.isArray(item.fotografiaProd) && item.fotografiaProd.length > 0) {
+    // Usa productId del item para armar la ruta pública
+    const pid = item.productId ?? item.idProducto;
+    if (pid) {
+      imageUrl = `${FILE_SERVICE_BASE_URL}/${pid}/${item.fotografiaProd[0]}`;
+    }
+  }
   return (
     <div className="card mb-3 shadow-sm">
       <div className="row g-0 align-items-center">
@@ -43,7 +56,7 @@ const onMouseMove = e => {
             <img
               src={imageUrl}
               className="img-fluid rounded-start product-card-img-cart"
-              alt={item.nombre || 'Producto'}
+              alt={item?.nombre || 'Producto'}
               style={zoomStyle}
               onError={(e) => { e.currentTarget.src = '/placeholder.png'; }}
             />
@@ -76,7 +89,10 @@ CardCart.propTypes = {
     unitPrice: PropTypes.number,
     precioIndividual: PropTypes.number,
     especialidades: PropTypes.arrayOf(PropTypes.string),
-    fotografiaUrl: PropTypes.string,        
-  }).isRequired,
+    fotografiaUrl: PropTypes.oneOfType([
+      PropTypes.arrayOf(PropTypes.string),
+      PropTypes.string
+    ]),
+    fotografiaProd: PropTypes.arrayOf(PropTypes.string),  }).isRequired,
   onRemove: PropTypes.func.isRequired,
 };
