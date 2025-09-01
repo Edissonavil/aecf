@@ -63,8 +63,6 @@ export default function CartPage() {
         setLoading(true);
         const { data: cart } = await getCart();
         setCartItems(cart.items || []);
-
-        // Siempre intenta obtener la última orden completada para el usuario
         try {
           const resp = await axios.get(
             'https://gateway-production-129e.up.railway.app/api/orders/my-orders/latest',
@@ -80,8 +78,6 @@ export default function CartPage() {
             setLastRelevantOrder(latestOrder);
             setIsAwaitingManualPaymentReview(true);
           } else {
-            // En cualquier otro caso (ej. carrito con items, pago rechazado, etc.),
-            // no hay una "última orden relevante" para mostrar descarga/espera.
             setLastRelevantOrder(null);
             setIsAwaitingManualPaymentReview(false);
           }
@@ -225,8 +221,11 @@ export default function CartPage() {
         }
       }, 5000);
     }
-    return () => learInterval(intervalId);
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [isAwaitingManualPaymentReview, lastRelevantOrder, accessToken, handlePaymentCompletion]);
+
 
   if (loading) return <div className="loading-state-cart">Cargando carrito…</div>;
   if (error) return <div className="error-state-cart">{error}</div>;
