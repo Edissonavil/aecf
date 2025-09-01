@@ -12,6 +12,7 @@ import {
 import { getProductById } from '../services/productApi';
 import CodigoQRImage from '../assets/CodigoQR.png';
 import '../styles/CartPage.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function CartPage() {
   const { isAuthenticated, role, accessToken, refreshCartCount } = useContext(AuthContext);
@@ -20,6 +21,8 @@ export default function CartPage() {
   const [error, setError] = useState(null);
   const [cartItems, setCartItems] = useState([]);
   const [itemsWithDetails, setItemsWithDetails] = useState([]);
+  const navigate = useNavigate();
+  const goToCatalog = () => navigate('/catalog'); // ← ajusta la ruta si tu catálogo es otra (p.ej. '/products' o '/tienda')
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('PAYPAL');
   const [receiptFile, setReceiptFile] = useState(null);
@@ -239,8 +242,16 @@ export default function CartPage() {
 
   return (
     <div className="container cart-page-container">
-      <h2 className="cart-title">Tu Carrito</h2>
-
+      <div className="cart-header-bar">
+        <h2 className="cart-title">Tu Carrito</h2>
+        <button
+          type="button"
+          className="btn-add-products"
+          onClick={goToCatalog}
+        >
+          Agregar más productos
+        </button>
+      </div>
       {/* Mensaje carrito vacío inicial */}
       {showInitialEmptyCartMessage && (
         <div className="cart-content-section">

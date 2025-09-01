@@ -1,10 +1,13 @@
 
+ :root {
+   --header-height: 84px; /* ajusta a la altura real de tu header fijo */
+ }
 /* 1. CONTENEDOR PRINCIPAL DEL CARRITO */
 .cart-page-container {
-    /* Espacio para el header fijo */
-    padding-top: 120px !important;
+    /* Espacio para el header fijo, ligeramente mayor para respirar */
+    padding-top: calc(var(--header-height) + 16px) !important;
     padding-bottom: 40px;
-    min-height: calc(100vh - 120px);
+    min-height: calc(100vh - var(--header-height));
     margin-top: 0 !important;
     position: relative;
 }
@@ -310,9 +313,8 @@
 }
 
 @media (max-width: 768px) {
-    .cart-page-container {
-        padding-top: 100px !important;
-    }
+    .cart-page-container { padding-top: calc(var(--header-height) + 8px) !important; }
+
     
     .cart-title {
         font-size: 2rem !important;
@@ -339,9 +341,8 @@
 }
 
 @media (max-width: 576px) {
-    .cart-page-container {
-        padding-top: 90px !important;
-    }
+    .cart-page-container { padding-top: calc(var(--header-height) + 6px) !important; }
+
     
     .cart-title {
         font-size: 1.8rem !important;
@@ -416,3 +417,48 @@
     border-radius: 8px;
     border: 1px solid #dee2e6;
 }
+
+/* Barra de cabecera del carrito */
+.cart-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem; /* menos separación para que quede más arriba */
+}
+
+/* El título puede mantenerse igual, solo reducimos el bottom */
+.cart-title {
+  margin-bottom: 1rem !important;
+}
+
+.btn-add-products {
+  background: linear-gradient(135deg, #6c63ff, #4e54c8); /* violeta sutil para diferenciarlo */
+  border: none;
+  color: white;
+  padding: 0.6rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(78, 84, 200, 0.3);
+  white-space: nowrap;
+}
+
+.btn-add-products:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(78, 84, 200, 0.4);
+}
+
+/* Responsivo: en pantallas pequeñas, el botón baja debajo del título */
+@media (max-width: 576px) {
+  .cart-header-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .btn-add-products {
+    width: 100%;
+  }
+}
+

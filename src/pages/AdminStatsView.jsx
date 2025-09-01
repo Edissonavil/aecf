@@ -27,8 +27,6 @@ const AdminStatsView = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  const didInit = useRef(false);
-
   const COLORS = ['#FF00FF', '#00C49F', '#FFBB28', '#0088FE', '#FF8042', '#8884d8'];
 
   const yearOptions = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
@@ -134,14 +132,13 @@ const AdminStatsView = () => {
 
   // 1ª carga únicamente del tab activo
   useEffect(() => {
-    if (!isAuthLoading && authToken && !didInit.current) {
-      didInit.current = true;
-      handleRefresh(); // carga inicial según tab
-    } else if (!isAuthLoading && !authToken) {
+    if (isAuthLoading) return;
+    if (!authToken) {
       setError("Token de autenticación no encontrado. Por favor, inicie sesión.");
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authToken, isAuthLoading, activeTab]);
+    handleRefresh();
+  }, [authToken, isAuthLoading, activeTab, selectedYear, selectedMonth, selectedCollaborator]);
 
   const handleRefresh = () => {
     if (activeTab === 'overview') {
@@ -149,9 +146,15 @@ const AdminStatsView = () => {
     } else if (activeTab === 'collaborators') {
       loadCollaboratorSales(selectedYear, selectedMonth);
     } else if (activeTab === 'products') {
+      loadCollaboratorSales(selectedYear, selectedMonth);
       loadProductSales(selectedYear, selectedMonth, selectedCollaborator);
     }
   };
+
+  useEffect(() => {
+    setSelectedCollaborator('');
+  }, [selectedYear, selectedMonth]);
+
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat('es-EC', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 })
@@ -291,7 +294,7 @@ const AdminStatsView = () => {
     <div className="stats-card-minimal">
       <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Ventas por Colaborador</h3>
       <div className="mb-4 d-flex gap-2">
-        <button className="btn btn-outline-info btn-sm" onClick={() => exportToCSV(collaboratorSales, 'ventas_colaboradores')}>
+        <button className="btn btn-outline-info btn-sm" disabled={!collaboratorSales?.length} onClick={() => exportToCSV(collaboratorSales, 'ventas_colaboradores')}>
           <Download className="me-1" size={16} /> Exportar CSV
         </button>
       </div>
@@ -359,7 +362,7 @@ const AdminStatsView = () => {
             </option>
           ))}
         </select>
-        <button className="btn btn-outline-info btn-sm ms-auto" onClick={() => exportToCSV(productSales, 'ventas_productos')}>
+        <button className="btn btn-outline-info btn-sm ms-auto" disabled={!productSales?.length} onClick={() => exportToCSV(productSales, 'ventas_productos')}>
           <Download className="me-1" size={16} /> Exportar CSV
         </button>
       </div>
