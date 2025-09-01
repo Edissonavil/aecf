@@ -22,7 +22,7 @@ export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
   const [itemsWithDetails, setItemsWithDetails] = useState([]);
   const navigate = useNavigate();
-  const goToCatalog = () => navigate('/catalog'); // ← ajusta la ruta si tu catálogo es otra (p.ej. '/products' o '/tienda')
+  const goToCatalog = () => navigate('/catalog'); // ajusta si tu ruta de catálogo es otra
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('PAYPAL');
   const [receiptFile, setReceiptFile] = useState(null);
@@ -33,6 +33,41 @@ export default function CartPage() {
 
   const [lastRelevantOrder, setLastRelevantOrder] = useState(null);
   const [isAwaitingManualPaymentReview, setIsAwaitingManualPaymentReview] = useState(false);
+
+  // 👉  memoria local de órdenes descargadas (para no re-mostrar el botón tras refrescar)
+  const [downloadedOrders, setDownloadedOrders] = useState(() => {
+    try {
+      return new Set(JSON.parse(localStorage.getItem('downloadedOrders') || '[]'));
+    } catch {
+      return new Set();
+    }
+  });
+
+  const markOrderDownloaded = (id) => {
+    const next = new Set(downloadedOrders);
+    next.add(id);
+    setDownloadedOrders(next);
+    localStorage.setItem('downloadedOrders', JSON.stringify([...next]));
+  };
+
+  // 👉  ajustar dinámicamente la altura del header para que el título no quede lejos
+  useEffect(() => {
+    const header =
+      document.querySelector('#mainHeader') ||
+      document.querySelector('header') ||
+      document.querySelector('.navbar');
+
+    if (!header) return;
+
+    const setHeaderHeight = () => {
+      const h = header.offsetHeight || 0;
+      document.documentElement.style.setProperty('--header-height', `${h}px`);
+    };
+
+    setHeaderHeight();
+    window.addEventListener('resize', setHeaderHeight);
+    return () => window.removeEventListener('resize', setHeaderHeight);
+  }, []);
 
   const currency = 'USD';
 
@@ -50,11 +85,11 @@ export default function CartPage() {
     }
     // SOLO AQUÍ se limpia el carrito, una vez que el pago es exitoso
     setCartItems([]);
-    await refreshCartCount(); // Actualiza el contador del carrito a 0
-    setIsAwaitingManualPaymentReview(false); // No hay orden en revisión
-    setUploadSuccessMessage(null); // Limpia cualquier mensaje de subida
-    setCurrentOrderId(null); // Limpia cualquier referencia a orden en proceso
-  }, [accessToken, setCartItems, refreshCartCount, setLastRelevantOrder, setIsAwaitingManualPaymentReview, setUploadSuccessMessage, setCurrentOrderId]);
+    await refreshCartCount();
+    setIsAwaitingManualPaymentReview(false);
+    setUploadSuccessMessage(null);
+    setCurrentOrderId(null);
+  }, [accessToken, refreshCartCount]);
 
   useEffect(() => {
     if (!isAuthenticated || role !== 'ROL_CLIENTE') {
@@ -73,10 +108,16 @@ export default function CartPage() {
           );
           const latestOrder = resp.data;
 
-          if ((latestOrder.paymentStatus === 'PAID' || latestOrder.paymentStatus === 'PAID_PAYPAL') && (cart.items == null || cart.items.length === 0)) {
+          const alreadyDownloaded = latestOrder && downloadedOrders.has(latestOrder.id);
+
+          if (!alreadyDownloaded &&
+              (latestOrder.paymentStatus === 'PAID' || latestOrder.paymentStatus === 'PAID_PAYPAL') &&
+              (cart.items == null || cart.items.length === 0)) {
             setLastRelevantOrder(latestOrder);
             setIsAwaitingManualPaymentReview(false);
-          } else if (latestOrder.paymentStatus === 'UPLOADED_RECEIPT' && (cart.items == null || cart.items.length === 0)) {
+          } else if (!alreadyDownloaded &&
+                     latestOrder.paymentStatus === 'UPLOADED_RECEIPT' &&
+                     (cart.items == null || cart.items.length === 0)) {
             // Si hay un comprobante subido, la orden está en revisión
             setLastRelevantOrder(latestOrder);
             setIsAwaitingManualPaymentReview(true);
@@ -86,7 +127,7 @@ export default function CartPage() {
           }
 
         } catch (e) {
-          // Esto se ejecutará si no hay órdenes completadas para el usuario (404)
+          // No hay últimas órdenes relevantes
           console.warn("No se encontró una última orden relevante o error al cargarla:", e);
           setLastRelevantOrder(null);
           setIsAwaitingManualPaymentReview(false);
@@ -98,7 +139,7 @@ export default function CartPage() {
         setLoading(false);
       }
     })();
-  }, [isAuthenticated, role, accessToken]);
+  }, [isAuthenticated, role, accessToken, downloadedOrders]); // 👈 dependemos de downloadedOrders
 
   // Enriquecer items del carrito con datos del producto
   useEffect(() => {
@@ -229,15 +270,23 @@ export default function CartPage() {
     };
   }, [isAwaitingManualPaymentReview, lastRelevantOrder, accessToken, handlePaymentCompletion]);
 
-
   if (loading) return <div className="loading-state-cart">Cargando carrito…</div>;
   if (error) return <div className="error-state-cart">{error}</div>;
 
   // Variables de control para mostrar secciones
-  const hasDownloadUrl = lastRelevantOrder && lastRelevantOrder.downloadUrl;
+  const hasDownloadUrl =
+    lastRelevantOrder &&
+    lastRelevantOrder.downloadUrl &&
+    !downloadedOrders.has(lastRelevantOrder.id); // 👈 respeta memoria local
+
   const showUploadReceiptSection = currentOrderId && !isUploadingReceipt;
   const showInitialEmptyCartMessage = itemsWithDetails.length === 0 && !currentOrderId && !isAwaitingManualPaymentReview && !hasDownloadUrl;
-  const showDownloadButton = lastRelevantOrder?.downloadUrl && (lastRelevantOrder.paymentStatus === 'PAID' || lastRelevantOrder.paymentStatus === 'PAID_PAYPAL');
+
+  const showDownloadButton =
+    lastRelevantOrder?.downloadUrl &&
+    (lastRelevantOrder.paymentStatus === 'PAID' || lastRelevantOrder.paymentStatus === 'PAID_PAYPAL') &&
+    !downloadedOrders.has(lastRelevantOrder.id); // 👈 respeta memoria local
+
   const showCartAndPaymentOptions = itemsWithDetails.length > 0 && !currentOrderId && !isAwaitingManualPaymentReview && !hasDownloadUrl;
 
   return (
@@ -252,6 +301,7 @@ export default function CartPage() {
           Agregar más productos
         </button>
       </div>
+
       {/* Mensaje carrito vacío inicial */}
       {showInitialEmptyCartMessage && (
         <div className="cart-content-section">
@@ -466,6 +516,10 @@ export default function CartPage() {
                   a.click();
                   document.body.removeChild(a);
                   URL.revokeObjectURL(url);
+
+                  // 👉 Evita que reaparezca tras refrescar:
+                  markOrderDownloaded(lastRelevantOrder.id);
+
                   setLastRelevantOrder(null);
                   await refreshCartCount();
                 } catch (e) {

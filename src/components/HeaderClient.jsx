@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import '../styles/Layout.css'; // Asegúrate de importar el CSS unificado
+import '../styles/Layout.css';
 
 const HeaderClient = () => {
   const navigate = useNavigate();
@@ -32,35 +32,37 @@ const HeaderClient = () => {
     navigate('/login');
   };
 
+  const badgeText = cartItemCount > 99 ? '99+' : String(cartItemCount);
+
   return (
-    // Usa las clases 'header' y 'header--scrolled' del CSS
     <header className={`header ${scrolled ? 'header--scrolled' : ''}`}>
       <div className="layout-container header__inner">
-        {/* Branding - Ahora usando clases de CSS */}
+        {/* Branding */}
         <div className="logo-area">
           <Link to="/" className="site-title">
             AEC<span className="highlight">Block</span>
           </Link>
         </div>
 
-        {/* Navigation and User Menu */}
-        <nav className="nav-desktop"> {/* Usa la clase nav-desktop */}
-          {/* Welcome message for larger screens */}
-          <span className="d-none d-lg-block nav__link"> {/* Puedes usar nav__link para el estilo de texto */}
+        {/* Nav + usuario */}
+        <nav className="nav-desktop">
+          <span className="d-none d-lg-block nav__link">
             Bienvenid@ <strong style={{ color: '#333' }}>{username}</strong>
           </span>
 
-          {/* Cart Icon */}
-          <Link to="/cart" className="nav__cart">
-            🛒
+          {/* Carrito */}
+          <Link
+            to="/cart"
+            className="nav__cart"
+            aria-label={`Ir al carrito (${cartItemCount} producto${cartItemCount === 1 ? '' : 's'})`}
+          >
+            <span aria-hidden="true">🛒</span>
             {cartItemCount > 0 && (
-              <span className="nav__badge">
-                {cartItemCount}
-              </span>
+              <span className="nav__badge" aria-live="polite">{badgeText}</span>
             )}
           </Link>
 
-          {/* User Dropdown */}
+          {/* Menú usuario */}
           <div className="nav__dropdown" ref={userMenuRef}>
             <button
               className="user-dropdown-toggle"
@@ -75,14 +77,9 @@ const HeaderClient = () => {
                   Cuenta
                 </Link>
               </li>
+              <li><hr className="user-dropdown-divider" /></li>
               <li>
-                <hr className="user-dropdown-divider" />
-              </li>
-              <li>
-                <button
-                  onClick={handleLogout}
-                  className="user-dropdown-logout-btn"
-                >
+                <button onClick={handleLogout} className="user-dropdown-logout-btn">
                   Cerrar Sesión
                 </button>
               </li>

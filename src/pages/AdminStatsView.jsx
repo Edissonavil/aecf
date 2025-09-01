@@ -104,7 +104,7 @@ const AdminStatsView = () => {
       setCollaboratorSales(data);
       setLastUpdated(new Date());
     } catch (err) {
-      setError('Error al cargar ventas por colaborador: ' + err.message);
+      setError('Error al cargar ventas por creador: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -202,7 +202,7 @@ const AdminStatsView = () => {
               <Users className="w-6 h-6 me-2 text-primary" />
               <div>
                 <div className="fs-5 fw-bold text-dark">{completeStats?.totalCollaborators?.toLocaleString() || '0'}</div>
-                <div className="text-secondary">Colaboradores Totales</div>
+                <div className="text-secondary">Creadores Totales</div>
               </div>
             </div>
           </div>
@@ -292,7 +292,7 @@ const AdminStatsView = () => {
 
   const CollaboratorsTab = () => (
     <div className="stats-card-minimal">
-      <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Ventas por Colaborador</h3>
+      <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Ventas por Creador</h3>
       <div className="mb-4 d-flex gap-2">
         <button className="btn btn-outline-info btn-sm" disabled={!collaboratorSales?.length} onClick={() => exportToCSV(collaboratorSales, 'ventas_colaboradores')}>
           <Download className="me-1" size={16} /> Exportar CSV
@@ -310,7 +310,7 @@ const AdminStatsView = () => {
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <div className="text-center p-5 text-secondary">No hay datos de ventas por colaborador para el período seleccionado.</div>
+          <div className="text-center p-5 text-secondary">No hay datos de ventas por creador para el período seleccionado.</div>
         )}
       </div>
       <div className="table-responsive">
@@ -318,7 +318,7 @@ const AdminStatsView = () => {
           <table className="table table-striped table-hover align-middle">
             <thead className="table-light">
               <tr>
-                <th>Colaborador</th>
+                <th>Creador</th>
                 <th>País</th>
                 <th>Órdenes</th>
                 <th>Cantidad Vendida</th>
@@ -338,7 +338,7 @@ const AdminStatsView = () => {
             </tbody>
           </table>
         ) : (
-          <div className="text-center p-5 text-secondary">No hay colaboradores para mostrar.</div>
+          <div className="text-center p-5 text-secondary">No hay creadores para mostrar.</div>
         )}
       </div>
     </div>
@@ -348,14 +348,14 @@ const AdminStatsView = () => {
     <div className="stats-card-minimal">
       <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Ventas por Producto</h3>
       <div className="mb-4 d-flex gap-2 align-items-center">
-        <label htmlFor="selectCollaborator" className="form-label fs-6 fw-semibold text-secondary mb-0">Filtrar por Colaborador:</label>
+        <label htmlFor="selectCollaborator" className="form-label fs-6 fw-semibold text-secondary mb-0">Filtrar por Creador:</label>
         <select
           id="selectCollaborator"
           value={selectedCollaborator}
           onChange={(e) => setSelectedCollaborator(e.target.value)}
           className="form-select form-select-custom w-auto d-inline-block"
         >
-          <option value="">Todos los colaboradores</option>
+          <option value="">Todos los creadores</option>
           {collaboratorSales.map((collaborator, index) => (
             <option key={index} value={collaborator.collaboratorUsername}>
               {collaborator.collaboratorUsername}
@@ -373,7 +373,7 @@ const AdminStatsView = () => {
             <thead className="table-light">
               <tr>
                 <th>Producto</th>
-                <th>Colaborador</th>
+                <th>Creador</th>
                 <th>País</th>
                 <th>Precio Unit.</th>
                 <th>Cantidad</th>
@@ -505,7 +505,7 @@ const AdminStatsView = () => {
             <li className="nav-item">
               <button className={`nav-link ${activeTab === 'collaborators' ? 'active' : ''}`} onClick={() => setActiveTab('collaborators')}>
                 <Users className="d-inline-block me-2" style={{ width: '1.25rem', height: '1.25rem' }} />
-                Colaboradores
+                Creadores
               </button>
             </li>
             <li className="nav-item">
