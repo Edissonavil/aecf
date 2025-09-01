@@ -105,13 +105,7 @@ const CreatorStatsView = () => {
       const data = await apiCall(`/collaborator/my-stats?${params}`);
       setMyStats(data);
     } catch (err) {
-      // Si el error es un "Error interno del servidor" o similar
-      // y no se cargaron datos (myStats es null), asumimos que es un "no hay ventas"
-      // NOTA: Lo ideal es que la API retorne un código de estado 200 con datos vacíos
-      // en lugar de un 500 cuando no hay ventas. Esta es una solución del lado del cliente.
       if (err.message.includes("Error interno del servidor") || err.message.includes("Error 500")) {
-        // En lugar de mostrar un error, seteamos myStats a un objeto vacío
-        // para que se active la lógica de "sin datos" o "aún no has realizado una venta"
         setMyStats({
           totalOrders: 0,
           productSales: [],
@@ -121,7 +115,6 @@ const CreatorStatsView = () => {
         });
         setError(null); // No mostrar error en este caso
       } else {
-        // Para otros errores (ej. 401, 403, network issues), mostrar el mensaje de error real
         setError('Error al cargar mis estadísticas: ' + err.message);
       }
     } finally {

@@ -411,3 +411,15 @@
   outline: 2px solid #FF00FF;
   outline-offset: 2px;
 }
+
+/* abrir por clase .show (estado React) */
+.nav-desktop .dropdown-menu.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.nav-desktop .dropdown-menu {
+  visibility: hidden;
+}

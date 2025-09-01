@@ -232,3 +232,31 @@ textarea.form-control:focus {
         font-size: 1.75rem;
     }
 }
+
+.form-select-custom {
+  font-size: 1.1rem;       /* Texto más grande */
+  padding: 0.6rem 1rem;    /* Más espacio interno */
+  height: auto;            /* Altura se ajusta automáticamente */
+  border-radius: 0.5rem;   /* Bordes más suaves */
+  border: 1px solid #ddd;  /* Borde claro */
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover */
+.form-select-custom:hover {
+  border-color: #FF00FF;
+}
+
+/* Focus */
+.form-select-custom:focus {
+  border-color: #FF00FF;
+  box-shadow: 0 0 0 0.25rem rgba(255, 0, 255, 0.25); /* Sombra fucsia */
+  outline: none;
+}
+
+/* Opciones (para navegadores que lo soportan) */
+.form-select-custom option {
+  font-size: 1rem;
+  padding: 0.5rem;
+}
+
