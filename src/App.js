@@ -7,6 +7,7 @@ import {
   Navigate,
   Outlet
 } from 'react-router-dom';
+import RouteChangeTracker from './RouteChangeTracker';
 
 import HeaderGuest from './components/HeaderGuest';
 import HeaderClient from './components/HeaderClient';
@@ -51,6 +52,7 @@ export default function App() {
 
   return (
     <Router>
+      <RouteChangeTracker />
       <ToastContainer />
 
       <Routes>

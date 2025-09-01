@@ -72,11 +72,9 @@ export default function CartPage() {
           );
           const latestOrder = resp.data;
 
-          // Si la última orden está PAGADA (o comprobante subido)
-          // Y el carrito actualmente NO tiene items, entonces es la orden relevante
           if ((latestOrder.paymentStatus === 'PAID' || latestOrder.paymentStatus === 'PAID_PAYPAL') && (cart.items == null || cart.items.length === 0)) {
             setLastRelevantOrder(latestOrder);
-            setIsAwaitingManualPaymentReview(false); // No está en revisión si ya está pagada
+            setIsAwaitingManualPaymentReview(false);
           } else if (latestOrder.paymentStatus === 'UPLOADED_RECEIPT' && (cart.items == null || cart.items.length === 0)) {
             // Si hay un comprobante subido, la orden está en revisión
             setLastRelevantOrder(latestOrder);
@@ -437,23 +435,19 @@ export default function CartPage() {
         {showDownloadButton && (
           <div className="flex-fill text-center">
             <button
-              className="download-button"
+              className="btn btn-success"
+              disabled={downloading}
               onClick={async () => {
+                setDownloading(true);
                 try {
-                  console.log('downloadUrl del DTO:', lastRelevantOrder.downloadUrl);
-                  console.log('ID orden (DB):', lastRelevantOrder.id, 'status:', lastRelevantOrder.paymentStatus);
-                  const endpoint = `/api/orders/${lastRelevantOrder.id}/zip`;
-                  const resp = await fetch(
-                    `https://gateway-production-129e.up.railway.app${endpoint}`,
-                    { headers: { Authorization: `Bearer ${accessToken}` } }
-                  );
-
+                  const endpoint = `https://gateway-production-129e.up.railway.app/api/orders/${lastRelevantOrder.id}/zip`;
+                  const resp = await fetch(endpoint, { headers: { Authorization: `Bearer ${accessToken}` } });
                   if (!resp.ok) {
-                    console.error("Error al iniciar la descarga:", resp.status, resp.statusText);
+                    const msg = await resp.text().catch(() => '');
+                    console.error("Error al iniciar la descarga:", resp.status, msg);
                     alert("Error al intentar descargar los archivos. Intenta de nuevo.");
                     return;
                   }
-
                   const blob = await resp.blob();
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement('a');
@@ -463,18 +457,17 @@ export default function CartPage() {
                   a.click();
                   document.body.removeChild(a);
                   URL.revokeObjectURL(url);
-
-                  // Limpieza de estado
                   setLastRelevantOrder(null);
                   await refreshCartCount();
-
                 } catch (e) {
-                  console.error("Error en el proceso de descarga:", e);
-                  alert("Hubo un error al intentar descargar los archivos. Por favor, intenta de nuevo.");
+                  console.error(e);
+                  alert('Error al descargar.');
+                } finally {
+                  setDownloading(false);
                 }
               }}
             >
-              Descarga tus archivos
+              {downloading ? 'Preparando…' : 'Descarga tus archivos Aquí'}
             </button>
 
             <p className="text-success text-center mt-3 mb-0">
