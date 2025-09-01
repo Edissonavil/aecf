@@ -15,7 +15,7 @@ import '../styles/CartPage.css';
 
 export default function CartPage() {
   const { isAuthenticated, role, accessToken, refreshCartCount } = useContext(AuthContext);
-
+  const [downloading, setDownloading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [cartItems, setCartItems] = useState([]);
@@ -225,7 +225,7 @@ export default function CartPage() {
         }
       }, 5000);
     }
-    return () => clearInterval(intervalId);
+    return () => learInterval(intervalId);
   }, [isAwaitingManualPaymentReview, lastRelevantOrder, accessToken, handlePaymentCompletion]);
 
   if (loading) return <div className="loading-state-cart">Cargando carrito…</div>;
@@ -235,7 +235,6 @@ export default function CartPage() {
   const hasDownloadUrl = lastRelevantOrder && lastRelevantOrder.downloadUrl;
   const showUploadReceiptSection = currentOrderId && !isUploadingReceipt;
   const showInitialEmptyCartMessage = itemsWithDetails.length === 0 && !currentOrderId && !isAwaitingManualPaymentReview && !hasDownloadUrl;
-  const downloadOrderId = lastRelevantOrder?.orderId;
   const showDownloadButton = lastRelevantOrder?.downloadUrl && (lastRelevantOrder.paymentStatus === 'PAID' || lastRelevantOrder.paymentStatus === 'PAID_PAYPAL');
   const showCartAndPaymentOptions = itemsWithDetails.length > 0 && !currentOrderId && !isAwaitingManualPaymentReview && !hasDownloadUrl;
 

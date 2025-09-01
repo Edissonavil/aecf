@@ -1,12 +1,12 @@
 // src/pages/AdminStatsView.jsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, LineChart, Line
 } from 'recharts';
 import {
   Calendar, DollarSign, ShoppingBag, Package, Users, TrendingUp, AlertCircle,
-  Download, FileText, CheckCircle, XCircle, UserCheck, UserX, Eye, ShoppingCart
+  Download, CheckCircle, XCircle, ShoppingCart, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/AdminStatsView.css';
@@ -25,12 +25,13 @@ const AdminStatsView = () => {
   const [collaboratorSales, setCollaboratorSales] = useState([]);
   const [productSales, setProductSales] = useState([]);
   const [activeTab, setActiveTab] = useState('overview');
+  const [lastUpdated, setLastUpdated] = useState(null);
+
+  const didInit = useRef(false);
 
   const COLORS = ['#FF00FF', '#00C49F', '#FFBB28', '#0088FE', '#FF8042', '#8884d8'];
 
-  const yearOptions = Array.from({ length: 5 }, (_, i) =>
-    new Date().getFullYear() - i
-  );
+  const yearOptions = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
 
   const monthOptions = [
     { value: '', label: 'Todo el año' },
@@ -52,7 +53,6 @@ const AdminStatsView = () => {
     if (!authToken) {
       throw new Error("No hay token de autenticación disponible. Por favor, inicie sesión.");
     }
-
     const fullUrl = `${STATS_API_BASE_URL}${path}`;
     const response = await fetch(fullUrl, {
       ...options,
@@ -62,130 +62,103 @@ const AdminStatsView = () => {
         ...options.headers,
       },
     });
-
     if (!response.ok) {
       let errorMessage = `Error ${response.status}: ${response.statusText}`;
       try {
         const errorData = await response.json();
-        if (errorData && errorData.message) {
-          errorMessage = errorData.message;
-        } else if (errorData) {
-          errorMessage = JSON.stringify(errorData);
-        }
+        if (errorData?.message) errorMessage = errorData.message;
+        else if (errorData) errorMessage = JSON.stringify(errorData);
       } catch (e) {
-        const responseText = await response.text();
-        console.error("Error al parsear la respuesta de error (no es JSON, podría ser HTML):", responseText);
-        if (response.status === 401) {
-          errorMessage = "Acceso no autorizado. Por favor, inicie sesión como administrador.";
-        } else if (response.status === 403) {
-          errorMessage = "Permiso denegado. No tiene los roles necesarios.";
-        } else {
-          errorMessage = `Error ${response.status}: ${response.statusText}. Consulte la consola para más detalles.`;
-        }
+        const text = await response.text();
+        console.error("Error al parsear error:", text);
+        if (response.status === 401) errorMessage = "Acceso no autorizado. Por favor, inicie sesión como administrador.";
+        else if (response.status === 403) errorMessage = "Permiso denegado. No tiene los roles necesarios.";
       }
       throw new Error(errorMessage);
     }
-
     return response.json();
   }, [authToken]);
 
-  const loadCompleteStats = useCallback(async () => {
+  // --- Loaders (parametrizados) ---
+  const loadCompleteStats = useCallback(async (year, month) => {
     if (!authToken) return;
     try {
       setLoading(true);
       setError(null);
-      const params = new URLSearchParams({
-        year: selectedYear.toString(),
-        ...(selectedMonth && { month: selectedMonth }),
-      });
-
+      const params = new URLSearchParams({ year: String(year), ...(month ? { month } : {}) });
       const data = await apiCall(`/admin/complete?${params}`);
       setCompleteStats(data);
+      setLastUpdated(new Date());
     } catch (err) {
       setError('Error al cargar estadísticas generales: ' + err.message);
     } finally {
       setLoading(false);
     }
-  }, [selectedYear, selectedMonth, apiCall, authToken]);
+  }, [apiCall, authToken]);
 
-  const loadCollaboratorSales = useCallback(async () => {
+  const loadCollaboratorSales = useCallback(async (year, month) => {
     if (!authToken) return;
     try {
       setLoading(true);
       setError(null);
-      const params = new URLSearchParams({
-        year: selectedYear.toString(),
-        ...(selectedMonth && { month: selectedMonth }),
-      });
-
+      const params = new URLSearchParams({ year: String(year), ...(month ? { month } : {}) });
       const data = await apiCall(`/admin/collaborators?${params}`);
       setCollaboratorSales(data);
+      setLastUpdated(new Date());
     } catch (err) {
       setError('Error al cargar ventas por colaborador: ' + err.message);
     } finally {
       setLoading(false);
     }
-  }, [selectedYear, selectedMonth, apiCall, authToken]);
+  }, [apiCall, authToken]);
 
-  const loadProductSales = useCallback(async () => {
+  const loadProductSales = useCallback(async (year, month, collaborator) => {
     if (!authToken) return;
     try {
       setLoading(true);
       setError(null);
       const params = new URLSearchParams({
-        year: selectedYear.toString(),
-        ...(selectedMonth && { month: selectedMonth }),
-        ...(selectedCollaborator && { collaborator: selectedCollaborator }),
+        year: String(year),
+        ...(month ? { month } : {}),
+        ...(collaborator ? { collaborator } : {})
       });
-
       const data = await apiCall(`/admin/products?${params}`);
       setProductSales(data);
+      setLastUpdated(new Date());
     } catch (err) {
       setError('Error al cargar ventas por producto: ' + err.message);
     } finally {
       setLoading(false);
     }
-  }, [selectedYear, selectedMonth, selectedCollaborator, apiCall, authToken]);
+  }, [apiCall, authToken]);
 
+  // 1ª carga únicamente del tab activo
   useEffect(() => {
-    if (!isAuthLoading && authToken) {
-      setError(null);
-      if (activeTab === 'overview') {
-        loadCompleteStats();
-      } else if (activeTab === 'collaborators') {
-        loadCollaboratorSales();
-      } else if (activeTab === 'products') {
-        loadProductSales();
-      }
+    if (!isAuthLoading && authToken && !didInit.current) {
+      didInit.current = true;
+      handleRefresh(); // carga inicial según tab
     } else if (!isAuthLoading && !authToken) {
       setError("Token de autenticación no encontrado. Por favor, inicie sesión.");
     }
-  }, [authToken, isAuthLoading, selectedYear, selectedMonth, selectedCollaborator, activeTab, loadCompleteStats, loadCollaboratorSales, loadProductSales]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authToken, isAuthLoading, activeTab]);
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('es-EC', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(amount || 0);
-  };
-
-  const formatPaymentMethodName = (methodName) => {
-    switch (methodName) {
-      case 'MANUAL_TRANSFER':
-        return 'Pago DeUna';
-      case 'PAYPAL':
-        return 'Paypal';
-      default:
-        return methodName;
+  const handleRefresh = () => {
+    if (activeTab === 'overview') {
+      loadCompleteStats(selectedYear, selectedMonth);
+    } else if (activeTab === 'collaborators') {
+      loadCollaboratorSales(selectedYear, selectedMonth);
+    } else if (activeTab === 'products') {
+      loadProductSales(selectedYear, selectedMonth, selectedCollaborator);
     }
   };
+
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat('es-EC', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 })
+      .format(amount || 0);
 
   const exportToCSV = (data, filename) => {
-    if (!data || data.length === 0) {
-      alert('No hay datos para exportar.');
-      return;
-    }
+    if (!data || data.length === 0) return alert('No hay datos para exportar.');
     const header = Object.keys(data[0]).join(',');
     const rows = data.map(row => Object.values(row).join(','));
     const csvContent = "data:text/csv;charset=utf-8," + [header, ...rows].join('\n');
@@ -215,7 +188,6 @@ const AdminStatsView = () => {
 
   const OverviewTab = () => (
     <div className="d-grid gap-4">
-      {/* Panel de resumen estratégico */}
       <div className="stats-card-minimal p-4 mb-4">
         <h3 className="card-title fs-5 fw-bold mb-3 d-flex align-items-center text-dark">
           <TrendingUp className="w-6 h-6 me-2 text-fuchsia-custom" />
@@ -254,48 +226,22 @@ const AdminStatsView = () => {
         </div>
       </div>
 
-      {/* Tarjetas de estadísticas principales */}
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
         <div className="col">
-          <StatCard
-            title="Ingresos Brutos"
-            value={formatCurrency(completeStats?.totalRevenue)}
-            subtitle="Ingresos generados antes de comisión"
-            icon={DollarSign}
-            color="fuchsia"
-          />
+          <StatCard title="Ingresos Brutos" value={formatCurrency(completeStats?.totalRevenue)} subtitle="Ingresos generados antes de comisión" icon={DollarSign} color="fuchsia" />
         </div>
         <div className="col">
-          <StatCard
-            title="Comisión AECBlock"
-            value={formatCurrency((completeStats?.totalRevenue || 0) * 0.5)}
-            subtitle="50% de los ingresos brutos"
-            icon={DollarSign}
-            color="blue"
-          />
+          <StatCard title="Comisión AECBlock" value={formatCurrency((completeStats?.totalRevenue || 0) * 0.5)} subtitle="50% de los ingresos brutos" icon={DollarSign} color="blue" />
         </div>
         <div className="col">
-          <StatCard
-            title="Órdenes Completadas"
-            value={completeStats?.totalOrders?.toLocaleString()}
-            icon={ShoppingBag}
-            color="purple"
-            onClick={() => setActiveTab('products')}
-          />
+          <StatCard title="Órdenes Completadas" value={completeStats?.totalOrders?.toLocaleString()} icon={ShoppingBag} color="purple" onClick={() => setActiveTab('products')} />
         </div>
         <div className="col">
-          <StatCard
-            title="Clientes Adquiridos"
-            value={completeStats?.totalCustomers?.toLocaleString() || '0'}
-            icon={Users}
-            color="orange"
-            onClick={() => alert('Funcionalidad de desglose de clientes no implementada.')}
-          />
+          <StatCard title="Clientes Adquiridos" value={completeStats?.totalCustomers?.toLocaleString() || '0'} icon={Users} color="orange" onClick={() => alert('Funcionalidad de desglose de clientes no implementada.')} />
         </div>
       </div>
 
-      {/* Gráfico de Ventas Mensuales (Line Chart) */}
-      {completeStats && completeStats.monthlySales && completeStats.monthlySales.length > 0 ? (
+      {completeStats?.monthlySales?.length > 0 ? (
         <div className="stats-card-minimal">
           <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Tendencia de Ventas Mensuales</h3>
           <ResponsiveContainer width="100%" height={300}>
@@ -305,7 +251,6 @@ const AdminStatsView = () => {
               <YAxis tickFormatter={(value) => `$${value}`} />
               <Tooltip formatter={(value) => [formatCurrency(value), 'Venta Mensual']} />
               <Legend />
-              {/* Se usa 'revenue' como dataKey para obtener el valor del JSON, pero 'name' para la etiqueta en la vista */}
               <Line type="monotone" dataKey="revenue" name="Venta Mensual" stroke="#FF00FF" strokeWidth={3} />
             </LineChart>
           </ResponsiveContainer>
@@ -314,76 +259,44 @@ const AdminStatsView = () => {
         <div className="stats-card-minimal text-center p-5">
           <TrendingUp className="mx-auto mb-4 text-secondary" style={{ width: '4rem', height: '4rem' }} />
           <h3 className="mt-2 fs-5 fw-bold text-dark">Sin datos de ventas mensuales</h3>
-          <p className="mt-1 fs-6 text-secondary">
-            No hay datos de ventas mensuales para el período seleccionado.
-          </p>
+          <p className="mt-1 fs-6 text-secondary">No hay datos de ventas mensuales para el período seleccionado.</p>
         </div>
       )}
 
-      {/* Top productos vendidos (últimos 30 días) */}
-      {completeStats?.topProductsLast30Days && completeStats.topProductsLast30Days.length > 0 ? (
+      {completeStats?.topProductsLast30Days?.length > 0 ? (
         <div className="stats-card-minimal">
           <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Top Productos Vendidos (Últimos 30 Días)</h3>
           <ResponsiveContainer width="100%" height={320}>
-            <BarChart
-              data={completeStats.topProductsLast30Days}
-              margin={{ top: 16, right: 16, bottom: 100, left: 8 }} // más espacio abajo
-            >
+            <BarChart data={completeStats.topProductsLast30Days} margin={{ top: 16, right: 16, bottom: 100, left: 8 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="productName"
-                angle={-45}
-                textAnchor="end"
-                height={100}
-                dy={10}                       
-                interval={0}                
-                tick={{ fontSize: 12 }}
-                tickFormatter={(v) => (v?.length > 18 ? v.slice(0, 18) + '…' : v)} 
-              />
+              <XAxis dataKey="productName" angle={-45} textAnchor="end" height={100} dy={10} interval={0} tick={{ fontSize: 12 }} tickFormatter={(v) => (v?.length > 18 ? v.slice(0, 18) + '…' : v)} />
               <YAxis />
-              <Tooltip
-                labelFormatter={(label) => `Producto: ${label}`} 
-                formatter={(value) => [value, 'Cantidad Vendida']}
-              />
-              <Legend
-                verticalAlign="top"           
-                align="right"
-                height={36}
-                wrapperStyle={{ paddingBottom: 8 }}
-              />
+              <Tooltip labelFormatter={(label) => `Producto: ${label}`} formatter={(value) => [value, 'Cantidad Vendida']} />
+              <Legend verticalAlign="top" align="right" height={36} wrapperStyle={{ paddingBottom: 8 }} />
               <Bar dataKey="totalQuantity" name="Cantidad Vendida" fill="#00C49F" />
             </BarChart>
           </ResponsiveContainer>
-
         </div>
       ) : (
         <div className="stats-card-minimal text-center p-5">
           <ShoppingCart className="mx-auto mb-4 text-secondary" style={{ width: '4rem', height: '4rem' }} />
           <h3 className="mt-2 fs-5 fw-bold text-dark">Sin datos de top productos</h3>
-          <p className="mt-1 fs-6 text-secondary">
-            No se encontraron datos de los productos más vendidos para el período.
-          </p>
+          <p className="mt-1 fs-6 text-secondary">No se encontraron datos de los productos más vendidos para el período.</p>
         </div>
       )}
-
     </div>
   );
 
   const CollaboratorsTab = () => (
     <div className="stats-card-minimal">
       <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Ventas por Colaborador</h3>
-
-      {/* Botones de filtro Activos/Inactivos para colaboradores (eliminados si no hay status) */}
-      {/* Se mantiene el botón de exportar CSV */}
       <div className="mb-4 d-flex gap-2">
         <button className="btn btn-outline-info btn-sm" onClick={() => exportToCSV(collaboratorSales, 'ventas_colaboradores')}>
           <Download className="me-1" size={16} /> Exportar CSV
         </button>
       </div>
-
-      {/* Gráfico de barras */}
       <div className="mb-4">
-        {collaboratorSales && collaboratorSales.length > 0 ? (
+        {collaboratorSales?.length > 0 ? (
           <ResponsiveContainer width="100%" height={400}>
             <BarChart data={collaboratorSales.slice(0, 10)}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -397,48 +310,26 @@ const AdminStatsView = () => {
           <div className="text-center p-5 text-secondary">No hay datos de ventas por colaborador para el período seleccionado.</div>
         )}
       </div>
-
-      {/* Tabla de colaboradores */}
       <div className="table-responsive">
-        {collaboratorSales && collaboratorSales.length > 0 ? (
+        {collaboratorSales?.length > 0 ? (
           <table className="table table-striped table-hover align-middle">
             <thead className="table-light">
               <tr>
-                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                  Colaborador
-                </th>
-                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                  País
-                </th>
-                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                  Órdenes
-                </th>
-                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                  Cantidad Vendida
-                </th>
-                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                  Ventas Totales
-                </th>
+                <th>Colaborador</th>
+                <th>País</th>
+                <th>Órdenes</th>
+                <th>Cantidad Vendida</th>
+                <th>Ventas Totales</th>
               </tr>
             </thead>
             <tbody>
-              {collaboratorSales.map((collaborator, index) => (
-                <tr key={index}>
-                  <td className="fs-6 fw-medium text-dark">
-                    {collaborator.collaboratorUsername}
-                  </td>
-                  <td className="fs-6 text-secondary">
-                    {collaborator.country}
-                  </td>
-                  <td className="fs-6 text-secondary">
-                    {collaborator.ordersCount?.toLocaleString()}
-                  </td>
-                  <td className="fs-6 text-secondary">
-                    {collaborator.totalQuantity?.toLocaleString()}
-                  </td>
-                  <td className="fs-6 text-dark">
-                    {formatCurrency(collaborator.totalSales)}
-                  </td>
+              {collaboratorSales.map((c, i) => (
+                <tr key={i}>
+                  <td className="fs-6 fw-medium text-dark">{c.collaboratorUsername}</td>
+                  <td className="fs-6 text-secondary">{c.country}</td>
+                  <td className="fs-6 text-secondary">{c.ordersCount?.toLocaleString()}</td>
+                  <td className="fs-6 text-secondary">{c.totalQuantity?.toLocaleString()}</td>
+                  <td className="fs-6 text-dark">{formatCurrency(c.totalSales)}</td>
                 </tr>
               ))}
             </tbody>
@@ -453,8 +344,6 @@ const AdminStatsView = () => {
   const ProductsTab = () => (
     <div className="stats-card-minimal">
       <h3 className="card-title fs-5 fw-bold mb-4 text-dark">Ventas por Producto</h3>
-
-      {/* Filtro adicional por colaborador y botón de exportar */}
       <div className="mb-4 d-flex gap-2 align-items-center">
         <label htmlFor="selectCollaborator" className="form-label fs-6 fw-semibold text-secondary mb-0">Filtrar por Colaborador:</label>
         <select
@@ -475,53 +364,28 @@ const AdminStatsView = () => {
         </button>
       </div>
 
-      {/* Tabla de productos */}
       <div className="table-responsive">
-        {productSales && productSales.length > 0 ? (
+        {productSales?.length > 0 ? (
           <table className="table table-striped table-hover align-middle">
             <thead className="table-light">
               <tr>
-                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                  Producto
-                </th>
-                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                  Colaborador
-                </th>
-                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                  País
-                </th>
-                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                  Precio Unit.
-                </th>
-                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                  Cantidad
-                </th>
-                <th scope="col" className="text-start fs-6 fw-semibold text-secondary text-uppercase">
-                  Ventas Totales
-                </th>
+                <th>Producto</th>
+                <th>Colaborador</th>
+                <th>País</th>
+                <th>Precio Unit.</th>
+                <th>Cantidad</th>
+                <th>Ventas Totales</th>
               </tr>
             </thead>
             <tbody>
-              {productSales.slice(0, 20).map((product, index) => (
-                <tr key={index}>
-                  <td className="fs-6 fw-medium text-dark">
-                    {product.productName}
-                  </td>
-                  <td className="fs-6 text-secondary">
-                    {product.uploaderUsername}
-                  </td>
-                  <td className="fs-6 text-secondary">
-                    {product.country}
-                  </td>
-                  <td className="fs-6 text-secondary">
-                    {formatCurrency(product.unitPrice)}
-                  </td>
-                  <td className="fs-6 text-secondary">
-                    {product.totalQuantity?.toLocaleString()}
-                  </td>
-                  <td className="fs-6 text-dark">
-                    {formatCurrency(product.totalSales)}
-                  </td>
+              {productSales.slice(0, 20).map((p, i) => (
+                <tr key={i}>
+                  <td className="fs-6 fw-medium text-dark">{p.productName}</td>
+                  <td className="fs-6 text-secondary">{p.uploaderUsername}</td>
+                  <td className="fs-6 text-secondary">{p.country}</td>
+                  <td className="fs-6 text-secondary">{formatCurrency(p.unitPrice)}</td>
+                  <td className="fs-6 text-secondary">{p.totalQuantity?.toLocaleString()}</td>
+                  <td className="fs-6 text-dark">{formatCurrency(p.totalSales)}</td>
                 </tr>
               ))}
             </tbody>
@@ -536,15 +400,21 @@ const AdminStatsView = () => {
   return (
     <div className="stats-view-container">
       <div className="container">
-        {/* Header */}
         <div className="mb-5">
           <h1 className="admin-stats-title mb-2">
             Panel de Estadísticas - <span className="text-fuchsia-custom">Administrador</span>
           </h1>
-          <p className="lead text-secondary">Vista general de la plataforma</p>
+          <p className="lead text-secondary">
+            Vista general de la plataforma
+            {lastUpdated && (
+              <span className="ms-2 small text-muted">
+                (Últ. actualización: {lastUpdated.toLocaleString()})
+              </span>
+            )}
+          </p>
         </div>
 
-        {/* Filtros */}
+        {/* Filtros + Botón Actualizar */}
         <div className="stats-card-minimal mb-4">
           <div className="row g-4 align-items-end">
             <div className="col-md-4">
@@ -559,9 +429,7 @@ const AdminStatsView = () => {
                 className="form-select form-select-custom"
               >
                 {yearOptions.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
+                  <option key={year} value={year}>{year}</option>
                 ))}
               </select>
             </div>
@@ -577,27 +445,41 @@ const AdminStatsView = () => {
                 className="form-select form-select-custom"
               >
                 {monthOptions.map((month) => (
-                  <option key={month.value} value={month.value}>
-                    {month.label}
-                  </option>
+                  <option key={month.value} value={month.value}>{month.label}</option>
                 ))}
               </select>
             </div>
 
-            <div className="col-md-4 d-flex align-items-end">
+            <div className="col-md-4 d-flex align-items-end justify-content-end gap-2">
+              <button
+                className="btn btn-outline-primary d-inline-flex align-items-center"
+                onClick={handleRefresh}
+                disabled={loading || !authToken}
+                title="Actualizar estadísticas"
+              >
+                {loading ? (
+                  <span className="d-inline-flex align-items-center">
+                    <span className="spinner-border spinner-border-sm me-2" role="status" />
+                    Actualizando…
+                  </span>
+                ) : (
+                  <>
+                    <RefreshCw size={16} className="me-2" />
+                    Actualizar
+                  </>
+                )}
+              </button>
               {loading && (
                 <div className="d-flex align-items-center text-fuchsia-600-custom fs-6 fw-semibold">
-                  <div className="spinner-border spinner-border-sm me-2 spinner-border-fuchsia" role="status">
+                  <div className="spinner-border spinner-border-sm ms-2 spinner-border-fuchsia" role="status">
                     <span className="visually-hidden">Cargando...</span>
                   </div>
-                  Cargando...
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Error handling */}
         {error && (
           <div className="alert alert-danger d-flex align-items-center rounded-3 shadow-sm p-4 mb-4" role="alert">
             <AlertCircle className="me-3" style={{ width: '1.5rem', height: '1.5rem' }} />
@@ -605,77 +487,36 @@ const AdminStatsView = () => {
               <h3 className="alert-heading fs-5 fw-semibold mb-1">Error</h3>
               <p className="mb-0 fs-6">{error}</p>
             </div>
-            <button
-              type="button"
-              className="btn-close-error btn-close-white ms-auto"
-              aria-label="Cerrar"
-              onClick={() => setError(null)}
-            >
-              ×
-            </button>
+            <button type="button" className="btn-close-error btn-close-white ms-auto" aria-label="Cerrar" onClick={() => setError(null)}>×</button>
           </div>
         )}
 
-        {/* Alerta de revisión de comprobantes */}
-        {completeStats && (completeStats.paymentsToVerify > 0 || completeStats.paymentErrors > 0) ? (
-          <div className={`alert alert-${completeStats.paymentErrors > 0 ? 'danger' : 'warning'} d-flex align-items-center rounded-3 shadow-sm p-3 mb-4`} role="alert">
-            {completeStats.paymentErrors > 0 ? (
-              <XCircle className="me-2" size={20} />
-            ) : (
-              <AlertCircle className="me-2" size={20} />
-            )}
-            <div>
-              {completeStats.paymentsToVerify > 0 && `Hay ${completeStats.paymentsToVerify} pagos pendientes de verificación. `}
-              {completeStats.paymentErrors > 0 && `Se detectaron ${completeStats.paymentErrors} errores en comprobantes de pago.`}
-            </div>
-            <button
-              type="button"
-              className="btn-close ms-auto"
-              aria-label="Cerrar"
-              onClick={() => setCompleteStats(prev => ({ ...prev, paymentsToVerify: 0, paymentErrors: 0 }))}
-            ></button>
-          </div>
-        ) : null}
-
-        {/* Tabs */}
         <div className="stats-card-minimal mb-4">
           <ul className="nav nav-tabs nav-tabs-minimal card-header-tabs">
             <li className="nav-item">
-              <button
-                className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`}
-                onClick={() => setActiveTab('overview')}
-              >
+              <button className={`nav-link ${activeTab === 'overview' ? 'active' : ''}`} onClick={() => setActiveTab('overview')}>
                 <TrendingUp className="d-inline-block me-2" style={{ width: '1.25rem', height: '1.25rem' }} />
                 Resumen General
               </button>
             </li>
             <li className="nav-item">
-              <button
-                className={`nav-link ${activeTab === 'collaborators' ? 'active' : ''}`}
-                onClick={() => setActiveTab('collaborators')}
-              >
+              <button className={`nav-link ${activeTab === 'collaborators' ? 'active' : ''}`} onClick={() => setActiveTab('collaborators')}>
                 <Users className="d-inline-block me-2" style={{ width: '1.25rem', height: '1.25rem' }} />
                 Colaboradores
               </button>
             </li>
             <li className="nav-item">
-              <button
-                className={`nav-link ${activeTab === 'products' ? 'active' : ''}`}
-                onClick={() => setActiveTab('products')}
-              >
+              <button className={`nav-link ${activeTab === 'products' ? 'active' : ''}`} onClick={() => setActiveTab('products')}>
                 <Package className="d-inline-block me-2" style={{ width: '1.25rem', height: '1.25rem' }} />
                 Productos
                 {completeStats?.productsPendingReview > 0 && (
-                  <span className="badge bg-danger ms-2 rounded-pill">
-                    {completeStats.productsPendingReview}
-                  </span>
+                  <span className="badge bg-danger ms-2 rounded-pill">{completeStats.productsPendingReview}</span>
                 )}
               </button>
             </li>
           </ul>
         </div>
 
-        {/* Content */}
         {activeTab === 'overview' && completeStats && <OverviewTab />}
         {activeTab === 'collaborators' && <CollaboratorsTab />}
         {activeTab === 'products' && <ProductsTab />}

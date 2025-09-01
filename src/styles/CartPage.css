@@ -1,14 +1,15 @@
-/* 1. CONTENEDOR PRINCIPAL DEL CARRITO - AJUSTADO */
+
+/* 1. CONTENEDOR PRINCIPAL DEL CARRITO */
 .cart-page-container {
-    /* Reducido el padding-top para que el título quede más cerca del header */
-    padding-top: 80px !important;
+    /* Espacio para el header fijo */
+    padding-top: 120px !important;
     padding-bottom: 40px;
-    min-height: calc(100vh - 80px);
+    min-height: calc(100vh - 120px);
     margin-top: 0 !important;
     position: relative;
 }
 
-/* 2. TÍTULO DEL CARRITO - ESPACIADO OPTIMIZADO */
+/* 2. TÍTULO DEL CARRITO */
 .cart-title {
     color: #1a1a1a !important;
     font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
@@ -16,10 +17,10 @@
     font-weight: 700 !important;
     letter-spacing: -0.02em;
     
-    /* Espaciado reducido para que no esté tan abajo */
+    /* Espaciado optimizado */
     margin-top: 0 !important;
-    margin-bottom: 1.5rem !important;
-    padding: 0.5rem 0 !important;
+    margin-bottom: 2rem !important;
+    padding: 0.75rem 0 !important;
     
     /* Layout */
     line-height: 1.2 !important;
@@ -291,7 +292,7 @@
     font-weight: 500;
 }
 
-/* 12. RESPONSIVE DESIGN - AJUSTADO */
+/* 12. RESPONSIVE DESIGN */
 @media (max-width: 992px) {
     .payment-options-container {
         flex-direction: column;
@@ -310,13 +311,12 @@
 
 @media (max-width: 768px) {
     .cart-page-container {
-        padding-top: 70px !important;
+        padding-top: 100px !important;
     }
     
     .cart-title {
         font-size: 2rem !important;
-        margin-bottom: 1.2rem !important;
-        padding: 0.3rem 0 !important;
+        margin-bottom: 1.5rem !important;
     }
     
     .cart-total-amount {
@@ -340,13 +340,12 @@
 
 @media (max-width: 576px) {
     .cart-page-container {
-        padding-top: 60px !important;
+        padding-top: 90px !important;
     }
     
     .cart-title {
         font-size: 1.8rem !important;
-        margin-bottom: 1rem !important;
-        padding: 0.25rem 0 !important;
+        margin-bottom: 1.25rem !important;
     }
     
     .cart-content-section {
