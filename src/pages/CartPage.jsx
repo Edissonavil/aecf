@@ -11,6 +11,7 @@ import {
 } from '../services/orderApi';
 import { getProductById } from '../services/productApi';
 import CodigoQRImage from '../assets/CodigoQR.png';
+import '../styles/CartPage.css';
 
 export default function CartPage() {
   const { isAuthenticated, role, accessToken, refreshCartCount } = useContext(AuthContext);
@@ -298,7 +299,7 @@ export default function CartPage() {
 
       {/* Contenedor de opciones de pago y secciones relacionadas */}
       <div className="payment-options-container">
-        
+
         {/* Opciones de pago (PayPal o Manual) */}
         {showCartAndPaymentOptions && (
           <div className="flex-fill">
@@ -401,14 +402,14 @@ export default function CartPage() {
           <div className="flex-fill">
             <div className="upload-receipt-section">
               <h5>Subir Comprobante (Orden #{currentOrderId})</h5>
-              
+
               <input
                 type="file"
                 className="form-control"
                 onChange={e => setReceiptFile(e.target.files[0])}
                 accept=".jpg,.jpeg,.png,.pdf"
               />
-              
+
               <div className="text-center">
                 <button
                   className="btn-cart-success"
@@ -418,13 +419,13 @@ export default function CartPage() {
                   {isUploadingReceipt ? 'Subiendo…' : 'Subir Comprobante'}
                 </button>
               </div>
-              
+
               {receiptUploadError && (
                 <div className="cart-alert alert alert-danger mt-3">
                   {receiptUploadError}
                 </div>
               )}
-              
+
               <p className="text-muted text-center mt-3 mb-0">
                 <small>Tu carrito permanecerá aquí hasta que el comprobante sea aprobado.</small>
               </p>
@@ -439,6 +440,8 @@ export default function CartPage() {
               className="download-button"
               onClick={async () => {
                 try {
+                  console.log('downloadUrl del DTO:', lastRelevantOrder.downloadUrl);
+                  console.log('ID orden (DB):', lastRelevantOrder.id, 'status:', lastRelevantOrder.paymentStatus);
                   const endpoint = `/api/orders/${lastRelevantOrder.id}/zip`;
                   const resp = await fetch(
                     `https://gateway-production-129e.up.railway.app${endpoint}`,
@@ -473,7 +476,7 @@ export default function CartPage() {
             >
               Descarga tus archivos
             </button>
-            
+
             <p className="text-success text-center mt-3 mb-0">
               <small>✅ Tu orden está completa y lista para descargar</small>
             </p>
