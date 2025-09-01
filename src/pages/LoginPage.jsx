@@ -103,11 +103,6 @@ const LoginPage = () => {
                   Regístrate aquí
                 </Link>
               </p>
-              <p className="mt-2">
-                <Link to="/login-colaborador" className="btn-colaborador mt-2 w-100 text-center">
-                  ¿Eres Creador AEC?, click aquí
-                </Link>
-              </p>
             </div>
           </form>
         </div>

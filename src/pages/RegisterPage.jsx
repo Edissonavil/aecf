@@ -186,12 +186,6 @@ const RegisterPage = () => {
                 Inicia Sesión aquí
               </Link>
             </p>
-            <p className="mt-2">
-              <Link to="/solicitudCreador" className="btn-colaborador mt-2 w-100 text-center">
-                ¿Quieres ser un CREADOR AEC? Regístrate aquí.
-              </Link>
-            </p>
-
           </div>
         </form>
       </div>

@@ -275,3 +275,139 @@
 .border-yellow-construction { border-color: #FFD700; }
 
 .highlight { color: #FF00FF; }
+
+/* ===== Dropdowns base (desktop & touch) ===== */
+.nav-desktop .dropdown {
+  position: relative;
+}
+
+/* Botones: heredan estilos existentes */
+.nav-desktop .dropdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0.75rem;
+  font-weight: 700;
+  color: #555;
+  border-radius: 0.375rem;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+/* Variante cuando el toggle es “botón principal” (Registrarse) */
+.nav-desktop .nav__button.dropdown-toggle {
+  background-color: #FF00FF;
+  color: #fff;
+  padding: 0.5rem 1rem;
+}
+.nav-desktop .nav__button.dropdown-toggle:hover {
+  background-color: #cc00cc;
+}
+
+/* Caret (flecha) */
+.nav-desktop .dropdown-toggle::after {
+  content: "";
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid currentColor;
+  transform: translateY(1px);
+}
+
+/* Hover/focus */
+.nav-desktop .dropdown-toggle:hover,
+.nav-desktop .dropdown-toggle:focus-visible {
+  color: #FF00FF;
+  outline: none;
+}
+
+/* Menú */
+.nav-desktop .dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;               /* para Iniciar Sesión; usa right:0 si quieres alinearlo a la derecha */
+  z-index: 1001;
+  min-width: 200px;
+  padding: 8px 0;
+  margin: 0;
+  list-style: none;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  border: 1px solid #f7efefff;
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+/* Mostrar por hover (desktop) */
+.nav-desktop .dropdown:hover > .dropdown-menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Mostrar por clase .open (click/touch) */
+.nav-desktop .dropdown.open > .dropdown-menu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Ítems */
+.nav-desktop .dropdown-item {
+  display: block;
+  padding: 10px 14px;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95rem;
+  transition: background-color 0.15s, color 0.15s, padding-left 0.15s;
+  border-radius: 6px;
+  margin: 2px 6px;
+}
+
+.nav-desktop .dropdown-item:hover,
+.nav-desktop .dropdown-item:focus-visible {
+  background-color: #FFC0CB;
+  color: #C71585;
+  outline: none;
+  padding-left: 16px;
+}
+
+/* Alineación del segundo dropdown (Registrarse) hacia la derecha si lo prefieres */
+.nav-desktop .dropdown.align-right .dropdown-menu {
+  right: 0;
+  left: auto;
+}
+
+/* Pequeño triángulo decorativo (opcional) */
+.nav-desktop .dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 16px;           /* ajusta si usas align-right: usa right:16px y elimina left */
+  width: 0; height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #fff;
+  filter: drop-shadow(0 -1px 0 #f7efefff);
+}
+
+/* Responsivo/touch: desactiva hover puro en pantallas pequeñas si necesitas click-only */
+@media (hover: none) {
+  .nav-desktop .dropdown:hover > .dropdown-menu {
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+  }
+}
+
+/* Accesibilidad: focus visibles */
+.nav-desktop .dropdown-toggle:focus-visible,
+.nav-desktop .dropdown-item:focus-visible {
+  outline: 2px solid #FF00FF;
+  outline-offset: 2px;
+}
