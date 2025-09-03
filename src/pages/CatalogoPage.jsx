@@ -9,8 +9,8 @@ export default function CatalogPage() {
   const [error, setError] = useState(null);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-
-  // Nuevo estado para la barra de búsqueda
+  const [sortBy, setSortBy] = useState('');
+  // Para la barra de búsqueda
   const [searchTerm, setSearchTerm] = useState('');
 
   // States for selected filters - NOW ARRAYS FOR MULTI-SELECTION
@@ -65,6 +65,11 @@ export default function CatalogPage() {
     );
   };
 
+  const getPrice = (p) => {
+    const val = p?.precioIndividual ?? p?.price ?? p?.precio ?? p?.unitPrice;
+    const n = Number(val);
+    return Number.isFinite(n) ? n : 0;
+  };
   const handleCountryChange = (country) => {
     setSelectedCountries(prev =>
       prev.includes(country)
@@ -122,6 +127,12 @@ export default function CatalogPage() {
         });
       }
 
+      if (sortBy === 'priceAsc') {
+        currentFiltered = [...currentFiltered].sort((a, b) => getPrice(a) - getPrice(b));
+      } else if (sortBy === 'priceDesc') {
+        currentFiltered = [...currentFiltered].sort((a, b) => getPrice(b) - getPrice(a));
+      }
+
       setFilteredProducts(currentFiltered);
     } catch (e) {
       // Catch any unexpected errors during filtering and prevent the app from crashing
@@ -130,7 +141,7 @@ export default function CatalogPage() {
       setError('Hubo un error al aplicar los filtros. Por favor, inténtalo de nuevo.');
       setFilteredProducts([]); // Asegura que la página no se queda en blanco
     }
-  }, [products, selectedCategories, selectedCountries, selectedSpecialties, searchTerm]);
+  }, [products, selectedCategories, selectedCountries, selectedSpecialties, searchTerm, sortBy]);
 
   if (loading) return <div className="text-center py-5">Cargando productos…</div>;
   if (error) return <Alert variant="danger" className="text-center my-5">{error}</Alert>;
@@ -142,10 +153,10 @@ export default function CatalogPage() {
       <h2
         className="catalog-title mb-2 text-center fw-normal"
         style={{
-          marginTop: '1rem', 
+          marginTop: '1rem',
           paddingTop: '0.5rem',
           overflow: 'visible',
-          lineHeight: '1.2' 
+          lineHeight: '1.2'
         }}
       >
         Catálogo de Productos
@@ -176,6 +187,17 @@ export default function CatalogPage() {
               </svg>
             </Button>
           </InputGroup>
+        </Col>
+        <Col md={4}>
+          <Form.Select
+            aria-label="Ordenar por"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value="">Ordenar…</option>
+            <option value="priceAsc">Precio: menor a mayor</option>
+            <option value="priceDesc">Precio: mayor a menor</option>
+          </Form.Select>
         </Col>
       </Row>
 

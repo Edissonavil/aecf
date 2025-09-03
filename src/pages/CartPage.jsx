@@ -23,7 +23,7 @@ export default function CartPage() {
   const [itemsWithDetails, setItemsWithDetails] = useState([]);
   const navigate = useNavigate();
   const goToCatalog = () => navigate('/catalog'); // ajusta si tu ruta de catálogo es otra
-
+  const [topOffset, setTopOffset] = useState(0);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('PAYPAL');
   const [receiptFile, setReceiptFile] = useState(null);
   const [currentOrderId, setCurrentOrderId] = useState(null);
@@ -34,7 +34,7 @@ export default function CartPage() {
   const [lastRelevantOrder, setLastRelevantOrder] = useState(null);
   const [isAwaitingManualPaymentReview, setIsAwaitingManualPaymentReview] = useState(false);
 
-  // 👉  memoria local de órdenes descargadas (para no re-mostrar el botón tras refrescar)
+  //memoria local de órdenes descargadas (para no re-mostrar el botón tras refrescar)
   const [downloadedOrders, setDownloadedOrders] = useState(() => {
     try {
       return new Set(JSON.parse(localStorage.getItem('downloadedOrders') || '[]'));
@@ -49,8 +49,25 @@ export default function CartPage() {
     setDownloadedOrders(next);
     localStorage.setItem('downloadedOrders', JSON.stringify([...next]));
   };
+  useEffect(() => {
+    const pick = (sel) => document.querySelector(sel);
+    const header = pick('#mainHeader') || pick('header') || pick('.navbar');
 
-  // 👉  ajustar dinámicamente la altura del header para que el título no quede lejos
+    const computeOffsets = () => {
+      const headerH = header?.offsetHeight || 0;
+      const bodyPT = parseFloat(getComputedStyle(document.body).paddingTop) || 0;
+      // Aplica solo la diferencia; deja un pequeño margen (4px)
+      const offset = Math.max(headerH - bodyPT + 4, 0);
+      setTopOffset(offset);
+      // (opcional) actualiza variables si las usas en otros lados
+      document.documentElement.style.setProperty('--header-height', `${headerH}px`);
+    };
+
+    computeOffsets();
+    window.addEventListener('resize', computeOffsets);
+    return () => window.removeEventListener('resize', computeOffsets);
+  }, []);
+  // ajustar dinámicamente la altura del header para que el título no quede lejos
   useEffect(() => {
     const header =
       document.querySelector('#mainHeader') ||
@@ -111,13 +128,13 @@ export default function CartPage() {
           const alreadyDownloaded = latestOrder && downloadedOrders.has(latestOrder.id);
 
           if (!alreadyDownloaded &&
-              (latestOrder.paymentStatus === 'PAID' || latestOrder.paymentStatus === 'PAID_PAYPAL') &&
-              (cart.items == null || cart.items.length === 0)) {
+            (latestOrder.paymentStatus === 'PAID' || latestOrder.paymentStatus === 'PAID_PAYPAL') &&
+            (cart.items == null || cart.items.length === 0)) {
             setLastRelevantOrder(latestOrder);
             setIsAwaitingManualPaymentReview(false);
           } else if (!alreadyDownloaded &&
-                     latestOrder.paymentStatus === 'UPLOADED_RECEIPT' &&
-                     (cart.items == null || cart.items.length === 0)) {
+            latestOrder.paymentStatus === 'UPLOADED_RECEIPT' &&
+            (cart.items == null || cart.items.length === 0)) {
             // Si hay un comprobante subido, la orden está en revisión
             setLastRelevantOrder(latestOrder);
             setIsAwaitingManualPaymentReview(true);
@@ -290,14 +307,10 @@ export default function CartPage() {
   const showCartAndPaymentOptions = itemsWithDetails.length > 0 && !currentOrderId && !isAwaitingManualPaymentReview && !hasDownloadUrl;
 
   return (
-    <div className="container cart-page-container">
+    <div className="container cart-page-container" style={{ paddingTop: topOffset }}>
       <div className="cart-header-bar">
         <h2 className="cart-title">Tu Carrito</h2>
-        <button
-          type="button"
-          className="btn-add-products"
-          onClick={goToCatalog}
-        >
+        <button type="button" className="btn-add-products" onClick={goToCatalog}>
           Agregar más productos
         </button>
       </div>

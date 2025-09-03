@@ -5,13 +5,12 @@
 
 /* 1. CONTENEDOR PRINCIPAL DEL CARRITO */
 .cart-page-container {
-  /* Espacio para el header fijo, ahora más compacto */
-  padding-top: calc(var(--header-height) + 4px) !important;
   padding-bottom: 40px;
-  min-height: calc(100vh - var(--header-height));
-  margin-top: 0 !important;
+  min-height: calc(100vh - var(--header-height, 64px));
+  margin-top: 0;
   position: relative;
 }
+
 
 /* 2. TÍTULO DEL CARRITO */
 .cart-title {

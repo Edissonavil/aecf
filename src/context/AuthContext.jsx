@@ -125,14 +125,25 @@ export const AuthProvider = ({ children }) => {
 
   // Refresca el contador de items del carrito
   const refreshCartCount = async () => {
-    try {
-      const resp = await getCartCount();
-      setAuth(a => ({ ...a, cartItemCount: resp.data.count ?? 0 }));
-    } catch (e) {
-      console.error('Error al cargar contador de carrito:', e);
-      setAuth(a => ({ ...a, cartItemCount: 0 }));
+  try {
+    // 1) intento con /cart/count
+    const resp = await getCartCount();
+    let nextCount = resp?.data?.count;
+
+    // 2) si no viene "count", caemos al carrito completo
+    if (typeof nextCount !== 'number') {
+      const full = await getCart(); // { data: { items: [...] } }
+      const items = full?.data?.items ?? [];
+      // si manejas "quantity" por item:
+      nextCount = items.reduce((acc, it) => acc + (it.quantity || 1), 0);
     }
-  };
+
+    setAuth(a => ({ ...a, cartItemCount: nextCount || 0 }));
+  } catch (e) {
+    console.error('Error al cargar contador de carrito:', e);
+    setAuth(a => ({ ...a, cartItemCount: 0 }));
+  }
+};
 
   // Inicialización: valida tokens y (si caducó) intenta refresh; carga carrito si procede
   useEffect(() => {

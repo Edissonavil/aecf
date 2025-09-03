@@ -161,9 +161,8 @@ const CreatorStatsView = () => {
           </div>
         </div>
         {trend && (
-          <div className={`d-flex align-items-center text-sm ${
-            trend > 0 ? 'text-success' : trend < 0 ? 'text-danger' : 'text-secondary'
-          }`}>
+          <div className={`d-flex align-items-center text-sm ${trend > 0 ? 'text-success' : trend < 0 ? 'text-danger' : 'text-secondary'
+            }`}>
             <TrendingUp className={`w-4 h-4 me-1 ${trend < 0 ? 'rotate-180' : ''}`} />
             {Math.abs(trend)}%
           </div>
@@ -341,46 +340,68 @@ const CreatorStatsView = () => {
             )}
           </p>
         </div>
-        <div className="col-auto">
-          <div className="d-flex align-items-center">
-            <select
-              className="form-select me-2"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-            >
-              {yearOptions.map((year) => (
-                <option key={year} value={year}>{year}</option>
-              ))}
-            </select>
-            <select
-              className="form-select me-2"
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-            >
-              {monthOptions.map((month) => (
-                <option key={month.value} value={month.value}>{month.label}</option>
-              ))}
-            </select>
+        <div className="stats-card-minimal mb-4">
+          <div className="row g-4 align-items-end">
+            <div className="col-md-4">
+              <label htmlFor="selectYear" className="form-label fs-6 fw-semibold text-secondary mb-2">
+                <Calendar className="d-inline-block me-2 text-fuchsia-custom" style={{ width: '1.25rem', height: '1.25rem' }} />
+                Año
+              </label>
+              <select
+                id="selectYear"
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                className="form-select form-select-custom"
+              >
+                {yearOptions.map((year) => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
 
-            {/* Botón Actualizar */}
-            <button
-              className="btn btn-outline-primary d-inline-flex align-items-center"
-              onClick={handleRefresh}
-              disabled={loading || !authToken}
-              title="Actualizar estadísticas"
-            >
-              {loading ? (
-                <span className="d-inline-flex align-items-center">
-                  <span className="spinner-border spinner-border-sm me-2" role="status" />
-                  Actualizando…
-                </span>
-              ) : (
-                <>
-                  <RefreshCw size={16} className="me-2" />
-                  Actualizar
-                </>
+            <div className="col-md-4">
+              <label htmlFor="selectMonth" className="form-label fs-6 fw-semibold text-secondary mb-2">
+                Mes (Opcional)
+              </label>
+              <select
+                id="selectMonth"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="form-select form-select-custom"
+              >
+                {monthOptions.map((month) => (
+                  <option key={month.value} value={month.value}>{month.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="col-md-4 d-flex align-items-end justify-content-end gap-2">
+              <button
+                className="btn btn-outline-primary d-inline-flex align-items-center"
+                onClick={handleRefresh}
+                disabled={loading || !authToken}
+                title="Actualizar estadísticas"
+              >
+                {loading ? (
+                  <span className="d-inline-flex align-items-center">
+                    <span className="spinner-border spinner-border-sm me-2" role="status" />
+                    Actualizando…
+                  </span>
+                ) : (
+                  <>
+                    <RefreshCw size={16} className="me-2" />
+                    Actualizar
+                  </>
+                )}
+              </button>
+              {loading && (
+                <div className="d-flex align-items-center text-fuchsia-600-custom fs-6 fw-semibold">
+                  <div className="spinner-border spinner-border-sm ms-2 spinner-border-fuchsia" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                  </div>
+                </div>
               )}
-            </button>
+            </div>
           </div>
         </div>
       </div>

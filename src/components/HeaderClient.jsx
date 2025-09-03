@@ -5,7 +5,7 @@ import '../styles/Layout.css';
 
 const HeaderClient = () => {
   const navigate = useNavigate();
-  const { username, cartItemCount, logout } = useContext(AuthContext);
+  const { username, cartItemCount, logout, refreshCartCount } = useContext(AuthContext);
 
   const [scrolled, setScrolled] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -16,6 +16,11 @@ const HeaderClient = () => {
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // 👇 Asegura que el contador se cargue al montar el header
+  useEffect(() => {
+    refreshCartCount?.();
+  }, [refreshCartCount]);
 
   useEffect(() => {
     const onClickOutside = e => {
@@ -32,7 +37,7 @@ const HeaderClient = () => {
     navigate('/login');
   };
 
-  const badgeText = cartItemCount > 99 ? '99+' : String(cartItemCount);
+  const badgeText = cartItemCount > 99 ? '99+' : String(cartItemCount || 0);
 
   return (
     <header className={`header ${scrolled ? 'header--scrolled' : ''}`}>
@@ -56,8 +61,8 @@ const HeaderClient = () => {
             className="nav__cart"
             aria-label={`Ir al carrito (${cartItemCount} producto${cartItemCount === 1 ? '' : 's'})`}
           >
-            <span aria-hidden="true">🛒</span>
-            {cartItemCount > 0 && (
+            <span className="nav__cart-icon" aria-hidden="true">🛒</span>
+            {Number(cartItemCount) > 0 && (
               <span className="nav__badge" aria-live="polite">{badgeText}</span>
             )}
           </Link>
