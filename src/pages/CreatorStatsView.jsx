@@ -5,7 +5,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import {
-  ShoppingBag, Package, TrendingUp, DollarSign,
+  Calendar,ShoppingBag, Package, TrendingUp, DollarSign,
   User, MapPin, CreditCard, Award, CheckCircle, Rocket, MessageSquare, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';

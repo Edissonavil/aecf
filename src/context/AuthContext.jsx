@@ -2,7 +2,7 @@
 import React, { createContext, useState, useEffect, useContext, useRef } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { getCartCount } from '../services/orderApi';
+import { getCartCount, getCart } from '../services/orderApi';
 
 // Cliente Axios para auth
 const API = axios.create({
